@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Tutorscout24-Android</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Test123</string>
+    <string name="title_display">Anzeigen</string>
+    <string name="title_tutorien">Tutorien</string>
+    <string name="title_create">Erstellen</string>
+    <string name="title_notifications">Nachrichten</string>
+    <string name="title_profile">Profil</string>
 </resources>
