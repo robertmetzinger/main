@@ -32,6 +32,12 @@
             android:background="?android:attr/windowBackground"
             app:menu="@menu/navigation" />
 
+        <LinearLayout
+            android:id="@+id/mainContentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"></LinearLayout>
+
     </FrameLayout>
 
 </LinearLayout>
