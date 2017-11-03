@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.LayoutInflater;
 
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
 
         mTextMessage = (TextView) findViewById(R.id.Home);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
