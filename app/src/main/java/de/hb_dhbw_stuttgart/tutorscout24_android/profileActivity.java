@@ -1,6 +1,7 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -30,7 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class profileActivity extends AppCompatActivity implements
+public class profileActivity extends Activity  implements
         ConnectionCallbacks, OnConnectionFailedListener{
 
     GoogleApiClient mGoogleApiClient;
@@ -60,7 +61,7 @@ public class profileActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnGetAdresse)
-    void gps() {
+    public void gps() {
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
