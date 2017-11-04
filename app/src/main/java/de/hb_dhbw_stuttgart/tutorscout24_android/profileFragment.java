@@ -1,20 +1,15 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
-import android.*;
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Fragment;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -23,13 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -40,14 +30,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 
 /**
@@ -71,11 +59,8 @@ public class profileFragment extends android.app.Fragment  implements
     String mail;
 
 
-    GoogleApiClient mGoogleApiClient;
-    private OnFragmentInteractionListener mListener;
-
-
-
+    GoogleApiClient googleApiClient;
+    private OnFragmentInteractionListener fragmentListener;
 
     public profileFragment() {
         // Required empty public constructor
@@ -90,6 +75,8 @@ public class profileFragment extends android.app.Fragment  implements
      * @return A new instance of fragment profileFragment.
      */
     public static profileFragment newInstance(String name, String mail) {
+      //TODO load userProfile
+
         profileFragment fragment = new profileFragment();
         Bundle args = new Bundle();
         args.putString(USER_NAME, name);
@@ -107,8 +94,8 @@ public class profileFragment extends android.app.Fragment  implements
         }
 
 
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(getContext())
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
@@ -143,7 +130,7 @@ public class profileFragment extends android.app.Fragment  implements
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        fragmentListener = null;
     }
 
     @Override
@@ -152,12 +139,13 @@ public class profileFragment extends android.app.Fragment  implements
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
             return;
         }
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
 
-            gpsBreitengrad = mLastLocation.getLatitude();
-            gpsLaengengrad = mLastLocation.getLongitude();
+        Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                googleApiClient);
+        if (myLastLocation != null) {
+
+            gpsBreitengrad = myLastLocation.getLatitude();
+            gpsLaengengrad = myLastLocation.getLongitude();
 
             SetCity();
         }
@@ -165,12 +153,13 @@ public class profileFragment extends android.app.Fragment  implements
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.e("Error", "onConnectionSuspended: Connection to Fragment suspendet");
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.e("Error", "onConnectionFailed: Connection to Fragment lost");
     }
 
     /**
@@ -190,30 +179,24 @@ public class profileFragment extends android.app.Fragment  implements
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnGetAdresse)
-    public void gps() {
+    public void connectToGoogleGPSApi() {
 
-        Log.e("Aufruf", "gps: ");
-        mGoogleApiClient.connect();
+        Log.e("Try connect", "gps: ");
+
         String[] LOCATION_PERMS = {
                 android.Manifest.permission.ACCESS_FINE_LOCATION};
         requestPermissions(LOCATION_PERMS, 1);
-
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
-            return;
-        }
+        googleApiClient.connect();
     }
 
     private void SetCity() {
-    /*------- To get city name from coordinates -------- */
-        Log.e("test", "SetCity: " );
+
         String cityName = null;
         Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
         List<Address> addresses;
         try {
             addresses = gcd.getFromLocation(gpsBreitengrad, gpsLaengengrad, 1);
             if (addresses.size() > 0) {
-                System.out.println(addresses.get(0).getLocality());
                 cityName = addresses.get(0).getLocality();
             }
         } catch (IOException e) {
@@ -221,36 +204,33 @@ public class profileFragment extends android.app.Fragment  implements
         }
 
         TextView t = getView().findViewById(R.id.City);
-
         t.setText(cityName);
     }
 
     @OnClick(R.id.btnSpeichern)
     public void htttpRequestTest(){
-        Log.e("test", "htttpRequestTest: ");
-        final TextView mTxtDisplay;
-        ImageView mImageView;
-        mTxtDisplay = (TextView) getView().findViewById(R.id.userInfo);
-        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/info";
+        // teilweise übernommen aus: https://developer.android.com/training/volley/request.html
+
+        final TextView displayView;
+        displayView = getView().findViewById(R.id.userInfo);
+        String userInfoURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/info";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
+                (Request.Method.GET, userInfoURL, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        mTxtDisplay.setText("Response: " + response.toString());
+                        displayView.setText("Response: " + response.toString());
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        mTxtDisplay.setText("Response: " + error.toString());
-
+                        displayView.setText("Response: " + error.toString());
                     }
                 });
 
         // Access the RequestQueue through your singleton class.
-        MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 }

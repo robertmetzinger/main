@@ -9,17 +9,18 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-class MySingleton {
-    private static MySingleton mInstance;
-    private RequestQueue mRequestQueue;
-    private ImageLoader mImageLoader;
-    private static Context mCtx;
+// Übernommen aus: https://developer.android.com/training/volley/requestqueue.html
+class HttpRequestManager {
+    private static HttpRequestManager instance;
+    private RequestQueue requestQueue;
+    private ImageLoader imageLoader;
+    private static Context context;
 
-    private MySingleton(Context context) {
-        mCtx = context;
-        mRequestQueue = getRequestQueue();
+    private HttpRequestManager(Context context) {
+        HttpRequestManager.context = context;
+        requestQueue = getRequestQueue();
 
-        mImageLoader = new ImageLoader(mRequestQueue,
+        imageLoader = new ImageLoader(requestQueue,
                 new ImageLoader.ImageCache() {
                     private final LruCache<String, Bitmap>
                             cache = new LruCache<String, Bitmap>(20);
@@ -36,20 +37,20 @@ class MySingleton {
                 });
     }
 
-    public static synchronized MySingleton getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new MySingleton(context);
+    public static synchronized HttpRequestManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new HttpRequestManager(context);
         }
-        return mInstance;
+        return instance;
     }
 
     public RequestQueue getRequestQueue() {
-        if (mRequestQueue == null) {
+        if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
+            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         }
-        return mRequestQueue;
+        return requestQueue;
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
@@ -57,6 +58,6 @@ class MySingleton {
     }
 
     public ImageLoader getImageLoader() {
-        return mImageLoader;
+        return imageLoader;
     }
 }
