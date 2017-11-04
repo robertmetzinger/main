@@ -13,13 +13,31 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/textName"
+            android:id="@+id/txtFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
-            tools:text="Name" />
+            android:text="Vorname"
+            tools:text="Vorname" />
+
+        <EditText
+            android:id="@+id/textLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Nachname"
+            tools:text="Nachname" />
+
+        <EditText
+            android:id="@+id/txtAlter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Alter"
+            tools:text="Alter" />
 
         <EditText
             android:id="@+id/textAdress"
@@ -60,19 +78,19 @@
             android:text="City"
             tools:text="City" />
 
-        <TextView
-            android:id="@+id/textLaenge"
+        <Button
+            android:id="@+id/btnSpeichern"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Laenge"
-            tools:text="Laenge" />
+            android:text="Speichern"
+            tools:text="Speichern" />
 
         <TextView
-            android:id="@+id/textBreite"
+            android:id="@+id/userInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Breite"
-            tools:text="Breite" />
+            android:text="TextView" />
+
     </LinearLayout>
 
 </FrameLayout>

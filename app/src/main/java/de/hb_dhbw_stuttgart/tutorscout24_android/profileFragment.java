@@ -29,9 +29,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -57,8 +65,11 @@ public class profileFragment extends android.app.Fragment  implements
     private static final String USER_NAME = "Name";
     private static final String USER_MAIL = "E-Mail Adresse";
 
-    String mParam1;
-    String mParam2;
+    double gpsLaengengrad;
+    double gpsBreitengrad;
+    String name;
+    String mail;
+
 
     GoogleApiClient mGoogleApiClient;
     private OnFragmentInteractionListener mListener;
@@ -91,8 +102,8 @@ public class profileFragment extends android.app.Fragment  implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(USER_NAME);
-            mParam2 = getArguments().getString(USER_MAIL);
+            name = getArguments().getString(USER_NAME);
+            mail = getArguments().getString(USER_MAIL);
         }
 
 
@@ -144,10 +155,11 @@ public class profileFragment extends android.app.Fragment  implements
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
-            TextView breite = (TextView) getView().findViewById(R.id.textBreite);
-            TextView laenge = (TextView) getView().findViewById(R.id.textLaenge);
-            breite.setText(String.valueOf(mLastLocation.getLatitude()));
-            laenge.setText(String.valueOf(mLastLocation.getLongitude()));
+
+            gpsBreitengrad = mLastLocation.getLatitude();
+            gpsLaengengrad = mLastLocation.getLongitude();
+
+            SetCity();
         }
     }
 
@@ -190,41 +202,55 @@ public class profileFragment extends android.app.Fragment  implements
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
             return;
         }
+    }
 
-
-        TextView breite = (TextView) getView().findViewById(R.id.textBreite);
-        TextView laenge = (TextView) getView().findViewById(R.id.textLaenge);
-
-
-
-        if (!breite.getText().toString().startsWith("B")){
-            double breitengrad = Double.parseDouble(breite.getText().toString());
-            double laengengrad = Double.parseDouble(laenge.getText().toString());
-
-            Toast.makeText(
-                    getContext(),
-                    "Location changed: Lat: " + breitengrad + " Lng: "
-                            + laengengrad, Toast.LENGTH_SHORT).show();
-            String longitude = "Longitude: " + laengengrad;
-
-
-        /*------- To get city name from coordinates -------- */
-            String cityName = null;
-            Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
-            List<Address> addresses;
-            try {
-                addresses = gcd.getFromLocation(breitengrad, laengengrad, 1);
-                if (addresses.size() > 0) {
-                    System.out.println(addresses.get(0).getLocality());
-                    cityName = addresses.get(0).getLocality();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    private void SetCity() {
+    /*------- To get city name from coordinates -------- */
+        Log.e("test", "SetCity: " );
+        String cityName = null;
+        Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+        List<Address> addresses;
+        try {
+            addresses = gcd.getFromLocation(gpsBreitengrad, gpsLaengengrad, 1);
+            if (addresses.size() > 0) {
+                System.out.println(addresses.get(0).getLocality());
+                cityName = addresses.get(0).getLocality();
             }
-
-            TextView t = (TextView)  getView().findViewById(R.id.City);
-
-            t.setText(cityName);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        TextView t = getView().findViewById(R.id.City);
+
+        t.setText(cityName);
+    }
+
+    @OnClick(R.id.btnSpeichern)
+    public void htttpRequestTest(){
+        Log.e("test", "htttpRequestTest: ");
+        final TextView mTxtDisplay;
+        ImageView mImageView;
+        mTxtDisplay = (TextView) getView().findViewById(R.id.userInfo);
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/info";
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        mTxtDisplay.setText("Response: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        mTxtDisplay.setText("Response: " + error.toString());
+
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 }
