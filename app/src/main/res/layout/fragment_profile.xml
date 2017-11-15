@@ -7,90 +7,103 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/txtFirstName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Vorname"
-            tools:text="Vorname" />
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/textLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Nachname"
-            tools:text="Nachname" />
+            <EditText
+                android:id="@+id/txtFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Vorname"
+                tools:text="Vorname" />
 
-        <EditText
-            android:id="@+id/txtAlter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Alter"
-            tools:text="Alter" />
+            <EditText
+                android:id="@+id/textLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Nachname"
+                tools:text="Nachname" />
 
-        <EditText
-            android:id="@+id/textAdress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Adresse"
-            tools:text="Adresse" />
+            <EditText
+                android:id="@+id/txtAlter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Alter"
+                tools:text="Alter" />
 
-        <EditText
-            android:id="@+id/textMail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:text="Mail"
-            tools:text="Mail" />
+            <EditText
+                android:id="@+id/txtAdress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Adresse"
+                tools:text="Adresse" />
 
-        <ImageView
-            android:id="@+id/imgViewProfile"
-            android:layout_width="match_parent"
-            android:layout_height="87dp"
-            android:contentDescription="@string/name"
-            app:srcCompat="@drawable/ic_account_circle_black_24dp" />
+            <EditText
+                android:id="@+id/txtMail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:text="Mail"
+                tools:text="Mail" />
 
-        <Button
-            android:id="@+id/btnGetAdresse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="GPS daten laden"
-            tools:text="GPS date laden" />
+            <ImageView
+                android:id="@+id/imgViewProfile"
+                android:layout_width="match_parent"
+                android:layout_height="87dp"
+                android:contentDescription="@string/name"
+                app:srcCompat="@drawable/ic_account_circle_black_24dp" />
 
-        <TextView
-            android:id="@+id/City"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="City"
-            tools:text="City" />
+            <Button
+                android:id="@+id/btnGetAdresse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="GPS daten laden"
+                tools:text="GPS date laden" />
 
-        <Button
-            android:id="@+id/btnSpeichern"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Speichern"
-            tools:text="Speichern" />
+            <TextView
+                android:id="@+id/City"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="City"
+                tools:text="City" />
 
-        <TextView
-            android:id="@+id/userInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            <Button
+                android:id="@+id/btnSpeichern"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Speichern"
+                tools:text="Speichern" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btnHttpTest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Test"
+                tools:text="Test" />
+
+            <TextView
+                android:id="@+id/userInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </FrameLayout>

@@ -18,7 +18,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 import com.android.volley.Request;
@@ -26,13 +28,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -208,6 +213,59 @@ public class profileFragment extends android.app.Fragment  implements
     }
 
     @OnClick(R.id.btnSpeichern)
+    public void saveUser(){
+
+        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/create";
+
+        StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+        {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                EditText firstName = getView().findViewById(R.id.txtFirstName);
+                EditText lastName = getView().findViewById(R.id.textLastName);
+                EditText alter = getView().findViewById(R.id.txtAlter);
+                EditText addresse = getView().findViewById(R.id.txtAdress);
+                EditText mail = getView().findViewById(R.id.txtMail);
+
+
+                Map<String, String> params = new HashMap<>();
+                params.put("userName", "android1234");
+                params.put("password", "androidTest12");
+                params.put("firstName",  firstName.toString());
+                params.put("lastName", lastName.toString());
+                params.put("age", alter.toString());
+                params.put("gender", "male");
+                params.put("email", addresse.toString());
+                params.put("note", "keine Notiz");
+                params.put("placeOfResidence", mail.toString());
+                params.put("maxGraduation", "kein Abschluss");
+
+                return params;
+            }
+        };
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
+    }
+
+    @OnClick(R.id.btnHttpTest)
     public void htttpRequestTest(){
         // teilweise übernommen aus: https://developer.android.com/training/volley/request.html
 
