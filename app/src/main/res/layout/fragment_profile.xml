@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.profileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -21,45 +19,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Vorname"
-                tools:text="Vorname" />
+                android:hint="Vorname"
+                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/textLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Nachname"
-                tools:text="Nachname" />
+                android:hint="Nachname"
+                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/txtAlter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Alter"
-                tools:text="Alter" />
+                android:hint="Alter"
+                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/txtAdress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Adresse"
-                tools:text="Adresse" />
+                android:hint="Adresse"
+                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/txtMail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textEmailAddress"
-                android:text="Mail"
-                tools:text="Mail" />
+                android:hint="Mail"
+                android:inputType="textEmailAddress" />
 
             <ImageView
                 android:id="@+id/imgViewProfile"

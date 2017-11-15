@@ -34,6 +34,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +42,9 @@ import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnFocusChange;
+import butterknife.OnItemClick;
+import butterknife.OnItemSelected;
 
 
 /**
@@ -55,14 +59,22 @@ import butterknife.OnClick;
 public class profileFragment extends android.app.Fragment  implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String USER_NAME = "Name";
-    private static final String USER_MAIL = "E-Mail Adresse";
+    private final static String USER_FIRSTNAME = "USER_FIRSTNAME";
+    private final static String USER_MAIL = "USER_MAIL";
+    private final static String USER_ALTER = "USER_ALTER";
+    private final static String USER_ADRESSE = "USER_ADRESSE";
+    private final static String USER_LASTNAME = "USER_LASTNAME";
+
+
+    private   Serializable firstname;
+    private   String mail ;
+    private   String alter;
+    private   String adresse;
+    private   String lastname;
+
 
     double gpsLaengengrad;
     double gpsBreitengrad;
-    String name;
-    String mail;
-
 
     GoogleApiClient googleApiClient;
     private OnFragmentInteractionListener fragmentListener;
@@ -84,20 +96,49 @@ public class profileFragment extends android.app.Fragment  implements
 
         profileFragment fragment = new profileFragment();
         Bundle args = new Bundle();
-        args.putString(USER_NAME, name);
+        args.putString(USER_FIRSTNAME, name);
+        args.putString(USER_LASTNAME, mail);
         args.putString(USER_MAIL, mail);
+        args.putString(USER_ADRESSE, mail);
+        args.putString(USER_ALTER, mail);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        Log.e("TAg", "onSaveInstanceState: ");
+        outState.putSerializable("firstname", firstname);
+        outState.putSerializable("lastname", lastname);
+        outState.putSerializable("alter", alter);
+        outState.putSerializable("adresse", adresse);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            name = getArguments().getString(USER_NAME);
-            mail = getArguments().getString(USER_MAIL);
-        }
+        if (savedInstanceState != null) {
 
+            firstname = savedInstanceState.getSerializable("firstname");
+            lastname = getArguments().getString(USER_LASTNAME);
+            mail = getArguments().getString(USER_MAIL);
+            alter = getArguments().getString(USER_ALTER);
+            adresse = getArguments().getString(USER_ADRESSE);
+
+            EditText firstNameEditText = getView().findViewById(R.id.txtFirstName);
+            EditText lastNameEditText = getView().findViewById(R.id.textLastName);
+            EditText alterEditText = getView().findViewById(R.id.txtAlter);
+            EditText addresseEditText = getView().findViewById(R.id.txtAdress);
+            EditText mailEditText = getView().findViewById(R.id.txtMail);
+
+            firstNameEditText.setText(firstname.toString());
+            lastNameEditText.setText(lastname);
+            alterEditText.setText(alter);
+            mailEditText.setText(mail);
+            addresseEditText.setText(adresse);
+        }
 
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(getContext())
@@ -246,15 +287,15 @@ public class profileFragment extends android.app.Fragment  implements
 
 
                 Map<String, String> params = new HashMap<>();
-                params.put("userName", "android1234");
+                params.put("userName", "android12345");
                 params.put("password", "androidTest12");
-                params.put("firstName",  firstName.toString());
-                params.put("lastName", lastName.toString());
-                params.put("age", alter.toString());
+                params.put("firstName",  firstName.getText().toString());
+                params.put("lastName", lastName.getText().toString());
+                params.put("age", alter.getText().toString());
                 params.put("gender", "male");
-                params.put("email", addresse.toString());
+                params.put("email", addresse.getText().toString());
                 params.put("note", "keine Notiz");
-                params.put("placeOfResidence", mail.toString());
+                params.put("placeOfResidence", mail.getText().toString());
                 params.put("maxGraduation", "kein Abschluss");
 
                 return params;
@@ -266,29 +307,42 @@ public class profileFragment extends android.app.Fragment  implements
     }
 
     @OnClick(R.id.btnHttpTest)
-    public void htttpRequestTest(){
-        // teilweise übernommen aus: https://developer.android.com/training/volley/request.html
+    public void getUserInfo(){
 
-        final TextView displayView;
-        displayView = getView().findViewById(R.id.userInfo);
-        String userInfoURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/info";
+        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, userInfoURL, null, new Response.Listener<JSONObject>() {
-
+        StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
+                new Response.Listener<String>()
+                {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        displayView.setText("Response: " + response.toString());
+                    public void onResponse(String response)
+                    {
+                        Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                     }
-                }, new Response.ErrorListener() {
-
+                },
+                new Response.ErrorListener()
+                {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-                        displayView.setText("Response: " + error.toString());
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
                     }
-                });
+                })
+        {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String> params = new HashMap<>();
+                params.put("UserToFind", "android1234");
+                params.put("userName",  "androidTest");
+                params.put("password", "androidTest");
+
+                return params;
+            }
+        };
 
         // Access the RequestQueue through your singleton class.
-        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
+
 }
