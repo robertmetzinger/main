@@ -22,10 +22,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements Display.OnMapsFragmentLoadingListener, OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
     private MainActivity that = this;
+    private MapFragment mapFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -41,8 +42,7 @@ public class MainActivity extends AppCompatActivity implements Display.OnMapsFra
             switch (item.getItemId()) {
                 case R.id.navigation_display:
 
-                    Display displayFragment = new Display();
-                    displayFragment.getMapAsync(that);
+                    DisplayFragment displayFragment = new DisplayFragment();
                     transaction.replace(R.id.fragment2, displayFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
@@ -118,16 +118,4 @@ public class MainActivity extends AppCompatActivity implements Display.OnMapsFra
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         }
 
-
-
-    @Override
-    public void onMapsFragmentLoaded() {
-
-
-    }
-
-    @Override
-    public void onMapReady(GoogleMap map) {
-        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-    }
 }

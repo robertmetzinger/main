@@ -1,19 +1,14 @@
-<!--FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/parentFragment"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.Display"-->
+    android:layout_height="match_parent" >
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/mapFragment"
-        class="com.google.android.gms.maps.MapFragment"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        android:name="com.google.android.gms.maps.MapFragment"
-        map:mapType="normal"
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.Display" />
+        android:apiKey="AIzaSyB007q-07lbrTVTIgu2pdRrB6WeXrcOSlM"
+        android:clickable="true"
+        android:enabled="true"/>
 
-    <!--/FrameLayout-->
+</RelativeLayout>
