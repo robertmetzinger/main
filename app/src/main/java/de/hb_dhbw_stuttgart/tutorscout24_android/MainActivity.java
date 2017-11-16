@@ -11,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
@@ -99,11 +100,13 @@ public class MainActivity extends AppCompatActivity implements Display.OnMapsFra
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        navigation.setEnabled(false);
-        navigation.setFocusable(false);
-        navigation.setFocusableInTouchMode(false);
-        navigation.setClickable(false);
-        navigation.setContextClickable(false);
+        navigation.getMenu().getItem(0).setEnabled(false);
+        navigation.getMenu().getItem(1).setEnabled(false);
+        navigation.getMenu().getItem(2).setEnabled(false);
+        navigation.getMenu().getItem(3).setEnabled(false);
+        navigation.getMenu().getItem(4).setEnabled(false);
+
+        navigation.setVisibility(View.VISIBLE);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         LoginFragment loginFragment = new LoginFragment();

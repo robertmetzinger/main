@@ -2,13 +2,39 @@ package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.support.annotation.RequiresApi;
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.util.Enumeration;
+
+import javax.crypto.KeyGenerator;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -72,18 +98,41 @@ public class LoginFragment extends android.app.Fragment {
         return  view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+       /*
+ * Load the Android KeyStore instance using the the
+ * "AndroidKeyStore" provider to list out what entries are
+ * currently stored.
+ */
+        try {
+            KeyStore ks = KeyStore.getInstance("Tutorscout24");
+            ks.load(null);
+            Enumeration<String> aliases = ks.aliases();
+            EditText passwortField = getView().findViewById(R.id.txtPasswort);
+
+            char[] password = passwortField.getText().toString().toCharArray();
+
+            FileInputStream fis = new FileInputStream("keyStoreName");
+            ks.load(fis, password);
+
+            passwortField.setText(password.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
 
     }
+
+
 
     @Override
     public void onDetach() {
@@ -98,10 +147,96 @@ public class LoginFragment extends android.app.Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnLogin)
     public void  Login(){
 
         BottomNavigationView nav = getActivity().findViewById(R.id.navigation);
         nav.setEnabled(true);
+
+        nav.getMenu().getItem(0).setEnabled(true);
+        nav.getMenu().getItem(1).setEnabled(true);
+        nav.getMenu().getItem(2).setEnabled(true);
+        nav.getMenu().getItem(3).setEnabled(true);
+        nav.getMenu().getItem(4).setEnabled(true);
+
+        nav.setVisibility(View.GONE);
+        EditText passwortField = getView().findViewById(R.id.txtPasswort);
+
+        // get user password and file input stream
+        char[] password = passwortField.getText().toString().toCharArray();
+
+        try {
+
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+
+            //try (FileInputStream fis = new FileInputStream("Tutorscout24")) {
+                ks.load(null, password);
+           // }
+
+
+            // get user password and file input stream
+
+
+
+            KeyStore.ProtectionParameter protParam =
+                    new KeyStore.PasswordProtection("Tutorscout24".toCharArray());
+
+            ks.getEntry("Tutorscout24", protParam);
+
+            // save my secret key
+            javax.crypto.SecretKey mySecretKey = KeyGenerator.getInstance("AES").generateKey();;
+            KeyStore.SecretKeyEntry skEntry =
+                    new KeyStore.SecretKeyEntry(mySecretKey);
+            ks.setEntry("Tutorscout24", skEntry, protParam);
+
+            // store away the keystore
+           try (FileOutputStream fos = new FileOutputStream("Tutorscout24")) {
+                ks.store(fos, password);
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+        catch (UnrecoverableEntryException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+    }
+
+    @OnClick(R.id.btnKeyTest)
+    public void accessKeyStore(){
+        try {
+            KeyStore ks = KeyStore.getInstance("Tutorscout24");
+            ks.load(null);
+            Enumeration<String> aliases = ks.aliases();
+            TextView passwortField = getView().findViewById(R.id.txtKeyTest);
+
+            char[] password = passwortField.getText().toString().toCharArray();
+
+            FileInputStream fis = new FileInputStream("Tutorscout24");
+            ks.load(fis, password);
+
+            passwortField.setText(password.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
     }
 }

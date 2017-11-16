@@ -287,13 +287,13 @@ public class profileFragment extends android.app.Fragment  implements
 
 
                 Map<String, String> params = new HashMap<>();
-                params.put("userName", "android12345");
+                params.put("userName", "android1234567");
                 params.put("password", "androidTest12");
                 params.put("firstName",  firstName.getText().toString());
                 params.put("lastName", lastName.getText().toString());
                 params.put("age", alter.getText().toString());
                 params.put("gender", "male");
-                params.put("email", addresse.getText().toString());
+                params.put("emaila", addresse.getText().toString());
                 params.put("note", "keine Notiz");
                 params.put("placeOfResidence", mail.getText().toString());
                 params.put("maxGraduation", "kein Abschluss");
@@ -306,7 +306,6 @@ public class profileFragment extends android.app.Fragment  implements
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
 
-    @OnClick(R.id.btnHttpTest)
     public void getUserInfo(){
 
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
@@ -343,6 +342,34 @@ public class profileFragment extends android.app.Fragment  implements
 
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
+    }
+    @OnClick(R.id.btnHttpTest)
+    public void htttpRequestTest(){
+        Log.e("test", "htttpRequestTest: ");
+        final TextView mTxtDisplay;
+
+        mTxtDisplay = (TextView) getView().findViewById(R.id.userInfo);
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/info";
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        mTxtDisplay.setText("Response: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        mTxtDisplay.setText("Response: " + error.toString());
+
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
 }
