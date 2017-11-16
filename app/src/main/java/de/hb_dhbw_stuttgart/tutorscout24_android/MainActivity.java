@@ -13,12 +13,18 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.TextView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Display.OnMapsFragmentLoadingListener, OnMapReadyCallback {
 
     private TextView mTextMessage;
+    private MainActivity that = this;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -34,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_display:
 
-                    transaction.replace(R.id.fragment2, blankFragment);
+                    Display displayFragment = new Display();
+                    displayFragment.getMapAsync(that);
+                    transaction.replace(R.id.fragment2, displayFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
                     mTextMessage.setText(R.string.title_display);
@@ -65,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
 
                 case R.id.navigation_profile:
-
-
 
                     Log.e("nix", "onNavigationItemSelected: ");
                     Fragment profileFragment = new profileFragment();
@@ -107,5 +113,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Nötig da durch einen Fehler, vermutlich durch Focus einer EditText, autmoatisch sich die Tastatur beim Start öffnete.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
+
+
+
+    @Override
+    public void onMapsFragmentLoaded() {
+
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 }

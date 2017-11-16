@@ -1,23 +1,31 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+//import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.app.Fragment;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link BlankFragment.OnFragmentInteractionListener} interface
+ * {@link OnMapsFragmentLoadingListener} interface
  * to handle interaction events.
- * Use the {@link BlankFragment#newInstance} factory method to
+ * Use the {@link Display#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BlankFragment extends android.app.Fragment {
+public class Display extends MapFragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -27,9 +35,10 @@ public class BlankFragment extends android.app.Fragment {
     private String mParam1;
     private String mParam2;
 
-    private profileFragment.OnFragmentInteractionListener mListener;
+    private OnMapsFragmentLoadingListener mListener;
 
-    public BlankFragment() {
+    public Display() {
+        super();
         // Required empty public constructor
     }
 
@@ -39,11 +48,11 @@ public class BlankFragment extends android.app.Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment BlankFragment.
+     * @return A new instance of fragment Display.
      */
     // TODO: Rename and change types and number of parameters
-    public static BlankFragment newInstance(String param1, String param2) {
-        BlankFragment fragment = new BlankFragment();
+    public static Display newInstance(String param1, String param2) {
+        Display fragment = new Display();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -52,37 +61,36 @@ public class BlankFragment extends android.app.Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blank, container, false);
+
+        //Inflate the layout for this fragment
+        /*Fragment parentFragment = this;
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.add(R.id.mapFragment, parentFragment).commit();
+        //MapFragment mapFragment = (MapFragment) parentFragment.getChildFragmentManager().findFragmentById(R.id.mapFragment);
+        //mapFragment.getMapAsync(this);
+        */
+
+        return inflater.inflate(R.layout.fragment_display, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onMapsFragmentLoaded();
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*if (context instanceof OnMapsFragmentLoadingListener) {
+        if (context instanceof OnMapsFragmentLoadingListener) {
             mListener = (OnMapsFragmentLoadingListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnMapsFragmentLoadingListener");
-        }*/
+        }
     }
 
     @Override
@@ -101,8 +109,8 @@ public class BlankFragment extends android.app.Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnMapsFragmentLoadingListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onMapsFragmentLoaded();
     }
 }
