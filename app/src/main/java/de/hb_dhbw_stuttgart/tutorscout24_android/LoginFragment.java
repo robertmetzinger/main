@@ -1,5 +1,8 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import android.*;
+import android.Manifest;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -16,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,18 +54,12 @@ import butterknife.OnClick;
  */
 public class LoginFragment extends android.app.Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
     }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -73,20 +71,13 @@ public class LoginFragment extends android.app.Fragment {
     // TODO: Rename and change types and number of parameters
     public static LoginFragment newInstance(String param1, String param2) {
         LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+             return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -103,11 +94,7 @@ public class LoginFragment extends android.app.Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-       /*
- * Load the Android KeyStore instance using the the
- * "AndroidKeyStore" provider to list out what entries are
- * currently stored.
- */
+
         try {
             KeyStore ks = KeyStore.getInstance("Tutorscout24");
             ks.load(null);
@@ -151,16 +138,18 @@ public class LoginFragment extends android.app.Fragment {
     @OnClick(R.id.btnLogin)
     public void  Login(){
 
-        BottomNavigationView nav = getActivity().findViewById(R.id.navigation);
-        nav.setEnabled(true);
+        String[] LOCATION_PERMS = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        requestPermissions(LOCATION_PERMS, 1);
 
-        nav.getMenu().getItem(0).setEnabled(true);
-        nav.getMenu().getItem(1).setEnabled(true);
-        nav.getMenu().getItem(2).setEnabled(true);
-        nav.getMenu().getItem(3).setEnabled(true);
-        nav.getMenu().getItem(4).setEnabled(true);
+        ((MainActivity)getActivity()).EnableNavigation();
 
-        nav.setVisibility(View.GONE);
+        android.app.Fragment blankFragment = new BlankFragment();
+//        ((MainActivity)getActivity()).ChangeFragment(blankFragment, "Blank");
+
+        if(true){
+            return;
+        }
         EditText passwortField = getView().findViewById(R.id.txtPasswort);
 
         // get user password and file input stream
@@ -170,14 +159,17 @@ public class LoginFragment extends android.app.Fragment {
 
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 
-            //try (FileInputStream fis = new FileInputStream("Tutorscout24")) {
-                ks.load(null, password);
-           // }
+            File file = new File(getContext().getFilesDir(), "Tutorscout24");
 
+            if(!file.exists()){
+                file.createNewFile();
+
+            }
+            try (FileInputStream fis = new FileInputStream(file)) {
+                ks.load(null, password);
+           }
 
             // get user password and file input stream
-
-
 
             KeyStore.ProtectionParameter protParam =
                     new KeyStore.PasswordProtection("Tutorscout24".toCharArray());
@@ -191,11 +183,17 @@ public class LoginFragment extends android.app.Fragment {
             ks.setEntry("Tutorscout24", skEntry, protParam);
 
             // store away the keystore
-           try (FileOutputStream fos = new FileOutputStream("Tutorscout24")) {
+           try (FileOutputStream fos = new FileOutputStream(file)) {
                 ks.store(fos, password);
             }
 
 
+            char[] passwordr = passwortField.getText().toString().toCharArray();
+
+            FileInputStream fis = new FileInputStream("Tutorscout24");
+            ks.load(fis, passwordr);
+
+            passwortField.setText(passwordr.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -215,8 +213,10 @@ public class LoginFragment extends android.app.Fragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnKeyTest)
     public void accessKeyStore(){
+
         try {
             KeyStore ks = KeyStore.getInstance("Tutorscout24");
             ks.load(null);
@@ -238,5 +238,13 @@ public class LoginFragment extends android.app.Fragment {
         } catch (KeyStoreException e) {
             e.printStackTrace();
         }
+    }
+
+    @OnClick(R.id.txtRegistrieren)
+    public void OnRegistrierenLabelClick(){
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        RegistrierenFragment registrierenFragment = new RegistrierenFragment();
+
+        ((MainActivity)getActivity()).ChangeFragment(registrierenFragment, "Registrieren");
     }
 }

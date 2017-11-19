@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -56,7 +57,7 @@ import butterknife.OnItemSelected;
  * create an instance of this fragment.
  */
 @TargetApi(23)
-public class profileFragment extends android.app.Fragment  implements
+public class profileFragment extends android.app.Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private final static String USER_FIRSTNAME = "USER_FIRSTNAME";
@@ -66,11 +67,11 @@ public class profileFragment extends android.app.Fragment  implements
     private final static String USER_LASTNAME = "USER_LASTNAME";
 
 
-    private   Serializable firstname;
-    private   String mail ;
-    private   String alter;
-    private   String adresse;
-    private   String lastname;
+    private Serializable firstname;
+    private String mail;
+    private String alter;
+    private String adresse;
+    private String lastname;
 
 
     double gpsLaengengrad;
@@ -92,7 +93,7 @@ public class profileFragment extends android.app.Fragment  implements
      * @return A new instance of fragment profileFragment.
      */
     public static profileFragment newInstance(String name, String mail) {
-      //TODO load userProfile
+        //TODO load userProfile
 
         profileFragment fragment = new profileFragment();
         Bundle args = new Bundle();
@@ -149,7 +150,6 @@ public class profileFragment extends android.app.Fragment  implements
         }
 
     }
-
 
 
     @Override
@@ -254,31 +254,25 @@ public class profileFragment extends android.app.Fragment  implements
     }
 
     @OnClick(R.id.btnSpeichern)
-    public void saveUser(){
+    public void saveUser() {
 
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/create";
 
         StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
-                new Response.Listener<String>()
-                {
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response)
-                    {
+                    public void onResponse(String response) {
                         Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
+                    public void onErrorResponse(VolleyError error) {
                         Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
                     }
-                })
-        {
+                }) {
             @Override
-            protected Map<String, String> getParams()
-            {
+            protected Map<String, String> getParams() {
                 EditText firstName = getView().findViewById(R.id.txtFirstName);
                 EditText lastName = getView().findViewById(R.id.textLastName);
                 EditText alter = getView().findViewById(R.id.txtAlter);
@@ -289,7 +283,7 @@ public class profileFragment extends android.app.Fragment  implements
                 Map<String, String> params = new HashMap<>();
                 params.put("userName", "android1234567");
                 params.put("password", "androidTest12");
-                params.put("firstName",  firstName.getText().toString());
+                params.put("firstName", firstName.getText().toString());
                 params.put("lastName", lastName.getText().toString());
                 params.put("age", alter.getText().toString());
                 params.put("gender", "male");
@@ -306,34 +300,28 @@ public class profileFragment extends android.app.Fragment  implements
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
 
-    public void getUserInfo(){
+    public void getUserInfo() {
 
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
 
         StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
-                new Response.Listener<String>()
-                {
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response)
-                    {
+                    public void onResponse(String response) {
                         Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
+                    public void onErrorResponse(VolleyError error) {
                         Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
                     }
-                })
-        {
+                }) {
             @Override
-            protected Map<String, String> getParams()
-            {
+            protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("UserToFind", "android1234");
-                params.put("userName",  "androidTest");
+                params.put("userName", "androidTest");
                 params.put("password", "androidTest");
 
                 return params;
@@ -343,8 +331,9 @@ public class profileFragment extends android.app.Fragment  implements
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
+
     @OnClick(R.id.btnHttpTest)
-    public void htttpRequestTest(){
+    public void htttpRequestTest() {
         Log.e("test", "htttpRequestTest: ");
         final TextView mTxtDisplay;
 

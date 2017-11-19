@@ -12,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,9 +26,9 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mTextMessage;
     private MainActivity that = this;
     private MapFragment mapFragment;
+    FragmentTransaction transaction;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -39,48 +41,35 @@ public class MainActivity extends AppCompatActivity {
             Fragment blankFragment = new BlankFragment();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
+
             switch (item.getItemId()) {
                 case R.id.navigation_display:
 
                     DisplayFragment displayFragment = new DisplayFragment();
-                    transaction.replace(R.id.fragment2, displayFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                    mTextMessage.setText(R.string.title_display);
+                    ChangeFragment(displayFragment, "Display");
                     return true;
 
                 case R.id.navigation_tutorien:
 
-                    transaction.replace(R.id.fragment2, blankFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                    mTextMessage.setText(R.string.title_tutorien);
+                    ChangeFragment(blankFragment, "Blank");
                     return true;
 
                 case R.id.navigation_create:
 
-                    transaction.replace(R.id.fragment2, blankFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                    mTextMessage.setText(R.string.title_create);
+                    ChangeFragment(blankFragment, "Blank");
                     return true;
 
                 case R.id.navigation_notifications:
 
-                    transaction.replace(R.id.fragment2, blankFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                    mTextMessage.setText(R.string.title_notifications);
+                    ChangeFragment(blankFragment, "Blank");
                     return true;
 
                 case R.id.navigation_profile:
 
                     Log.e("nix", "onNavigationItemSelected: ");
                     Fragment profileFragment = new profileFragment();
-                    transaction.replace(R.id.fragment2, profileFragment);
-                    transaction.addToBackStack("Profil");
-                    transaction.commit();
-                    mTextMessage.setText(" ");
+                    ChangeFragment(profileFragment, "Profil");
+
                     return true;
             }
             return false;
@@ -94,28 +83,57 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         ButterKnife.bind(this);
 
-        mTextMessage = findViewById(R.id.Home);
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        //DisableNavigation();
+        BottomNavigationView nav = findViewById(R.id.navigation);
+        nav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        navigation.getMenu().getItem(0).setEnabled(false);
-        navigation.getMenu().getItem(1).setEnabled(false);
-        navigation.getMenu().getItem(2).setEnabled(false);
-        navigation.getMenu().getItem(3).setEnabled(false);
-        navigation.getMenu().getItem(4).setEnabled(false);
 
-        navigation.setVisibility(View.VISIBLE);
-
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         LoginFragment loginFragment = new LoginFragment();
-        transaction.replace(R.id.fragment2, loginFragment);
-        transaction.addToBackStack("Login");
-        transaction.commit();
+        ChangeFragment(loginFragment, "Login");
 
         // Nötig da durch einen Fehler, vermutlich durch Focus einer EditText, autmoatisch sich die Tastatur beim Start öffnete.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        }
+    }
 
+    public void ChangeFragment(Fragment fragment, String name) {
+
+        transaction = getFragmentManager().beginTransaction();
+        transaction.replace(((ViewGroup) findViewById(R.id.contentFragment).getParent()).getId(), fragment);
+
+        // Alternativ (neues Fragment wird nur drüber gesetzt (anderes evtl Fehlerhaft)
+        // transaction.replace(R.id.contentFragment, fragment);
+
+        transaction.addToBackStack(name);
+        transaction.commit();
+    }
+
+
+    public void DisableNavigation() {
+        BottomNavigationView nav = findViewById(R.id.navigation);
+        nav.setEnabled(false);
+
+        nav.getMenu().getItem(0).setEnabled(false);
+        nav.getMenu().getItem(1).setEnabled(false);
+        nav.getMenu().getItem(2).setEnabled(false);
+        nav.getMenu().getItem(3).setEnabled(false);
+        nav.getMenu().getItem(4).setEnabled(false);
+
+        nav.setVisibility(View.GONE);
+    }
+
+    public void EnableNavigation() {
+        BottomNavigationView nav = findViewById(R.id.navigation);
+        nav.setEnabled(true);
+
+        nav.getMenu().getItem(0).setEnabled(true);
+        nav.getMenu().getItem(1).setEnabled(true);
+        nav.getMenu().getItem(2).setEnabled(true);
+        nav.getMenu().getItem(3).setEnabled(true);
+        nav.getMenu().getItem(4).setEnabled(true);
+
+        nav.setVisibility(View.VISIBLE);
+    }
 }

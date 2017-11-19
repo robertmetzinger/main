@@ -1,0 +1,109 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.RegistrierenFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/txtBenutzername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Benutzername"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/txtFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Vorname"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/textLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Nachname"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/txtGeschlecht"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Geschlecht"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/txtAlter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Alter"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/txtWohnort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Wohnort"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/txtMail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Mail"
+                android:inputType="textEmailAddress" />
+
+            <EditText
+                android:id="@+id/txtPasswort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Passwort"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/txtPasswortWdh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Passwort wiederholen"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/txtAbschluss"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Höchster akademischer Abschluss"
+                android:inputType="textPersonName" />
+
+            <Button
+                android:id="@+id/btnRegistrien"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registrieren"
+                tools:text="Registrieren" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

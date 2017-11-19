@@ -16,16 +16,6 @@
         android:layout_weight="1">
 
 
-        <TextView
-            android:id="@+id/Home"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/title_display" />
-
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
@@ -50,19 +40,26 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
-        <LinearLayout
-            android:id="@+id/mainContentLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
 
-            <fragment
-                android:id="@+id/fragment2"
-                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="455dp"
-                android:layout_weight="1" />
-        </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/mainContentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <fragment
+                    android:id="@+id/contentFragment"
+                    android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="455dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </ScrollView>
 
     </FrameLayout>
 

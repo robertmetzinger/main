@@ -17,11 +17,11 @@ public class User {
     public String maxGraduation;
 
 
-   public void User(String userName, String firstName, String email){
+    public void User(String userName, String firstName, String email) {
 
-       this.userName = userName;
-       this.firstName = firstName;
-       this.email = email;
-   }
+        this.userName = userName;
+        this.firstName = firstName;
+        this.email = email;
+    }
 
 }
