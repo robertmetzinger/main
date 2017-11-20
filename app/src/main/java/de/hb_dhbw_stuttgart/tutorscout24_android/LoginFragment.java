@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -23,20 +21,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.credentials.Credential;
-import com.google.android.gms.auth.api.credentials.IdToken;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -117,7 +107,7 @@ public class LoginFragment extends android.app.Fragment {
 
     public void savePassword() {
 
-        CheckBox saveCred = getView().findViewById(R.id.checkBox);
+        CheckBox saveCred = getView().findViewById(R.id.checkRememberMe);
         if (saveCred.isChecked()) {
             EditText userName = getView().findViewById(R.id.txtLoginUserName);
             EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
@@ -255,7 +245,9 @@ public class LoginFragment extends android.app.Fragment {
         userName.setText(credential.getId());
         passwort.setText(credential.getPassword());
 
+        CheckBox checkBox = getView().findViewById(R.id.checkRememberMe);
 
+        checkBox.setChecked(true);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
