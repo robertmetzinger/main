@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/txtUserName"
+            android:id="@+id/txtLoginUserName"
             android:layout_width="214dp"
             android:layout_height="55dp"
             android:hint="Benutzername"
@@ -46,7 +46,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <EditText
-            android:id="@+id/txtPasswort"
+            android:id="@+id/txtLoginPasswort"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -56,33 +56,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtUserName" />
+            app:layout_constraintTop_toBottomOf="@+id/txtLoginUserName" />
 
         <Button
-            android:id="@+id/btnKeyTest"
+            android:id="@+id/btnAdmin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Button"
-            app:layout_constraintBottom_toTopOf="@+id/txtPasswort"
+            app:layout_constraintBottom_toTopOf="@+id/txtLoginPasswort"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/txtKeyTest"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_marginBottom="112dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/txtUserName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.264"
-            app:layout_constraintStart_toEndOf="@+id/btnKeyTest"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            tools:text="text" />
 
         <TextView
             android:id="@+id/txtRegistrieren"

@@ -1,44 +1,42 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
-import android.*;
-import android.Manifest;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
-import java.util.Enumeration;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.credentials.Credential;
+import com.google.android.gms.auth.api.credentials.IdToken;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
-import javax.crypto.KeyGenerator;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -55,11 +53,15 @@ import butterknife.OnClick;
 public class LoginFragment extends android.app.Fragment {
 
 
+    private Credential mCurrentCredential;
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
     }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -71,54 +73,33 @@ public class LoginFragment extends android.app.Fragment {
     // TODO: Rename and change types and number of parameters
     public static LoginFragment newInstance(String param1, String param2) {
         LoginFragment fragment = new LoginFragment();
-             return fragment;
+        return fragment;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         ButterKnife.bind(this, view);
-        return  view;
+        return view;
     }
-
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        try {
-            KeyStore ks = KeyStore.getInstance("Tutorscout24");
-            ks.load(null);
-            Enumeration<String> aliases = ks.aliases();
-            EditText passwortField = getView().findViewById(R.id.txtPasswort);
-
-            char[] password = passwortField.getText().toString().toCharArray();
-
-            FileInputStream fis = new FileInputStream("keyStoreName");
-            ks.load(fis, password);
-
-            passwortField.setText(password.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        }
 
     }
-
 
 
     @Override
@@ -128,123 +109,175 @@ public class LoginFragment extends android.app.Fragment {
     }
 
 
-
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick(R.id.btnLogin)
-    public void  Login(){
 
-        String[] LOCATION_PERMS = {
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        requestPermissions(LOCATION_PERMS, 1);
+    public void savePassword() {
 
-        ((MainActivity)getActivity()).EnableNavigation();
+        CheckBox saveCred = getView().findViewById(R.id.checkBox);
+        if (saveCred.isChecked()) {
+            EditText userName = getView().findViewById(R.id.txtLoginUserName);
+            EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
-        android.app.Fragment blankFragment = new BlankFragment();
-//        ((MainActivity)getActivity()).ChangeFragment(blankFragment, "Blank");
 
-        if(true){
-            return;
-        }
-        EditText passwortField = getView().findViewById(R.id.txtPasswort);
+            ((MainActivity) getActivity()).saveCredentialClicked(userName.getText().toString(), passwort.getText().toString());
 
-        // get user password and file input stream
-        char[] password = passwortField.getText().toString().toCharArray();
+        } else {
+            if (mCurrentCredential != null) {
+                ((MainActivity) getActivity()).deleteLoadedCredentialClicked(mCurrentCredential);
 
-        try {
-
-            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-
-            File file = new File(getContext().getFilesDir(), "Tutorscout24");
-
-            if(!file.exists()){
-                file.createNewFile();
 
             }
-            try (FileInputStream fis = new FileInputStream(file)) {
-                ks.load(null, password);
-           }
-
-            // get user password and file input stream
-
-            KeyStore.ProtectionParameter protParam =
-                    new KeyStore.PasswordProtection("Tutorscout24".toCharArray());
-
-            ks.getEntry("Tutorscout24", protParam);
-
-            // save my secret key
-            javax.crypto.SecretKey mySecretKey = KeyGenerator.getInstance("AES").generateKey();;
-            KeyStore.SecretKeyEntry skEntry =
-                    new KeyStore.SecretKeyEntry(mySecretKey);
-            ks.setEntry("Tutorscout24", skEntry, protParam);
-
-            // store away the keystore
-           try (FileOutputStream fos = new FileOutputStream(file)) {
-                ks.store(fos, password);
-            }
-
-
-            char[] passwordr = passwortField.getText().toString().toCharArray();
-
-            FileInputStream fis = new FileInputStream("Tutorscout24");
-            ks.load(fis, passwordr);
-
-            passwortField.setText(passwordr.toString());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
         }
-        catch (UnrecoverableEntryException e) {
-            e.printStackTrace();
-        }
-
-
-
-
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick(R.id.btnKeyTest)
-    public void accessKeyStore(){
+    @OnClick(R.id.btnLogin)
+    public void checKAuthentification() {
+
+
+        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/checkAuthentication";
+
+
+        final String requestBody = getAutentificationJSON().toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, usercreateURL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onResponse: " + response);
+                if (response.contains("200")) {
+                    ((MainActivity) getActivity()).EnableNavigation();
+                    ((MainActivity) getActivity()).ChangeFragment(new BlankFragment(), "Blank");
+
+                    savePassword();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode);
+                    // can get more details such as response.headers
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+        };
+
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
+
+    private JSONObject getAutentificationJSON() {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject userJson = new JSONObject();
+
+        EditText benutzerName = getView().findViewById(R.id.txtLoginUserName);
+        EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
         try {
-            KeyStore ks = KeyStore.getInstance("Tutorscout24");
-            ks.load(null);
-            Enumeration<String> aliases = ks.aliases();
-            TextView passwortField = getView().findViewById(R.id.txtKeyTest);
+            userJson.put("userName", benutzerName.getText().toString());
+            userJson.put("password", passwort.getText().toString());
+            jsonObject.put("authentication", userJson);
 
-            char[] password = passwortField.getText().toString().toCharArray();
-
-            FileInputStream fis = new FileInputStream("Tutorscout24");
-            ks.load(fis, password);
-
-            passwortField.setText(password.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG, "getAutentificationJSON: ", e);
         }
+
+        return jsonObject;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @OnClick(R.id.btnAdmin)
+    public void accessKeyStore() {
+        ((MainActivity) getActivity()).requestCredentials();
+        ((MainActivity) getActivity()).EnableNavigation();
+        ((MainActivity) getActivity()).ChangeFragment(new BlankFragment(), "Blank");
     }
 
     @OnClick(R.id.txtRegistrieren)
-    public void OnRegistrierenLabelClick(){
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    public void OnRegistrierenLabelClick() {
         RegistrierenFragment registrierenFragment = new RegistrierenFragment();
 
-        ((MainActivity)getActivity()).ChangeFragment(registrierenFragment, "Registrieren");
+
+        ((MainActivity) getActivity()).ChangeFragment(registrierenFragment, "Registrieren");
+    }
+
+    /**
+     * Process a Credential object retrieved from a successful request.
+     *
+     * @param credential the Credential to process.
+     * @param isHint     true if the Credential is hint-only, false otherwise.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void processRetrievedCredential(Credential credential, boolean isHint) {
+        Log.d(TAG, "Credential Retrieved: " + credential.getId() + ":" +
+                anonymizePassword(credential.getPassword()));
+
+        // If the Credential is not a hint, we should store it an enable the delete button.
+        // If it is a hint, skip this because a hint cannot be deleted.
+        if (!isHint) {
+            showToast("Credential Retrieved");
+            mCurrentCredential = credential;
+            //findViewById(R.id.button_delete_loaded_credential).setEnabled(true);
+        } else {
+            showToast("Credential Hint Retrieved");
+        }
+
+        EditText userName = getView().findViewById(R.id.txtLoginUserName);
+        EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
+        userName.setText(credential.getId());
+        passwort.setText(credential.getPassword());
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    /** Make a password into asterisks of the right length, for logging. **/
+    private String anonymizePassword(String password) {
+        if (password == null) {
+            return "null";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < password.length(); i++) {
+            sb.append('*');
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * Display a short Toast message
+     **/
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void showToast(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

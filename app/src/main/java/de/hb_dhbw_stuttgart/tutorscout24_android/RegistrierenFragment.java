@@ -5,12 +5,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,8 +17,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import java.lang.reflect.Array;
-import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,6 +88,7 @@ public class RegistrierenFragment extends android.app.Fragment {
                     @Override
                     public void onResponse(String response) {
                         Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+                        Log.e("response ", response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -109,7 +106,7 @@ public class RegistrierenFragment extends android.app.Fragment {
                 EditText alter = getView().findViewById(R.id.txtAlter);
                 EditText wohnort = getView().findViewById(R.id.txtWohnort);
                 EditText mail = getView().findViewById(R.id.txtMail);
-                EditText passwort = getView().findViewById(R.id.txtPasswort);
+                EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
                 EditText akademischGrad = getView().findViewById(R.id.txtAbschluss);
 
 
@@ -120,7 +117,7 @@ public class RegistrierenFragment extends android.app.Fragment {
                 params.put("lastName", lastName.getText().toString());
                 params.put("age", alter.getText().toString());
                 params.put("gender", geschlecht.getText().toString());
-                params.put("emaila", mail.getText().toString());
+                params.put("email", mail.getText().toString());
                 params.put("note", "keine Notiz");
                 params.put("placeOfResidence", wohnort.getText().toString());
                 params.put("maxGraduation", akademischGrad.getText().toString());
@@ -139,7 +136,7 @@ public class RegistrierenFragment extends android.app.Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean CeckPassword() {
-        EditText passwort = getView().findViewById(R.id.txtPasswort);
+        EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
         EditText passwortwdh = getView().findViewById(R.id.txtPasswortWdh);
 
         String pw = passwort.getText().toString();
