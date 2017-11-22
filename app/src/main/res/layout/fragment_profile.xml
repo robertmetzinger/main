@@ -5,98 +5,137 @@
     android:layout_height="match_parent"
     tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.profileFragment">
 
-    <ScrollView
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <ScrollView
+            android:layout_width="294dp"
+            android:layout_height="441dp"
+            android:background="@drawable/trans_white_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <EditText
-                android:id="@+id/txtFirstName"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Vorname"
-                android:inputType="textPersonName" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/textLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Nachname"
-                android:inputType="textPersonName" />
+                <EditText
+                    android:id="@+id/txtFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Vorname"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="10dp"/>/>
 
-            <EditText
-                android:id="@+id/txtAlter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Alter"
-                android:inputType="textPersonName" />
+                <EditText
+                    android:id="@+id/textLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Nachname"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
 
-            <EditText
-                android:id="@+id/txtAdress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Adresse"
-                android:inputType="textPersonName" />
+                <EditText
+                    android:id="@+id/txtAlter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Alter"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
 
-            <EditText
-                android:id="@+id/txtMail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Mail"
-                android:inputType="textEmailAddress" />
+                <EditText
+                    android:id="@+id/txtAdress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Adresse"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
 
-            <ImageView
-                android:id="@+id/imgViewProfile"
-                android:layout_width="match_parent"
-                android:layout_height="87dp"
-                android:contentDescription="@string/name"
-                app:srcCompat="@drawable/ic_account_circle_black_24dp" />
+                <EditText
+                    android:id="@+id/txtMail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Mail"
+                    android:inputType="textEmailAddress"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
 
-            <Button
-                android:id="@+id/btnGetAdresse"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="GPS daten laden"
-                tools:text="GPS date laden" />
+                <ImageView
+                    android:id="@+id/imgViewProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="87dp"
+                    android:contentDescription="@string/name"
+                    app:srcCompat="@drawable/ic_account_circle_black_24dp" />
 
-            <TextView
-                android:id="@+id/City"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="City"
-                tools:text="City" />
+                <Button
+                    android:id="@+id/btnGetAdresse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="GPS daten laden"
+                    tools:text="GPS date laden"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/login_buttonstyle"/>
 
-            <Button
-                android:id="@+id/btnSpeichern"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Speichern"
-                tools:text="Speichern" />
+                <TextView
+                    android:id="@+id/City"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="City"
+                    tools:text="City"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
 
-            <Button
-                android:id="@+id/btnHttpTest"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Test"
-                tools:text="Test" />
+                <Button
+                    android:id="@+id/btnSpeichern"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Speichern"
+                    tools:text="Speichern"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/login_buttonstyle"/>
 
-            <TextView
-                android:id="@+id/userInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
+                <Button
+                    android:id="@+id/btnHttpTest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Test"
+                    tools:text="Test"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/login_buttonstyle"/>
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/userInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
 
-    </ScrollView>
+            </LinearLayout>
+
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>

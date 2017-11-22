@@ -139,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements
 
         // Nötig da durch einen Fehler, vermutlich durch Focus einer EditText, autmoatisch sich die Tastatur beim Start öffnete.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        getWindow().setBackgroundDrawableResource(R.drawable.background_screen_small);
     }
 
     @Override
