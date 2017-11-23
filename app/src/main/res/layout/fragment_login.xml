@@ -57,17 +57,6 @@
                 />
 
             <EditText
-                android:id="@+id/txtLoginPasswort"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Passwort"
-                android:inputType="textPassword"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                />
-
-            <EditText
                 android:id="@+id/txtLoginUserName"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
@@ -75,6 +64,16 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 />
+
+            <EditText
+                android:id="@+id/txtLoginPasswort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:ems="10"
+                android:hint="Passwort"
+                android:inputType="textPassword" />
 
             <CheckBox
                 android:id="@+id/checkRememberMe"
