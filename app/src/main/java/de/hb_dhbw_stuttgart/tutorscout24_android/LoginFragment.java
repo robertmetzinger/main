@@ -45,23 +45,15 @@ public class LoginFragment extends android.app.Fragment {
 
     private Credential mCurrentCredential;
     private static final String TAG = MainActivity.class.getSimpleName();
-
+    private boolean isLockedIn;
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
+    
+    public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         return fragment;
     }
@@ -71,7 +63,7 @@ public class LoginFragment extends android.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        isLockedIn = false;
     }
 
     @Override
@@ -206,6 +198,7 @@ public class LoginFragment extends android.app.Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnAdmin)
     public void accessKeyStore() {
+        isLockedIn = true;
         ((MainActivity) getActivity()).requestCredentials();
         ((MainActivity) getActivity()).EnableNavigation();
         ((MainActivity) getActivity()).ChangeFragment(new BlankFragment(), "Blank");
@@ -230,6 +223,10 @@ public class LoginFragment extends android.app.Fragment {
         Log.d(TAG, "Credential Retrieved: " + credential.getId() + ":" +
                 anonymizePassword(credential.getPassword()));
 
+
+        if(isLockedIn){
+            return;
+        }
         // If the Credential is not a hint, we should store it an enable the delete button.
         // If it is a hint, skip this because a hint cannot be deleted.
         if (!isHint) {
@@ -240,6 +237,7 @@ public class LoginFragment extends android.app.Fragment {
             showToast("Credential Hint Retrieved");
         }
 
+        isLockedIn = true;
         EditText userName = getView().findViewById(R.id.txtLoginUserName);
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
         userName.setText(credential.getId());
