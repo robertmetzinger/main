@@ -1,7 +1,6 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -25,17 +24,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.auth.api.credentials.Credential;
 
 import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -46,13 +42,12 @@ public class LoginFragment extends android.app.Fragment {
     private Credential mCurrentCredential;
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isLockedIn;
-    private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
     }
 
-    
+
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         return fragment;
@@ -87,31 +82,21 @@ public class LoginFragment extends android.app.Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
-
-    public void savePassword() {
+   public void savePassword() {
 
         CheckBox saveCred = getView().findViewById(R.id.checkRememberMe);
         if (saveCred.isChecked()) {
             EditText userName = getView().findViewById(R.id.txtLoginUserName);
             EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
-
             ((MainActivity) getActivity()).saveCredentialClicked(userName.getText().toString(), passwort.getText().toString());
 
         } else {
             if (mCurrentCredential != null) {
                 ((MainActivity) getActivity()).deleteLoadedCredentialClicked(mCurrentCredential);
-
-
             }
         }
     }
@@ -121,7 +106,6 @@ public class LoginFragment extends android.app.Fragment {
     @OnClick(R.id.btnLogin)
     public void checKAuthentification() {
 
-
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/checkAuthentication";
 
 
@@ -130,7 +114,7 @@ public class LoginFragment extends android.app.Fragment {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, usercreateURL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onResponse: " + response);
                 if (response.contains("200")) {
                     ((MainActivity) getActivity()).EnableNavigation();
@@ -182,6 +166,7 @@ public class LoginFragment extends android.app.Fragment {
         EditText benutzerName = getView().findViewById(R.id.txtLoginUserName);
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
+        ((MainActivity)getActivity()).setUser(benutzerName.getText().toString(), passwort.getText().toString());
         try {
             userJson.put("userName", benutzerName.getText().toString());
             userJson.put("password", passwort.getText().toString());
@@ -243,13 +228,13 @@ public class LoginFragment extends android.app.Fragment {
         userName.setText(credential.getId());
         passwort.setText(credential.getPassword());
 
+        ((MainActivity)getActivity()).setUser(credential.getId(), credential.getPassword());
         CheckBox checkBox = getView().findViewById(R.id.checkRememberMe);
 
         checkBox.setChecked(true);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    /** Make a password into asterisks of the right length, for logging. **/
     private String anonymizePassword(String password) {
         if (password == null) {
             return "null";
@@ -262,10 +247,6 @@ public class LoginFragment extends android.app.Fragment {
         return sb.toString();
     }
 
-
-    /**
-     * Display a short Toast message
-     **/
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void showToast(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();

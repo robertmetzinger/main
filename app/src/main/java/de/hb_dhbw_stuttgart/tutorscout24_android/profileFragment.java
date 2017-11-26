@@ -22,20 +22,33 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -56,7 +69,7 @@ import butterknife.OnItemSelected;
  * Use the {@link profileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-@TargetApi(23)
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class profileFragment extends android.app.Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -73,6 +86,7 @@ public class profileFragment extends android.app.Fragment implements
     private String adresse;
     private String lastname;
 
+    private User currentUser;
 
     double gpsLaengengrad;
     double gpsBreitengrad;
@@ -84,17 +98,8 @@ public class profileFragment extends android.app.Fragment implements
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param name Parameter 1.
-     * @param mail Parameter 2.
-     * @return A new instance of fragment profileFragment.
-     */
-    public static profileFragment newInstance(String name, String mail) {
-        //TODO load userProfile
 
+    public static profileFragment newInstance(String name, String mail) {
         profileFragment fragment = new profileFragment();
         Bundle args = new Bundle();
         args.putString(USER_FIRSTNAME, name);
@@ -117,6 +122,7 @@ public class profileFragment extends android.app.Fragment implements
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,14 +169,9 @@ public class profileFragment extends android.app.Fragment implements
 
     @Override
     public void onAttach(Context context) {
+        getUserInfo();
+
         super.onAttach(context);
-
-
-        /*try {
-            mListener = (OnArticleSelectedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArticleSelectedListener");
-        }*/
     }
 
     @Override
@@ -208,22 +209,12 @@ public class profileFragment extends android.app.Fragment implements
         Log.e("Error", "onConnectionFailed: Connection to Fragment lost");
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
     @OnClick(R.id.btnGetAdresse)
     public void connectToGoogleGPSApi() {
 
@@ -253,7 +244,7 @@ public class profileFragment extends android.app.Fragment implements
         t.setText(cityName);
     }
 
-    @OnClick(R.id.btnSpeichern)
+   // @OnClick(R.id.btnSpeichern)
     public void saveUser() {
 
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/create";
@@ -300,37 +291,6 @@ public class profileFragment extends android.app.Fragment implements
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
 
-    public void getUserInfo() {
-
-        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
-
-        StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("UserToFind", "android1234");
-                params.put("userName", "androidTest");
-                params.put("password", "androidTest");
-
-                return params;
-            }
-        };
-
-        // Access the RequestQueue through your singleton class.
-        HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
-    }
 
     @OnClick(R.id.btnHttpTest)
     public void htttpRequestTest() {
@@ -359,6 +319,66 @@ public class profileFragment extends android.app.Fragment implements
 
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+    }
+
+    public void getUserInfo() {
+
+
+        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
+
+
+        JSONObject requestBody = ((MainActivity)getActivity()).getUserInfoJsn();
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.POST, usercreateURL, requestBody, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        String a = response.toString();
+                        try {
+                            currentUser = new User();
+                            currentUser.userName = response.getString("userid");
+                            currentUser.firstName = response.getString("firstName");
+                            currentUser.lastName = response.getString("lastName");
+                            currentUser.age = Integer.parseInt(response.getString("age"));
+                            //currentUser.email = response.getString("email");
+                           // currentUser.maxGraduation = response.getString("maxGraduation");
+                            // currentUser.placeOfResidence = response.getString("placeOfResidence");
+                            //currentUser.note = response.getString("note");
+
+                            SetUserInfo();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+    }
+
+    private void SetUserInfo(){
+        EditText firstName = getView().findViewById(R.id.txtFirstName);
+        EditText lastName = getView().findViewById(R.id.textLastName);
+        EditText alter = getView().findViewById(R.id.txtAlter);
+        EditText addresse = getView().findViewById(R.id.txtAdress);
+        EditText mail = getView().findViewById(R.id.txtMail);
+
+        firstName.setText(currentUser.firstName);
+        lastName.setText(currentUser.lastName);
+        alter.setText("" + currentUser.age);
+       // addresse.setText(currentUser.placeOfResidence);
+       // mail.setText(currentUser.email);
+
     }
 
 }

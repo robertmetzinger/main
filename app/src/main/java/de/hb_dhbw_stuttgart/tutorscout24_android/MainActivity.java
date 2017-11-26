@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONObject;
+
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements
@@ -60,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements
     private static final int RC_HINT = 2;
     private static final int RC_READ = 3;
 
+    private String userName;
+    private String password;
+
     LoginFragment loginFragment;
 
     private GoogleApiClient mCredentialsApiClient;
@@ -69,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
+        @RequiresApi(api = Build.VERSION_CODES.M)
         @SuppressLint("ResourceType")
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -97,12 +104,12 @@ public class MainActivity extends AppCompatActivity implements
 
                 case R.id.navigation_notifications:
 
-                    ChangeFragment(blankFragment, "Blank");
+                    ChatFragment chatFragment = new ChatFragment();
+                    ChangeFragment(chatFragment, "Chat");
                     return true;
 
                 case R.id.navigation_profile:
 
-                    Log.e("nix", "onNavigationItemSelected: ");
                     Fragment profileFragment = new profileFragment();
                     ChangeFragment(profileFragment, "Profil");
 
@@ -449,4 +456,27 @@ public class MainActivity extends AppCompatActivity implements
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    public JSONObject getUserInfoJsn() {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject userJson = new JSONObject();
+
+
+
+        try {
+            userJson.put("userName", userName);
+            userJson.put("password", password);
+            jsonObject.put("userToFind", userName);
+            jsonObject.put("authentication", userJson);
+
+        } catch (Exception e) {
+            Log.e("aut", "getAutentificationJSON: ", e);
+        }
+
+        return jsonObject;
+    }
+
+    public void setUser(String userName, String password){
+        this.userName = userName;
+        this.password = password;
+    }
 }

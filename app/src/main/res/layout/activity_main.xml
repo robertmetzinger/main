@@ -9,41 +9,54 @@
     android:orientation="vertical"
     tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.MainActivity">
 
-    <FrameLayout
-        android:id="@+id/content"
+    <RelativeLayout
+        android:id="@+id/relativContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/navigation"
+        <FrameLayout
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="?android:attr/windowBackground"
-            app:menu="@menu/navigation"
-            android:clickable="false"
-            android:contextClickable="false"/>
-        <fragment android:name="de.hb_dhbw_stuttgart.tutorscout24_android.profileFragment"
-            android:id="@+id/profile"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
-        <fragment android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
-            android:id="@+id/blank"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
-        <fragment android:name="de.hb_dhbw_stuttgart.tutorscout24_android.DisplayFragment"
-            android:id="@+id/display"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+
+            <fragment
+                android:id="@+id/profile"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.profileFragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <fragment
+                android:id="@+id/blank"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <fragment
+                android:id="@+id/display"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.DisplayFragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <fragment
+                android:id="@+id/chaat"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.ChatFragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        </FrameLayout>
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true">
 
             <LinearLayout
                 android:id="@+id/mainContentLayout"
@@ -54,13 +67,25 @@
                 <fragment
                     android:id="@+id/contentFragment"
                     android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="455dp"
                     android:layout_weight="1" />
             </LinearLayout>
 
         </ScrollView>
 
-    </FrameLayout>
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="bottom"
+            android:background="?android:attr/windowBackground"
+            android:clickable="false"
+            android:contextClickable="false"
+            app:menu="@menu/navigation" />
+
+    </RelativeLayout>
 
 </LinearLayout>
