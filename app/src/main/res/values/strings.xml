@@ -6,13 +6,15 @@
     <string name="title_notifications">Nachrichten</string>
     <string name="title_profile">Profil</string>
 
+    <string name="type_your_message">Enter msg</string>
+    <string name="NoRecent">No recent</string>
+
     <string name="inputSubject">Fach</string>
     <string name="inputDescription_Label">Deine Beschreibung...</string>
     <string name="btnCreate_Text">Anfrage Erstellen</string>
     <string name="name">Name</string>
     <string name="title_activity_profile">profileActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
 </resources>
