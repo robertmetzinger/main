@@ -18,7 +18,8 @@
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@color/white"/>
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
@@ -31,6 +32,12 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+
+                    <Button
+                        android:id="@+id/btnLoadFeedDataFromBackend"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Load Data" />
 
                     <ListView
                         android:id="@+id/feed_list_view"

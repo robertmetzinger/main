@@ -63,8 +63,16 @@ public class MainActivity extends AppCompatActivity implements
     private static final int RC_HINT = 2;
     private static final int RC_READ = 3;
 
-    private String userName;
-    private String password;
+    public static String getUserName() {
+        return userName;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
+
+    private static String userName;
+    private static String password;
 
     LoginFragment loginFragment;
 

@@ -1,19 +1,21 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -27,25 +29,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import de.hb_dhbw_stuttgart.tutorscout24_android.R;
-
-import static com.google.android.gms.plus.PlusOneDummyView.TAG;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class DisplayFragment extends Fragment {
 
     MapView mMapView;
     private GoogleMap googleMap;
+    View rootView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_display, container, false);
+        rootView = inflater.inflate(R.layout.fragment_display, container, false);
+        ButterKnife.bind(this, rootView);
 
         TabHost host = (TabHost) rootView.findViewById(R.id.tabHost);
         host.setup();
@@ -56,14 +55,16 @@ public class DisplayFragment extends Fragment {
         spec.setIndicator("Feed");
         host.addTab(spec);
 
+        //Da der Request im Backend noch nicht implementiert ist, werden Mockup Daten zum Anzeigen verwendet
+        JSONObject jsonObject;
         JSONArray feedData;
         ArrayList<FeedItem> feedArrayList = new ArrayList<>();
         String jsonString = getString(R.string.mockdata);
 
         try {
-            //generiere JSON Array aus den Mock Daten
-            JSONObject jsnobject = new JSONObject(jsonString);
-            feedData = jsnobject.getJSONArray("tutorien");
+            //MockDaten in JSON Array umwandeln
+            jsonObject = new JSONObject(jsonString);
+            feedData = jsonObject.getJSONArray("tutorien");
 
             //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
             for (int i = 0; i < feedData.length(); i++) {
@@ -109,11 +110,11 @@ public class DisplayFragment extends Fragment {
                 //googleMap.setMyLocationEnabled(true);
 
                 // For dropping a marker at a point on the Map
-                LatLng sydney = new LatLng(-34, 151);
-                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
+                LatLng horb = new LatLng(48.442078, 8.684851200000026);
+                googleMap.addMarker(new MarkerOptions().position(horb).title("Marker Title").snippet("Marker Description"));
 
                 // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(horb).zoom(12).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
@@ -121,23 +122,133 @@ public class DisplayFragment extends Fragment {
         return rootView;
     }
 
-    private static String loadJSONFromAsset(Context context, String jsonFileName) {
-        String json = null;
-        InputStream is = null;
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @OnClick(R.id.btnLoadFeedDataFromBackend)
+    public void loadData() {
+        JSONArray feedData;
+        ArrayList<FeedItem> feedArrayList = new ArrayList<>();
+
         try {
-            AssetManager manager = context.getAssets();
-            Log.d(TAG, "path " + jsonFileName);
-            is = manager.open(jsonFileName);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+            //Backend Request um die Daten für den Feed zu erhalten
+            JSONObject jsonObject = getTutoringListAsObjectFromBackend();
+            feedData = jsonObject.getJSONArray("");
+            //feedData = getTutoringListAsArrayFromBackend();
+
+            //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
+            for (int i = 0; i < feedData.length(); i++) {
+                JSONObject object = feedData.getJSONObject(i);
+                String creator = object.getString("userName");
+                String subject = object.getString("tutoringId");
+                String info = object.getString("distanceKm");
+                String creationDate = object.getString("creationDate");
+                FeedItem item = new FeedItem(creator, subject, info, creationDate);
+                feedArrayList.add(item);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return json;
+        //erzeuge Listenobjekte für die ListView
+        feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
+        ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
+        feedListView.setAdapter(adapter);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public JSONArray getTutoringListAsArrayFromBackend() {
+
+        final JSONArray[] feedList = new JSONArray[1];
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
+
+        //erstelle JSON Object für den Request
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("latitude", 48.442078);
+            requestBody.put("longitude", 8.684851200000026);
+            requestBody.put("rangeKm", 50);
+            requestBody.put("rowLimit", 100);
+            requestBody.put("rowOffset", 0);
+            requestBody.put("authentication", getAuthenticationJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONArray requestBodySingletonArray = new JSONArray();
+        try {
+            requestBodySingletonArray.put(0, requestBody);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonArrayRequest jsArrRequest = new JsonArrayRequest(Request.Method.POST, url, requestBodySingletonArray, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Toast.makeText(getContext(), "Response: " + response.toString(), Toast.LENGTH_SHORT).show();
+                feedList[0] = response;
+            }
+
+        }, new Response.ErrorListener() {
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
+        return feedList[0];
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public JSONObject getTutoringListAsObjectFromBackend() {
+
+        final JSONObject[] feedList = new JSONObject[1];
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
+
+        //erstelle JSON Object für den Request
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("latitude", 48.442078);
+            requestBody.put("longitude", 8.684851200000026);
+            requestBody.put("rangeKm", 50);
+            requestBody.put("rowLimit", 100);
+            requestBody.put("rowOffset", 0);
+            requestBody.put("authentication", getAuthenticationJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(getContext(), "Response: " + response.toString(), Toast.LENGTH_SHORT).show();
+                feedList[0] = response;
+            }
+
+        }, new Response.ErrorListener() {
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+        return feedList[0];
+    }
+
+    public JSONObject getAuthenticationJson() {
+        JSONObject authentication = new JSONObject();
+        try {
+            authentication.put("userName", MainActivity.getUserName());
+            authentication.put("password", MainActivity.getPassword());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return authentication;
     }
 
     @Override
