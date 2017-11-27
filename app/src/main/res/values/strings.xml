@@ -17,40 +17,10 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
-    <string name="mockdata">
-        { "tutorien":
-            [
-              {
-                "creator": "Bernd",
-                "subject": "Mathe",
-                "info": \"Ich suche einen Tutor, der mir hilft mich auf meine Matheklausur im 1. Semester vorzubereiten\",
-                "creationDate": "12.11.2017"
-              },
-              {
-                "creator": "Hans",
-                "subject": "Digitaltechnik",
-                "info": \"Suche Hilfe für Digitaltechnik. Vor allem beim Bauen von Schaltungen.\",
-                "creationDate": "25.10.2017"
-              },
-              {
-                "creator": "Jochen",
-                "subject": \"Theoretische Informatik\",
-                "info": \"Schwächen bei Turing-Maschinen und Grammatiken. Bitte melden!\",
-                "creationDate": "04.11.2017"
-              },
-              {
-                "creator": "Helmut",
-                "subject": "Webengineering",
-                "info": \"Joke. Als ob das jemand nicht kann xD.\",
-                "creationDate": "19.11.2017"
-              },
-              {
-                "creator": "Peter",
-                "subject": "Mathe",
-                "info": \"Wie zum Teufel funktioniert diese partielle Integration??? Bitte helft mir!\",
-                "creationDate": "21.10.2017"
-              }
-            ]
-        }
-</string>
+    <string-array name="duration_array">
+        <item>10 Tage</item>
+        <item>20 Tage</item>
+        <item>30 Tage</item>
+        <item>60 Tage</item>
+    </string-array>
 </resources>

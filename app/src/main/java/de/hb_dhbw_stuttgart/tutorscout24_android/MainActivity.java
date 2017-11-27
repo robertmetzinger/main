@@ -107,7 +107,8 @@ public class MainActivity extends AppCompatActivity implements
 
                 case R.id.navigation_create:
 
-                    ChangeFragment(blankFragment, "Blank");
+                    createOfferFragment createOfferFragment = new createOfferFragment();
+                    ChangeFragment(createOfferFragment, "CreateOffer");
                     return true;
 
                 case R.id.navigation_notifications:
