@@ -1,50 +1,44 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.content.Context;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Rect;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ChatFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ChatFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class ChatFragment extends android.app.Fragment {
 
     private ListView chatListView;
@@ -52,16 +46,10 @@ public class ChatFragment extends android.app.Fragment {
     private ArrayList<ChatMessage> chatMessages;
     private ImageView enterChatView1;
     private ChatListAdapter listAdapter;
-    private SizeNotifierRelativeLayout sizeNotifierRelativeLayout;
-    private int keyboardHeight;
-    private boolean keyboardVisible;
-    private WindowManager.LayoutParams windowLayoutParams;
-    private OnFragmentInteractionListener mListener;
 
     public ChatFragment() {
         // Required empty public constructor
     }
-
 
     public static ChatFragment newInstance() {
         ChatFragment fragment = new ChatFragment();
@@ -70,8 +58,6 @@ public class ChatFragment extends android.app.Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -84,34 +70,23 @@ public class ChatFragment extends android.app.Fragment {
 
         // AndroidUtilities.statusBarHeight = getStatusBarHeight();
 
-               chatMessages = new ArrayList<>();
+        chatEditText1 = view.findViewById(R.id.chat_edit_text1);
+        enterChatView1 = view.findViewById(R.id.enter_chat1);
 
-        chatListView = (ListView) view.findViewById(R.id.chat_list_view);
-
-        chatEditText1 = (EditText) view.findViewById(R.id.chat_edit_text1);
-        enterChatView1 = (ImageView) view.findViewById(R.id.enter_chat1);
-
-        chatEditText1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-
-
+        chatMessages = new ArrayList<>();
         listAdapter = new ChatListAdapter(chatMessages, getContext());
 
-        chatListView.setAdapter(listAdapter);
+        chatListView = view.findViewById(R.id.chat_list_view);
 
+            chatListView.setAdapter(listAdapter);
+
+
+
+        loadMessages();
 
         enterChatView1.setOnClickListener(clickListener);
 
-
-        //sizeNotifierRelativeLayout = (SizeNotifierRelativeLayout) getView().findViewById(R.id.chat_layout);
-        // sizeNotifierRelativeLayout.delegate = this;
-
-        // NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
+        setUser(((MainActivity)getActivity()).chatUser, view);
 
         return view;
     }
@@ -124,25 +99,17 @@ public class ChatFragment extends android.app.Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
+            // loadMessages();
+
+           // sendMessageBackend("nix", "PatrickAndroid2");
 
     }
 
-    @OnClick(R.id.enter_chat1)
-    public void sendesaage(){
-        EditText editText = getView().findViewById(R.id.chat_edit_text1);
-        sendMessage(editText.getText().toString(), UserType.OTHER);
-    }
 
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener {
-
     }
 
     private ImageView.OnClickListener clickListener = new View.OnClickListener() {
@@ -150,26 +117,27 @@ public class ChatFragment extends android.app.Fragment {
         public void onClick(View v) {
 
                 EditText chat_edit_text1 = getView().findViewById(R.id.chat_edit_text1);
-                sendMessage(chat_edit_text1.getText().toString(), UserType.OTHER);
-
+                sendMessageFrontend(chat_edit_text1.getText().toString(), UserType.OTHER, new Date().getTime());
 
             chat_edit_text1.setText("");
 
         }
     };
 
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
-    private void sendMessage(final String messageText, final UserType userType)
+    @OnClick(R.id.enter_chat1)
+    public void sendMessage(){
+        EditText editText = getView().findViewById(R.id.chat_edit_text1);
+        sendMessageFrontend(editText.getText().toString(), UserType.OTHER, new Date().getTime());
+        sendMessageBackend(editText.getText().toString(), ((MainActivity)getActivity()).chatUser);
+    }
+
+    private void sendMessageFrontend(final String messageText, final UserType userType, final long datetime)
     {
         if(chatMessages == null){
             chatMessages = new ArrayList<>();
@@ -178,10 +146,9 @@ public class ChatFragment extends android.app.Fragment {
             return;
 
         final ChatMessage message = new ChatMessage();
-        message.setMessageStatus(Status.SENT);
         message.setMessageText(messageText);
         message.setUserType(userType);
-        message.setMessageTime(new Date().getTime());
+        message.setMessageTime(datetime);
         chatMessages.add(message);
 
         if(listAdapter!=null)
@@ -194,24 +161,214 @@ public class ChatFragment extends android.app.Fragment {
         exec.schedule(new Runnable(){
             @Override
             public void run(){
-                message.setMessageStatus(Status.DELIVERED);
 
                 final ChatMessage message = new ChatMessage();
-                message.setMessageStatus(Status.SENT);
                 message.setMessageText(messageText);
                 message.setUserType(UserType.SELF);
-                message.setMessageTime(new Date().getTime());
+                message.setMessageTime(datetime);
                 chatMessages.add(message);
 
-               /* ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
+                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
                     public void run() {
-                        //listAdapter.notifyDataSetChanged();
+                        listAdapter.notifyDataSetChanged();
                     }
-                });*/
+                });
 
 
             }
         }, 1, TimeUnit.SECONDS);
 
+    }
+
+    public void setUser(String user, View view){
+        TextView textView = view.findViewById(R.id.txtuserName);
+        textView.setText(user);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void sendMessageBackend(String mssg, String toUserId) {
+
+            String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/sendMessage";
+
+            JSONObject message = new JSONObject();
+
+        try {
+            message.put("toUserId", toUserId);
+            message.put("text", mssg);
+            message.put("authentication" , getAuthenticationJsonb());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String requestBody = message.toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, usercreateURL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+                    Log.e("", "onResponse: " + response);
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                   if(error == null){
+                       return;
+                   }
+                    NetworkResponse response = error.networkResponse;
+
+                    String json = new String(response.data);
+                    json = trimMessage(json, "message");
+                    Log.e("", "onErrorResponse: " + json );
+
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            HttpRequestManager.getInstance(getContext()).addToRequestQueue(stringRequest);
+        }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void loadMessages(){
+
+        final JSONArray[] feedList = new JSONArray[1];
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getSentMessages";
+
+        //erstelle JSON Object für den Request
+
+
+
+
+        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                for(int i = 0; i < response.length(); i++){
+                    try {
+                        JSONObject o = (JSONObject) response.get(i);
+
+                        sendMessageFrontend(o.getString("text"), UserType.OTHER, new Date().getTime());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+        }, new Response.ErrorListener() {
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse response = error.networkResponse;
+
+                String json = new String(response.data);
+                json = trimMessage(json, "message");
+                Log.e("", "onErrorResponse: " + json );
+
+                Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+            }
+        });
+
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(a);
+    }
+
+    public String trimMessage(String json, String key){
+        String trimmedString = null;
+
+        try{
+            JSONObject obj = new JSONObject(json);
+            trimmedString = obj.getString(key);
+        } catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return trimmedString;
+    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void loadRecievedMessages(){
+
+        final JSONArray[] feedList = new JSONArray[1];
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/messages/getReceivedMessages";
+
+        //erstelle JSON Object für den Request
+
+        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Toast.makeText(getContext(), "Response: load success", Toast.LENGTH_SHORT).show();
+
+            }
+
+        }, new Response.ErrorListener() {
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String json = new String(error.networkResponse.data);
+                json = trimMessage(json, "message");
+                Log.e("", "onErrorResponse: " + json );
+
+                Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+            }
+        });
+
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(a);
+    }
+    public JSONObject getAuthenticationJson() {
+        JSONObject authentication = new JSONObject();
+        JSONObject aut = new JSONObject();
+        try {
+            authentication.put("userName", MainActivity.getUserName());
+            authentication.put("password", MainActivity.getPassword());
+            aut.put("authentication", authentication);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return aut;
+    }
+
+
+    public JSONObject getAuthenticationJsonb() {
+        JSONObject authentication = new JSONObject();
+        try {
+            authentication.put("userName", MainActivity.getUserName());
+            authentication.put("password", MainActivity.getPassword());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return authentication;
     }
 }
