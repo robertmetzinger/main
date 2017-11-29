@@ -12,10 +12,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +98,11 @@ public class RegistrierenFragment extends android.app.Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        NetworkResponse response = error.networkResponse;
+
+                        String json = new String(response.data);
+                        json = trimMessage(json, "message");
+                        Log.e("", "onErrorResponse: " + json );
                         Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }) {
@@ -133,6 +142,22 @@ public class RegistrierenFragment extends android.app.Fragment {
         ((MainActivity) getActivity()).ChangeFragment(blankFragment, "Blank");
 
     }
+
+
+    public String trimMessage(String json, String key){
+        String trimmedString = null;
+
+        try{
+            JSONObject obj = new JSONObject(json);
+            trimmedString = obj.getString(key);
+        } catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return trimmedString;
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean CeckPassword() {

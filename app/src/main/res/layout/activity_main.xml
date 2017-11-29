@@ -44,8 +44,15 @@
                 android:layout_weight="1" />
 
             <fragment
-                android:id="@+id/chaat"
+                android:id="@+id/chat"
                 android:name="de.hb_dhbw_stuttgart.tutorscout24_android.ChatFragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <fragment
+                android:id="@+id/kontakte"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.KontakteFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />

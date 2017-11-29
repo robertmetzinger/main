@@ -53,6 +53,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    public String chatUser = "kein User";
+
     private MainActivity that = this;
     private MapFragment mapFragment;
     FragmentTransaction transaction;
@@ -113,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements
 
                 case R.id.navigation_notifications:
 
-                    ChatFragment chatFragment = new ChatFragment();
-                    ChangeFragment(chatFragment, "Chat");
+                    KontakteFragment kontateFragment = new KontakteFragment();
+                    ChangeFragment(kontateFragment, "Chat");
                     return true;
 
                 case R.id.navigation_profile:

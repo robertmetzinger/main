@@ -1,5 +1,7 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import java.util.Date;
+
 /**
  * Created by patrick.woehnl on 26.11.2017.
  */
@@ -7,7 +9,13 @@ public class ChatMessage {
 
     private String messageText;
     private UserType userType;
-    private Status messageStatus;
+    public Date datetime;
+    public String fromUserId;
+    public String toUserId;
+    private long messageTime;
+
+
+
 
     public long getMessageTime() {
         return messageTime;
@@ -17,7 +25,6 @@ public class ChatMessage {
         this.messageTime = messageTime;
     }
 
-    private long messageTime;
 
     public void setMessageText(String messageText) {
         this.messageText = messageText;
@@ -27,9 +34,6 @@ public class ChatMessage {
         this.userType = userType;
     }
 
-    public void setMessageStatus(Status messageStatus) {
-        this.messageStatus = messageStatus;
-    }
 
     public String getMessageText() {
 
@@ -40,7 +44,4 @@ public class ChatMessage {
         return userType;
     }
 
-    public Status getMessageStatus() {
-        return messageStatus;
-    }
 }
