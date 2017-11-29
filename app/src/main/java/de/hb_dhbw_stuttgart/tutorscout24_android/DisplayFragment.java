@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -30,15 +32,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class DisplayFragment extends Fragment {
 
+    View rootView;
     MapView mMapView;
     private GoogleMap googleMap;
-    View rootView;
+    private HashMap<Marker, String> markerTutoringIdHashMap = new HashMap<Marker, String>();
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -58,7 +63,7 @@ public class DisplayFragment extends Fragment {
         //Da der Request im Backend noch nicht implementiert ist, werden Mockup Daten zum Anzeigen verwendet
         JSONObject jsonObject;
         JSONArray feedData;
-        ArrayList<FeedItem> feedArrayList = new ArrayList<>();
+        final ArrayList<FeedItem> feedArrayList = new ArrayList<>();
         String jsonString = getString(R.string.mockdata);
 
         try {
@@ -69,11 +74,16 @@ public class DisplayFragment extends Fragment {
             //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
             for (int i = 0; i < feedData.length(); i++) {
                 JSONObject object = feedData.getJSONObject(i);
-                String creator = object.getString("creator");
-                String subject = object.getString("subject");
-                String info = object.getString("info");
+                String tutoringId = object.getString("tutoringId");
                 String creationDate = object.getString("creationDate");
-                FeedItem item = new FeedItem(creator, subject, info, creationDate);
+                String userName = object.getString("userName");
+                String subject = object.getString("subject");
+                String text = object.getString("text");
+                String expirationDate = object.getString("expirationDate");
+                Double latitude = new Double(object.getString("latitude"));
+                Double longitude = new Double(object.getString("longitude"));
+                String distanceKm = object.getString("distanceKm");
+                FeedItem item = new FeedItem(tutoringId, creationDate, userName, subject, text, expirationDate, latitude, longitude, distanceKm);
                 feedArrayList.add(item);
             }
         } catch (JSONException e) {
@@ -109,13 +119,33 @@ public class DisplayFragment extends Fragment {
                 // For showing a move to my location button
                 //googleMap.setMyLocationEnabled(true);
 
+                Marker currentMarker;
+                for(FeedItem item : feedArrayList){
+                    String tutoringId = item.getTutoringId();
+                    LatLng pos = new LatLng(item.getLatitude(), item.getLongitude());
+                    String userName = item.getUserName();
+                    String subject = item.getSubject();
+                    currentMarker = googleMap.addMarker(new MarkerOptions().position(pos).title(userName).snippet(subject));
+                    markerTutoringIdHashMap.put(currentMarker, tutoringId);
+                }
+
                 // For dropping a marker at a point on the Map
                 LatLng horb = new LatLng(48.442078, 8.684851200000026);
-                googleMap.addMarker(new MarkerOptions().position(horb).title("Marker Title").snippet("Marker Description"));
-
+                //String tutoringId = "1234";
+                //Marker marker = googleMap.addMarker(new MarkerOptions().position(horb).title("Marker Title").snippet("Marker Description"));
+                //markerTutoringIdHashMap.put(marker, tutoringId);
                 // For zooming automatically to the location of the marker
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(horb).zoom(12).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        String thisTutoringId = markerTutoringIdHashMap.get(marker);
+                        Toast.makeText(getContext(), "Tutoring ID = " + thisTutoringId, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
             }
         });
 
@@ -123,25 +153,29 @@ public class DisplayFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick(R.id.btnLoadFeedDataFromBackend)
-    public void loadData() {
-        JSONArray feedData;
+
+    public void loadData(JSONArray feedData) {
         ArrayList<FeedItem> feedArrayList = new ArrayList<>();
 
         try {
             //Backend Request um die Daten für den Feed zu erhalten
-            JSONObject jsonObject = getTutoringListAsObjectFromBackend();
-            feedData = jsonObject.getJSONArray("");
-            //feedData = getTutoringListAsArrayFromBackend();
+            //JSONObject jsonObject = getTutoringListAsObjectFromBackend();
+            //feedData = jsonObject.getJSONArray("");
+            getTutoringListAsArrayFromBackend();
 
             //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
             for (int i = 0; i < feedData.length(); i++) {
                 JSONObject object = feedData.getJSONObject(i);
-                String creator = object.getString("userName");
-                String subject = object.getString("tutoringId");
-                String info = object.getString("distanceKm");
+                String tutoringId = object.getString("tutoringId");
                 String creationDate = object.getString("creationDate");
-                FeedItem item = new FeedItem(creator, subject, info, creationDate);
+                String userName = object.getString("userName");
+                String subject = object.getString("subject");
+                String text = object.getString("text");
+                String expirationDate = object.getString("expirationDate");
+                Double latitude = new Double(object.getString("latitude"));
+                Double longitude = new Double(object.getString("longitude"));
+                String distanceKm = object.getString("distanceKm");
+                FeedItem item = new FeedItem(tutoringId, creationDate, userName, subject, text, expirationDate, latitude, longitude, distanceKm);
                 feedArrayList.add(item);
             }
         } catch (JSONException e) {
@@ -154,7 +188,43 @@ public class DisplayFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public JSONArray getTutoringListAsArrayFromBackend() {
+    @OnClick(R.id.btnLoadFeedDataFromBackend)
+    public void getTutoringListAsArrayFromBackend2() {
+
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
+
+        //erstelle JSON Object für den Request
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("latitude", 48.442078);
+            requestBody.put("longitude", 8.684851200000026);
+            requestBody.put("rangeKm", 50);
+            requestBody.put("rowLimit", 100);
+            requestBody.put("rowOffset", 0);
+            requestBody.put("authentication", getAuthenticationJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                loadData(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void getTutoringListAsArrayFromBackend() {
 
         final JSONArray[] feedList = new JSONArray[1];
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
@@ -183,7 +253,7 @@ public class DisplayFragment extends Fragment {
             @Override
             public void onResponse(JSONArray response) {
                 Toast.makeText(getContext(), "Response: " + response.toString(), Toast.LENGTH_SHORT).show();
-                feedList[0] = response;
+                loadData(response);
             }
 
         }, new Response.ErrorListener() {
@@ -197,11 +267,11 @@ public class DisplayFragment extends Fragment {
 
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
-        return feedList[0];
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public JSONObject getTutoringListAsObjectFromBackend() {
+    public void getTutoringListAsObjectFromBackend() {
 
         final JSONObject[] feedList = new JSONObject[1];
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
@@ -223,7 +293,7 @@ public class DisplayFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 Toast.makeText(getContext(), "Response: " + response.toString(), Toast.LENGTH_SHORT).show();
-                feedList[0] = response;
+                Log.e("Request", response.toString());
             }
 
         }, new Response.ErrorListener() {
@@ -237,7 +307,6 @@ public class DisplayFragment extends Fragment {
 
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
-        return feedList[0];
     }
 
     public JSONObject getAuthenticationJson() {
