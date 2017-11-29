@@ -65,6 +65,8 @@ public class ChatListAdapter extends BaseAdapter {
 
             }
 
+            holder1.messageTextView.setText(message.getMessageText());
+
             holder1.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
         } else if (message.getUserType() == UserType.OTHER) {
@@ -89,13 +91,17 @@ public class ChatListAdapter extends BaseAdapter {
             holder2.messageTextView.setText(message.getMessageText());
             holder2.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
+                holder2.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_double_tick));
 
-                holder2.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_single_tick));
-        }
+            }
+
+
+
 
 
         return v;
     }
+
 
     @Override
     public int getViewTypeCount() {

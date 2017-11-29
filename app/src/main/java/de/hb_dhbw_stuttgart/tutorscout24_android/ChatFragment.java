@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
@@ -40,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class ChatFragment extends android.app.Fragment {
 
     private ListView chatListView;
@@ -47,12 +46,6 @@ public class ChatFragment extends android.app.Fragment {
     private ArrayList<ChatMessage> chatMessages;
     private ImageView enterChatView1;
     private ChatListAdapter listAdapter;
-    private SizeNotifierRelativeLayout sizeNotifierRelativeLayout;
-    private int keyboardHeight;
-    private boolean keyboardVisible;
-    private WindowManager.LayoutParams windowLayoutParams;
-
-    private OnFragmentInteractionListener mListener;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -66,8 +59,6 @@ public class ChatFragment extends android.app.Fragment {
         return fragment;
     }
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,8 +69,6 @@ public class ChatFragment extends android.app.Fragment {
 
 
         // AndroidUtilities.statusBarHeight = getStatusBarHeight();
-
-
 
         chatEditText1 = view.findViewById(R.id.chat_edit_text1);
         enterChatView1 = view.findViewById(R.id.enter_chat1);
@@ -93,16 +82,12 @@ public class ChatFragment extends android.app.Fragment {
 
 
 
-            //loadMessages();
+        loadMessages();
 
         enterChatView1.setOnClickListener(clickListener);
 
         setUser(((MainActivity)getActivity()).chatUser, view);
 
-        //sizeNotifierRelativeLayout = (SizeNotifierRelativeLayout) getView().findViewById(R.id.chat_layout);
-        // sizeNotifierRelativeLayout.delegate = this;
-
-        // NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
         return view;
     }
 
@@ -114,12 +99,10 @@ public class ChatFragment extends android.app.Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-      //  loadMessages();
-        try {
-            sendMessage("nix");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            // loadMessages();
+
+           // sendMessageBackend("nix", "PatrickAndroid2");
+
     }
 
 
@@ -127,12 +110,6 @@ public class ChatFragment extends android.app.Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener {
-
     }
 
     private ImageView.OnClickListener clickListener = new View.OnClickListener() {
@@ -140,15 +117,12 @@ public class ChatFragment extends android.app.Fragment {
         public void onClick(View v) {
 
                 EditText chat_edit_text1 = getView().findViewById(R.id.chat_edit_text1);
-                sendMessage(chat_edit_text1.getText().toString(), UserType.OTHER, new Date().getTime());
+                sendMessageFrontend(chat_edit_text1.getText().toString(), UserType.OTHER, new Date().getTime());
 
             chat_edit_text1.setText("");
 
         }
     };
-
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -157,12 +131,13 @@ public class ChatFragment extends android.app.Fragment {
     }
 
     @OnClick(R.id.enter_chat1)
-    public void sendesaage(){
+    public void sendMessage(){
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
-        sendMessage(editText.getText().toString(), UserType.OTHER, new Date().getTime());
+        sendMessageFrontend(editText.getText().toString(), UserType.OTHER, new Date().getTime());
+        sendMessageBackend(editText.getText().toString(), ((MainActivity)getActivity()).chatUser);
     }
 
-    private void sendMessage(final String messageText, final UserType userType, final long datetime)
+    private void sendMessageFrontend(final String messageText, final UserType userType, final long datetime)
     {
         if(chatMessages == null){
             chatMessages = new ArrayList<>();
@@ -212,16 +187,19 @@ public class ChatFragment extends android.app.Fragment {
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void sendMessage(String mssg) throws JSONException {
+    private void sendMessageBackend(String mssg, String toUserId) {
 
             String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/sendMessage";
 
             JSONObject message = new JSONObject();
 
-            message.put("toUserId", "PatrickAndroid2");
-            message.put("text", "Test Nachricht");
+        try {
+            message.put("toUserId", toUserId);
+            message.put("text", mssg);
             message.put("authentication" , getAuthenticationJsonb());
-
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         final String requestBody = message.toString();
 
@@ -235,6 +213,9 @@ public class ChatFragment extends android.app.Fragment {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                   if(error == null){
+                       return;
+                   }
                     NetworkResponse response = error.networkResponse;
 
                     String json = new String(response.data);
@@ -278,7 +259,7 @@ public class ChatFragment extends android.app.Fragment {
     private void loadMessages(){
 
         final JSONArray[] feedList = new JSONArray[1];
-        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/messages/getSendMessages";
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getSentMessages";
 
         //erstelle JSON Object für den Request
 
@@ -288,7 +269,16 @@ public class ChatFragment extends android.app.Fragment {
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Toast.makeText(getContext(), "Response: load success", Toast.LENGTH_SHORT).show();
+
+                for(int i = 0; i < response.length(); i++){
+                    try {
+                        JSONObject o = (JSONObject) response.get(i);
+
+                        sendMessageFrontend(o.getString("text"), UserType.OTHER, new Date().getTime());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
             }
 
@@ -312,7 +302,6 @@ public class ChatFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(a);
     }
 
-
     public String trimMessage(String json, String key){
         String trimmedString = null;
 
@@ -334,9 +323,6 @@ public class ChatFragment extends android.app.Fragment {
 
         //erstelle JSON Object für den Request
 
-
-
-
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -349,7 +335,10 @@ public class ChatFragment extends android.app.Fragment {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
+                String json = new String(error.networkResponse.data);
+                json = trimMessage(json, "message");
+                Log.e("", "onErrorResponse: " + json );
+
                 Log.e("Messages", "onErrorResponse:" + error.getMessage() );
             }
         });
