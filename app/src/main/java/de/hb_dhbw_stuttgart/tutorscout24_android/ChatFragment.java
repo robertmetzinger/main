@@ -29,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Executors;
@@ -82,9 +84,8 @@ public class ChatFragment extends android.app.Fragment {
 
 
 
+        loadRecievedMessages();
         loadMessages();
-
-        enterChatView1.setOnClickListener(clickListener);
 
         setUser(((MainActivity)getActivity()).chatUser, view);
 
@@ -101,7 +102,7 @@ public class ChatFragment extends android.app.Fragment {
 
             // loadMessages();
 
-           // sendMessageBackend("nix", "PatrickAndroid2");
+           // sendMessageBackend("Dies ist eine neue Nachricht.", "PatrickAndroid2");
 
     }
 
@@ -112,17 +113,6 @@ public class ChatFragment extends android.app.Fragment {
         super.onDetach();
     }
 
-    private ImageView.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-                EditText chat_edit_text1 = getView().findViewById(R.id.chat_edit_text1);
-                sendMessageFrontend(chat_edit_text1.getText().toString(), UserType.OTHER, new Date().getTime());
-
-            chat_edit_text1.setText("");
-
-        }
-    };
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -133,8 +123,9 @@ public class ChatFragment extends android.app.Fragment {
     @OnClick(R.id.enter_chat1)
     public void sendMessage(){
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
-        sendMessageFrontend(editText.getText().toString(), UserType.OTHER, new Date().getTime());
         sendMessageBackend(editText.getText().toString(), ((MainActivity)getActivity()).chatUser);
+        sendMessageFrontend(editText.getText().toString(), UserType.OTHER, new Date().getTime());
+        editText.setText("");
     }
 
     private void sendMessageFrontend(final String messageText, final UserType userType, final long datetime)
@@ -158,7 +149,7 @@ public class ChatFragment extends android.app.Fragment {
 
         final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
-        exec.schedule(new Runnable(){
+        /*exec.schedule(new Runnable(){
             @Override
             public void run(){
 
@@ -176,7 +167,7 @@ public class ChatFragment extends android.app.Fragment {
 
 
             }
-        }, 1, TimeUnit.SECONDS);
+        }, 1, TimeUnit.SECONDS);*/
 
     }
 
@@ -274,7 +265,17 @@ public class ChatFragment extends android.app.Fragment {
                     try {
                         JSONObject o = (JSONObject) response.get(i);
 
-                        sendMessageFrontend(o.getString("text"), UserType.OTHER, new Date().getTime());
+                        String string_date = o.getString("datetime");
+
+                        SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'");
+                        try {
+                            Date d = f.parse(string_date);
+                            sendMessageFrontend(o.getString("text"), UserType.OTHER, d.getTime());
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -319,15 +320,33 @@ public class ChatFragment extends android.app.Fragment {
     private void loadRecievedMessages(){
 
         final JSONArray[] feedList = new JSONArray[1];
-        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/messages/getReceivedMessages";
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getReceivedMessages";
 
         //erstelle JSON Object für den Request
 
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Toast.makeText(getContext(), "Response: load success", Toast.LENGTH_SHORT).show();
+                for(int i = 0; i < response.length(); i++) {
 
+
+
+                        SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'");
+                        try {
+                            JSONObject o = (JSONObject) response.get(i);
+
+                            String string_date = o.getString("datetime");
+
+                            Date d = f.parse(string_date);
+                            sendMessageFrontend(o.getString("text"), UserType.SELF, d.getTime());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+
+
+                    }
+                }
             }
 
         }, new Response.ErrorListener() {
