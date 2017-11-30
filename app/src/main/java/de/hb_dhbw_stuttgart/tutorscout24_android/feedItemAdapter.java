@@ -56,9 +56,9 @@ public class feedItemAdapter extends BaseAdapter {
 
         feedItemView.setTag(holder);
 
-        holder.creatorTextView.setText(item.getCreator());
+        holder.creatorTextView.setText(item.getUserName());
         holder.subjectTextView.setText(item.getSubject());
-        holder.infoTextView.setText(item.getInfo());
+        holder.infoTextView.setText(item.getText());
         holder.creationDateTextView.setText(item.getCreationDate());
         holder.profilePic.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_account_circle_black_24dp, null));
 
