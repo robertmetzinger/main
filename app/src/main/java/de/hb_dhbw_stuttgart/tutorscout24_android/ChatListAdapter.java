@@ -49,7 +49,7 @@ public class ChatListAdapter extends BaseAdapter {
         ViewHolder1 holder1;
         ViewHolder2 holder2;
 
-        if (message.getUserType() == UserType.SELF) {
+        if (message.getUserType() == UserType.OTHER) {
             if (convertView == null) {
                 v = LayoutInflater.from(context).inflate(R.layout.chat_user1_item, null, false);
                 holder1 = new ViewHolder1();
@@ -57,6 +57,7 @@ public class ChatListAdapter extends BaseAdapter {
 
                 holder1.messageTextView = (TextView) v.findViewById(R.id.message_text);
                 holder1.timeTextView = (TextView) v.findViewById(R.id.time_text);
+
 
                 v.setTag(holder1);
             } else {
@@ -69,7 +70,8 @@ public class ChatListAdapter extends BaseAdapter {
 
             holder1.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
-        } else if (message.getUserType() == UserType.OTHER) {
+
+        } else if (message.getUserType() == UserType.SELF) {
 
             if (convertView == null) {
                 v = LayoutInflater.from(context).inflate(R.layout.chat_user2_item, null, false);

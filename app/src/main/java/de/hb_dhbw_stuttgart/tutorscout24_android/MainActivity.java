@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements
     private MainActivity that = this;
     private MapFragment mapFragment;
     FragmentTransaction transaction;
+    TextView titleView;
+
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_IS_RESOLVING = "is_resolving";
@@ -85,28 +88,37 @@ public class MainActivity extends AppCompatActivity implements
             switch (item.getItemId()) {
                 case R.id.navigation_display:
 
+                    titleView.setText("Tutorien");
+
                     DisplayFragment displayFragment = new DisplayFragment();
                     ChangeFragment(displayFragment, "Display");
+
+
                     return true;
 
                 case R.id.navigation_tutorien:
+                    titleView.setText("Eigene Tutorien");
 
                     ChangeFragment(blankFragment, "Blank");
                     return true;
 
                 case R.id.navigation_create:
+                    titleView.setText("Tutorium erstellen");
 
                     createOfferFragment createOfferFragment = new createOfferFragment();
                     ChangeFragment(createOfferFragment, "CreateOffer");
                     return true;
 
                 case R.id.navigation_notifications:
+                    titleView.setText("Kontakte");
 
                     KontakteFragment kontateFragment = new KontakteFragment();
-                    ChangeFragment(kontateFragment, "Chat");
+                    ChangeFragment(kontateFragment, "Kontakte");
                     return true;
 
                 case R.id.navigation_profile:
+
+                    titleView.setText("Profil");
 
                     Fragment profileFragment = new profileFragment();
                     ChangeFragment(profileFragment, "Profil");
@@ -115,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements
             }
             return false;
         }
-
     };
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -142,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements
         DisableNavigation();
         BottomNavigationView nav = findViewById(R.id.navigation);
         nav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        titleView = findViewById(R.id.toolbar_title);
 
 
         loginFragment = new LoginFragment();
@@ -433,5 +445,11 @@ public class MainActivity extends AppCompatActivity implements
     public void setUser(String userName, String password){
         this.userName = userName;
         this.password = password;
+    }
+
+    public void changeTitle(String title){
+        if(titleView != null && title != null && !title.isEmpty()){
+            titleView.setText(title);
+        }
     }
 }

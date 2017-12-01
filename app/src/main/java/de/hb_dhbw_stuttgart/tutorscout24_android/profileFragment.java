@@ -164,12 +164,19 @@ public class profileFragment extends android.app.Fragment implements
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
         Log.d("BIn", "onCreateView: ");
+
+
+
+
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
         getUserInfo();
+
+
+
 
         super.onAttach(context);
     }

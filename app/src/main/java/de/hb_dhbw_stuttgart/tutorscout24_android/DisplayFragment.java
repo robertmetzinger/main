@@ -124,6 +124,7 @@ public class DisplayFragment extends Fragment implements
             }
         });
 
+
         return rootView;
     }
 

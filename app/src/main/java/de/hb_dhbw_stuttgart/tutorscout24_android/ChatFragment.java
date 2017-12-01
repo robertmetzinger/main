@@ -48,6 +48,7 @@ public class ChatFragment extends android.app.Fragment {
     private ArrayList<ChatMessage> chatMessages;
     private ImageView enterChatView1;
     private ChatListAdapter listAdapter;
+    private  String chatPartner;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -89,6 +90,7 @@ public class ChatFragment extends android.app.Fragment {
 
         setUser(((MainActivity)getActivity()).chatUser, view);
 
+
         return view;
     }
 
@@ -124,7 +126,7 @@ public class ChatFragment extends android.app.Fragment {
     public void sendMessage(){
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
         sendMessageBackend(editText.getText().toString(), ((MainActivity)getActivity()).chatUser);
-        sendMessageFrontend(editText.getText().toString(), UserType.OTHER, new Date().getTime());
+        sendMessageFrontend(editText.getText().toString(), UserType.SELF, new Date().getTime());
         editText.setText("");
     }
 
@@ -174,6 +176,10 @@ public class ChatFragment extends android.app.Fragment {
     public void setUser(String user, View view){
         TextView textView = view.findViewById(R.id.txtuserName);
         textView.setText(user);
+
+        chatPartner = user;
+        ((MainActivity)getActivity()).changeTitle(user);
+
     }
 
 
@@ -261,16 +267,23 @@ public class ChatFragment extends android.app.Fragment {
             @Override
             public void onResponse(JSONArray response) {
 
+
                 for(int i = 0; i < response.length(); i++){
                     try {
                         JSONObject o = (JSONObject) response.get(i);
+
+                        String toUserId = o.getString("toUserId");
+
+                        if(!toUserId.equals(chatPartner)){
+                            continue;
+                        }
 
                         String string_date = o.getString("datetime");
 
                         SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'");
                         try {
                             Date d = f.parse(string_date);
-                            sendMessageFrontend(o.getString("text"), UserType.OTHER, d.getTime());
+                            sendMessageFrontend(o.getString("text"), UserType.SELF, d.getTime());
 
                         } catch (ParseException e) {
                             e.printStackTrace();
@@ -333,12 +346,20 @@ public class ChatFragment extends android.app.Fragment {
 
                         SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'");
                         try {
+
+
                             JSONObject o = (JSONObject) response.get(i);
+
+                            String fromUserId = o.getString("fromUserId");
+
+                            if(!fromUserId.equals(chatPartner)){
+                                continue;
+                            }
 
                             String string_date = o.getString("datetime");
 
                             Date d = f.parse(string_date);
-                            sendMessageFrontend(o.getString("text"), UserType.SELF, d.getTime());
+                            sendMessageFrontend(o.getString("text"), UserType.OTHER, d.getTime());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {

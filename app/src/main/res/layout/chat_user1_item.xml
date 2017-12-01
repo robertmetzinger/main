@@ -20,18 +20,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/chat_company_reply_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingRight="8dp"
-                android:paddingTop="5dp"
-                android:textStyle="bold"
-                android:textColor="@color/orange"
-                android:text="User1"
-                android:textSize="16sp" />
-
-            <TextView
                 android:id="@+id/message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

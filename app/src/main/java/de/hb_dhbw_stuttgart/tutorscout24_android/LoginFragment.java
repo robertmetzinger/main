@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -67,6 +68,10 @@ public class LoginFragment extends android.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         ButterKnife.bind(this, view);
+
+
+
+
         return view;
     }
 
@@ -85,7 +90,7 @@ public class LoginFragment extends android.app.Fragment {
     }
 
 
-   public void savePassword() {
+    public void savePassword() {
 
         CheckBox saveCred = getView().findViewById(R.id.checkRememberMe);
         if (saveCred.isChecked()) {
@@ -166,7 +171,7 @@ public class LoginFragment extends android.app.Fragment {
         EditText benutzerName = getView().findViewById(R.id.txtLoginUserName);
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
-        ((MainActivity)getActivity()).setUser(benutzerName.getText().toString(), passwort.getText().toString());
+        ((MainActivity) getActivity()).setUser(benutzerName.getText().toString(), passwort.getText().toString());
         try {
             userJson.put("userName", benutzerName.getText().toString());
             userJson.put("password", passwort.getText().toString());
@@ -203,6 +208,7 @@ public class LoginFragment extends android.app.Fragment {
 
         // @Backend send mail
     }
+
     /**
      * Process a Credential object retrieved from a successful request.
      *
@@ -215,7 +221,7 @@ public class LoginFragment extends android.app.Fragment {
                 anonymizePassword(credential.getPassword()));
 
 
-        if(isLockedIn){
+        if (isLockedIn) {
             return;
         }
         // If the Credential is not a hint, we should store it an enable the delete button.
@@ -234,7 +240,7 @@ public class LoginFragment extends android.app.Fragment {
         userName.setText(credential.getId());
         passwort.setText(credential.getPassword());
 
-        ((MainActivity)getActivity()).setUser(credential.getId(), credential.getPassword());
+        ((MainActivity) getActivity()).setUser(credential.getId(), credential.getPassword());
         CheckBox checkBox = getView().findViewById(R.id.checkRememberMe);
 
         checkBox.setChecked(true);
