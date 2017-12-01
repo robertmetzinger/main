@@ -189,14 +189,20 @@ public class LoginFragment extends android.app.Fragment {
         ((MainActivity) getActivity()).ChangeFragment(new BlankFragment(), "Blank");
     }
 
-    @OnClick(R.id.txtRegistrieren)
-    public void OnRegistrierenLabelClick() {
+    @OnClick(R.id.btnRegistrien)
+    public void btnRegistrierenClicked() {
         RegistrierenFragment registrierenFragment = new RegistrierenFragment();
 
 
         ((MainActivity) getActivity()).ChangeFragment(registrierenFragment, "Registrieren");
     }
 
+
+    @OnClick(R.id.txtPasswortVergessen)
+    public void passwortVergessen() {
+
+        // @Backend send mail
+    }
     /**
      * Process a Credential object retrieved from a successful request.
      *

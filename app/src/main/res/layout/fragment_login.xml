@@ -46,12 +46,10 @@
                 android:id="@+id/btnAdmin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:background="@color/white"
                 android:text="Admin"
-                android:layout_marginLeft="80dp"
-                android:layout_marginRight="80dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="30dp"
-                android:background="@drawable/login_buttonstyle"
 
 
                 />
@@ -92,18 +90,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Anmelden"
-                android:background="@drawable/login_buttonstyle"
-                android:layout_marginLeft="80dp"
-                android:layout_marginRight="80dp"/>
+                android:background="@color/gray"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"/>
 
-            <TextView
-                android:id="@+id/txtRegistrieren"
+            <Button
+                android:id="@+id/btnRegistrien"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Registrieren"
-                android:layout_marginLeft="80dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/login_buttonstyle"
+                android:text="Registrieren" />
+
+            <TextView
+                android:id="@+id/txtPasswortVergessen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
                 android:layout_marginTop="10dp"
-                />
+                android:text="Passwort Vergessen?"
+                android:fontFamily="@font/neuropol"/>
 
         </LinearLayout>
 
