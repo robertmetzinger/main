@@ -25,7 +25,8 @@
         android:divider="@drawable/chat_divider"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:scrollbarStyle="outsideOverlay" />
+        android:scrollbarStyle="outsideOverlay"
+        android:overScrollMode="always"/>
 
     <LinearLayout
         android:id="@+id/bottomlayout"
