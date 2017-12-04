@@ -3,7 +3,6 @@ package de.hb_dhbw_stuttgart.tutorscout24_android;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Build;
@@ -13,38 +12,27 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.credentials.Credential;
-import com.google.android.gms.auth.api.credentials.CredentialPickerConfig;
 import com.google.android.gms.auth.api.credentials.CredentialRequest;
 import com.google.android.gms.auth.api.credentials.CredentialRequestResult;
-import com.google.android.gms.auth.api.credentials.CredentialsApi;
-import com.google.android.gms.auth.api.credentials.HintRequest;
-import com.google.android.gms.auth.api.credentials.IdToken;
-import com.google.android.gms.auth.api.credentials.IdentityProviders;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResolvingResultCallbacks;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONObject;
 
@@ -58,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements
     private MainActivity that = this;
     private MapFragment mapFragment;
     FragmentTransaction transaction;
+    TextView titleView;
+
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_IS_RESOLVING = "is_resolving";
@@ -98,28 +88,37 @@ public class MainActivity extends AppCompatActivity implements
             switch (item.getItemId()) {
                 case R.id.navigation_display:
 
+                    titleView.setText("Tutorien");
+
                     DisplayFragment displayFragment = new DisplayFragment();
                     ChangeFragment(displayFragment, "Display");
+
+
                     return true;
 
                 case R.id.navigation_tutorien:
+                    titleView.setText("Eigene Tutorien");
 
                     ChangeFragment(blankFragment, "Blank");
                     return true;
 
                 case R.id.navigation_create:
+                    titleView.setText("Tutorium erstellen");
 
                     createOfferFragment createOfferFragment = new createOfferFragment();
                     ChangeFragment(createOfferFragment, "CreateOffer");
                     return true;
 
                 case R.id.navigation_notifications:
+                    titleView.setText("Kontakte");
 
                     KontakteFragment kontateFragment = new KontakteFragment();
-                    ChangeFragment(kontateFragment, "Chat");
+                    ChangeFragment(kontateFragment, "Kontakte");
                     return true;
 
                 case R.id.navigation_profile:
+
+                    titleView.setText("Profil");
 
                     Fragment profileFragment = new profileFragment();
                     ChangeFragment(profileFragment, "Profil");
@@ -128,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements
             }
             return false;
         }
-
     };
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -137,6 +135,12 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
         mCredentialsApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .enableAutoManage(this, this)
@@ -149,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements
         DisableNavigation();
         BottomNavigationView nav = findViewById(R.id.navigation);
         nav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        titleView = findViewById(R.id.toolbar_title);
 
 
         loginFragment = new LoginFragment();
@@ -304,47 +309,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Called when the Load Credentials button is clicked. Attempts to read the user's saved
-     * Credentials from the Credentials API.  This may show UX, such as a credential picker
-     * or an account picker.
-     *
-     * <b>Note:</b> in a normal application loading credentials should happen without explicit user
-     * action, this is only connected to a 'Load Credentials' button for easier demonstration
-     * in this sample.  Make sure not to load credentials automatically if the user has clicked
-     * a "sign out" button in your application in order to avoid a sign-in loop. You can do this
-     * with the function <code>Auth.CredentialsApi.disableAuthSignIn(...)</code>.
-     */
-    public void loadCredentialsClicked() {
-         requestCredentials();
-    }
-
-    /**
-     * Called when the Load Hints button is clicked. Requests a Credential "hint" which will
-     * be the basic profile information and an ID token for an account on the device. This is useful
-     * to auto-fill sign-up forms with an email address, picture, and name or to do password-free
-     * authentication with a server by providing an ID Token.
-     */
-    private void loadHintClicked() {
-        HintRequest hintRequest = new HintRequest.Builder()
-                .setHintPickerConfig(new CredentialPickerConfig.Builder()
-                        .setShowCancelButton(true)
-                        .build())
-                .setEmailAddressIdentifierSupported(true)
-                .setAccountTypes(IdentityProviders.GOOGLE)
-                .build();
-
-        PendingIntent intent =
-                Auth.CredentialsApi.getHintPickerIntent(mCredentialsApiClient, hintRequest);
-        try {
-            startIntentSenderForResult(intent.getIntentSender(), RC_HINT, null, 0, 0, 0);
-            mIsResolving = true;
-        } catch (IntentSender.SendIntentException e) {
-            Log.e(TAG, "Could not start hint picker Intent", e);
-            mIsResolving = false;
-        }
-    }
-
-    /**
      * Request Credentials from the Credentials API.
      */
     public void requestCredentials() {
@@ -382,11 +346,6 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 });
     }
-
-    /**
-     * Called when the delete credentials button is clicked.  This deletes the last Credential
-     * that was loaded using the load button.
-     */
 
 
     /**
@@ -446,9 +405,6 @@ public class MainActivity extends AppCompatActivity implements
                 });
     }
 
-
-
-
     /** Make a password into asterisks of the right length, for logging. **/
     private String anonymizePassword(String password) {
         if (password == null) {
@@ -489,5 +445,11 @@ public class MainActivity extends AppCompatActivity implements
     public void setUser(String userName, String password){
         this.userName = userName;
         this.password = password;
+    }
+
+    public void changeTitle(String title){
+        if(titleView != null && title != null && !title.isEmpty()){
+            titleView.setText(title);
+        }
     }
 }

@@ -75,6 +75,8 @@ public class KontakteFragment extends android.app.Fragment {
 
         setKontakteList(view);
 
+
+
         return view;
     }
 
@@ -122,6 +124,7 @@ public class KontakteFragment extends android.app.Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
 
     }
 

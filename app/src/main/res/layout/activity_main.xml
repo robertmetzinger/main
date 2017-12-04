@@ -1,19 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.MainActivity">
 
-    <RelativeLayout
-        android:id="@+id/relativContent"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/neuropol"
+            android:text="@string/app_name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp" />
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
+
+        <fragment
+            android:id="@+id/contentFragment"
+            android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:id="@+id/content"
@@ -59,40 +90,22 @@
 
         </FrameLayout>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true">
-
-            <LinearLayout
-                android:id="@+id/mainContentLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <fragment
-                    android:id="@+id/contentFragment"
-                    android:name="de.hb_dhbw_stuttgart.tutorscout24_android.BlankFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="455dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-        </ScrollView>
-
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_gravity="bottom"
-            android:background="?android:attr/windowBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:background="@color/white"
             android:clickable="false"
             android:contextClickable="false"
+            app:itemIconTint="@color/colorPrimary"
+            app:itemTextColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/contentFragment"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
             app:menu="@menu/navigation" />
 
-    </RelativeLayout>
+
+    </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>
