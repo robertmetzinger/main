@@ -1,23 +1,31 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -41,11 +49,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -61,6 +68,12 @@ public class DisplayFragment extends Fragment implements
     private HashMap<Marker, String> markerTutoringIdHashMap = new HashMap<Marker, String>();
     private double gpsBreitengrad;
     private double gpsLaengengrad;
+    private int rowOffset = 0;
+    private int rangeKm = 50;
+    private int rowLimit = 100;
+    private SearchView searchView;
+    private SimpleCursorAdapter suggestionsAdapter;
+    String[] columns = new String[] {"adress", BaseColumns._ID};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +95,45 @@ public class DisplayFragment extends Fragment implements
         spec.setIndicator("Map");
         host.addTab(spec);
 
+        searchView = (SearchView) rootView.findViewById(R.id.searchView);
+
+        final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
+        suggestionsAdapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_1,
+                null,
+                columns,
+                to,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        searchView.setSuggestionsAdapter(suggestionsAdapter);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                search(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                getSearchSuggestions(newText);
+                //if (suggestions != null) populateAdapter(suggestions);
+                return true;
+            }
+        });
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                searchView.setQuery(suggestionsAdapter.getCursor().getString(position), false);
+                return false;
+            }
+        });
+
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
@@ -102,16 +154,10 @@ public class DisplayFragment extends Fragment implements
                     return;
                 }
                 googleMap.setMyLocationEnabled(true);
-                /*googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-                    @Override
-                    public boolean onMyLocationButtonClick() {
-                        googleApiClient.connect();
-                        return true;
-                    }
-                });*/
                 UiSettings settings = googleMap.getUiSettings();
                 settings.setMyLocationButtonEnabled(true);
                 settings.setZoomControlsEnabled(true);
+                settings.setMapToolbarEnabled(true);
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
@@ -124,10 +170,83 @@ public class DisplayFragment extends Fragment implements
             }
         });
 
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        getTutoringOffersFromBackend();
+
         return rootView;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void getSearchSuggestions(String query) {
+
+        if (!query.equals(null) && !query.trim().equals("")) {
+
+            Geocoder geocoder = new Geocoder(getContext());
+            List<Address> addresses = null;
+
+            try {
+                // Getting a maximum of 3 Address that matches the input text
+                int counter = 0;
+                do {
+                    addresses = geocoder.getFromLocationName(query, 3);
+                    counter++;
+                } while (addresses.size() == 0 && counter < 10);
+
+                if (addresses.size() > 0) {
+                    MatrixCursor matrixCursor = new MatrixCursor(columns);
+                    String[] suggestions = new String[addresses.size()];
+                    Log.d("adress", addresses.get(0).toString());
+                    //for (Address address : addresses) {
+                    for (int i = 0; i < addresses.size(); i++) {
+                        Address address = addresses.get(i);
+                        String adressText = "";
+                        for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
+                            adressText += address.getAddressLine(line);
+                            if (line != address.getMaxAddressLineIndex()) adressText += ", ";
+                            suggestions[i] = adressText;
+                        }
+                        matrixCursor.addRow(new Object[] {adressText, i});
+                    }
+                    suggestionsAdapter.swapCursor(matrixCursor);
+                }
+
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void search(String query) {
+
+        Geocoder geocoder = new Geocoder(getContext());
+        List<Address> addresses = null;
+
+        try {
+            // Getting a maximum of 3 Address that matches the input
+            // text
+            int counter = 0;
+            do {
+                addresses = geocoder.getFromLocationName(query, 1);
+                counter++;
+            } while (addresses.size() == 0 && counter < 10);
+
+            if (addresses != null && !addresses.equals("")) {
+                Address address = (Address) addresses.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            }
+
+        } catch (Exception e) {
+
+        }
+    }
+
     public void connectToGoogleGPSApi() {
 
         Log.e("Try connect", "gps: ");
@@ -138,8 +257,6 @@ public class DisplayFragment extends Fragment implements
         googleApiClient.connect();
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public ArrayList<FeedItem> loadData(JSONArray feedData) {
         ArrayList<FeedItem> feedArrayList = new ArrayList<>();
 
@@ -167,15 +284,14 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void setUpFeedAndMap (ArrayList<FeedItem> feedArrayList){
+    public void setUpFeedAndMap(ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
 
         Marker currentMarker;
-        for(FeedItem item : feedArrayList){
+        for (FeedItem item : feedArrayList) {
             String tutoringId = item.getTutoringId();
             LatLng pos = new LatLng(item.getLatitude(), item.getLongitude());
             String userName = item.getUserName();
@@ -185,23 +301,18 @@ public class DisplayFragment extends Fragment implements
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick(R.id.btnLoadFeedDataFromBackend)
-    public void getTutoringListAsArrayFromBackend2() {
+    @OnClick(R.id.btnReloadTutoringOffersFromBackend)
+    public void getTutoringOffersFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
 
-        Number latitude = 10;
-        Number longitude = 10;
-        Number rangeKm = 50;
-        Number rowLimit = 100;
-        Number rowOffset = 0;
+        getMyLocation();
 
         //erstelle JSON Object für den Request
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("latitude", latitude);
-            requestBody.put("longitude", longitude);
+            requestBody.put("latitude", gpsBreitengrad);
+            requestBody.put("longitude", gpsLaengengrad);
             requestBody.put("rangeKm", rangeKm);
             requestBody.put("rowLimit", rowLimit);
             requestBody.put("rowOffset", rowOffset);
@@ -221,7 +332,7 @@ public class DisplayFragment extends Fragment implements
             public void onErrorResponse(VolleyError error) {
                 String json = new String(error.networkResponse.data);
                 json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json );
+                Log.e("", "onErrorResponse: " + json);
 
             }
         });
@@ -231,20 +342,19 @@ public class DisplayFragment extends Fragment implements
 
     }
 
-    public String trimMessage(String json, String key){
+    public String trimMessage(String json, String key) {
         String trimmedString = null;
 
-        try{
+        try {
             JSONObject obj = new JSONObject(json);
             trimmedString = obj.getString(key);
-        } catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
 
         return trimmedString;
     }
-
 
 
     public JSONObject getAuthenticationJson() {
@@ -284,27 +394,21 @@ public class DisplayFragment extends Fragment implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    public void getMyLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
             return;
         }
-
         Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 googleApiClient);
         if (myLastLocation != null) {
 
             gpsBreitengrad = myLastLocation.getLatitude();
             gpsLaengengrad = myLastLocation.getLongitude();
-
-            ShowMyLocation();
         }
-    }
-
-    private void ShowMyLocation() {
-
-        LatLng myLocation = new LatLng(gpsBreitengrad, gpsLaengengrad);
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(myLocation).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
