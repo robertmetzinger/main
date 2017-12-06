@@ -92,14 +92,13 @@ public class MainActivity extends AppCompatActivity implements
 
                     DisplayFragment displayFragment = new DisplayFragment();
                     ChangeFragment(displayFragment, "Display");
-
-
                     return true;
 
                 case R.id.navigation_tutorien:
                     titleView.setText("Eigene Tutorien");
 
-                    ChangeFragment(blankFragment, "Blank");
+                    MyTutoringsFragment myTutoringsFragment = new MyTutoringsFragment();
+                    ChangeFragment(myTutoringsFragment, "MyTutorings");
                     return true;
 
                 case R.id.navigation_create:

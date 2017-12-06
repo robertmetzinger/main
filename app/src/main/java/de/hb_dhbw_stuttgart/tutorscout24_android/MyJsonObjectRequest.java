@@ -28,12 +28,15 @@ public class MyJsonObjectRequest extends JsonObjectRequest {
             String json = new String(response.data, "UTF-8");
 
             if (json.length() == 0) {
-                return Response.success(null, HttpHeaderParser.parseCacheHeaders(response));
+                JSONObject jsResponse = new JSONObject().put("response", "success");
+                return Response.success(jsResponse, HttpHeaderParser.parseCacheHeaders(response));
             } else {
                 return super.parseNetworkResponse(response);
             }
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
+        } catch (JSONException j) {
+            return Response.error(new ParseError(j));
         }
     }
 }
