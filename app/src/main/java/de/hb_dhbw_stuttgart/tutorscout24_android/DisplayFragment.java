@@ -1,7 +1,6 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -14,13 +13,11 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -40,7 +37,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -50,9 +46,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -64,25 +60,31 @@ public class DisplayFragment extends Fragment implements
     View rootView;
     MapView mMapView;
     private GoogleMap googleMap;
-    GoogleApiClient googleApiClient;
     private HashMap<Marker, String> markerTutoringIdHashMap = new HashMap<Marker, String>();
+    GoogleApiClient googleApiClient;
     private double gpsBreitengrad;
     private double gpsLaengengrad;
     private int rowOffset = 0;
-    private int rangeKm = 50;
+    private int rangeKm = 50000;
     private int rowLimit = 100;
     private SearchView searchView;
     private SimpleCursorAdapter suggestionsAdapter;
     String[] columns = new String[] {"adress", BaseColumns._ID};
+    Geocoder geocoder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_display, container, false);
         ButterKnife.bind(this, rootView);
 
+        Locale.Builder builder = new Locale.Builder();
+        builder.setRegion("DE");
+        builder.setLanguage("deu");
+        Locale locale = builder.build();
+        geocoder = new Geocoder(getContext(), Locale.getDefault());
+
         TabHost host = (TabHost) rootView.findViewById(R.id.tabHost);
         host.setup();
-
         //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("Feed");
         spec.setContent(R.id.tabFeed);
@@ -95,44 +97,7 @@ public class DisplayFragment extends Fragment implements
         spec.setIndicator("Map");
         host.addTab(spec);
 
-        searchView = (SearchView) rootView.findViewById(R.id.searchView);
-
-        final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
-        suggestionsAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_1,
-                null,
-                columns,
-                to,
-                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        searchView.setSuggestionsAdapter(suggestionsAdapter);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                search(query);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                getSearchSuggestions(newText);
-                //if (suggestions != null) populateAdapter(suggestions);
-                return true;
-            }
-        });
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-            @Override
-            public boolean onSuggestionSelect(int position) {
-                return false;
-            }
-
-            @Override
-            public boolean onSuggestionClick(int position) {
-                searchView.setQuery(suggestionsAdapter.getCursor().getString(position), false);
-                return false;
-            }
-        });
+        setUpSearchView();
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -183,11 +148,54 @@ public class DisplayFragment extends Fragment implements
         return rootView;
     }
 
+    public void setUpSearchView() {
+        searchView = (SearchView) rootView.findViewById(R.id.searchView);
+
+        final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
+        suggestionsAdapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_1,
+                null,
+                columns,
+                to,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        searchView.setSuggestionsAdapter(suggestionsAdapter);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                search(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                getSearchSuggestions(newText);
+                //if (suggestions != null) populateAdapter(suggestions);
+                return true;
+            }
+        });
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                Cursor cursor = suggestionsAdapter.getCursor();
+                cursor.moveToPosition(position);
+                searchView.setQuery(cursor.getString(0), false);
+                cursor.moveToFirst();
+                return false;
+            }
+        });
+    }
+
     public void getSearchSuggestions(String query) {
 
         if (!query.equals(null) && !query.trim().equals("")) {
 
-            Geocoder geocoder = new Geocoder(getContext());
             List<Address> addresses = null;
 
             try {
@@ -200,16 +208,12 @@ public class DisplayFragment extends Fragment implements
 
                 if (addresses.size() > 0) {
                     MatrixCursor matrixCursor = new MatrixCursor(columns);
-                    String[] suggestions = new String[addresses.size()];
-                    Log.d("adress", addresses.get(0).toString());
-                    //for (Address address : addresses) {
                     for (int i = 0; i < addresses.size(); i++) {
                         Address address = addresses.get(i);
                         String adressText = "";
                         for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
                             adressText += address.getAddressLine(line);
                             if (line != address.getMaxAddressLineIndex()) adressText += ", ";
-                            suggestions[i] = adressText;
                         }
                         matrixCursor.addRow(new Object[] {adressText, i});
                     }
@@ -223,7 +227,6 @@ public class DisplayFragment extends Fragment implements
 
     public void search(String query) {
 
-        Geocoder geocoder = new Geocoder(getContext());
         List<Address> addresses = null;
 
         try {
@@ -284,7 +287,7 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
-    public void setUpFeedAndMap(ArrayList<FeedItem> feedArrayList) {
+    public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
@@ -325,7 +328,7 @@ public class DisplayFragment extends Fragment implements
             @Override
             public void onResponse(JSONArray response) {
                 ArrayList<FeedItem> feedArrayList = loadData(response);
-                setUpFeedAndMap(feedArrayList);
+                showTutoringsInFeedAndMap(feedArrayList);
             }
         }, new Response.ErrorListener() {
             @Override

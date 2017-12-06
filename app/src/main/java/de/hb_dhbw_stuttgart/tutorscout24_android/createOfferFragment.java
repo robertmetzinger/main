@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.location.Address;
 import android.location.Geocoder;
@@ -154,7 +155,10 @@ public class createOfferFragment extends Fragment implements
 
             @Override
             public boolean onSuggestionClick(int position) {
-                locationSearch.setQuery(suggestionsAdapter.getCursor().getString(position), false);
+                Cursor cursor = suggestionsAdapter.getCursor();
+                cursor.moveToPosition(position);
+                locationSearch.setQuery(cursor.getString(0), false);
+                cursor.moveToFirst();
                 return false;
             }
         });
@@ -221,7 +225,7 @@ public class createOfferFragment extends Fragment implements
     }
 
     private void setCity() {
-        Toast.makeText(getContext(), "My Location Button pressed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
         List<Address> addresses;
         try {
             int counter = 0;
@@ -289,7 +293,7 @@ public class createOfferFragment extends Fragment implements
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Angebot wurde erfolgreich erstellt", Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
