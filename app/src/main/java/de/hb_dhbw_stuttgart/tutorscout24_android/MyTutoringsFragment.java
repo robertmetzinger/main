@@ -6,13 +6,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.RequiresApi;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TabHost;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 
 /**
@@ -40,7 +39,7 @@ import butterknife.OnClick;
 public class MyTutoringsFragment extends Fragment {
 
     private View rootView;
-
+    private SwipeRefreshLayout swipeContainer;
 
     private OnFragmentInteractionListener mListener;
 
@@ -79,13 +78,20 @@ public class MyTutoringsFragment extends Fragment {
         spec.setIndicator("Meine Anfragen");
         host.addTab(spec);
 
-        getTutoringOffersFromBackend();
+        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainerTutorings);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getMyOffersFromBackend();
+            }
+        });
+
+        getMyOffersFromBackend();
 
         return rootView;
     }
 
-    @OnClick(R.id.btnRefreshMyOffers)
-    public void getTutoringOffersFromBackend() {
+    public void getMyOffersFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/myOffers";
 
@@ -170,6 +176,7 @@ public class MyTutoringsFragment extends Fragment {
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.myOffers_list_view);
         feedListView.setAdapter(adapter);
+        swipeContainer.setRefreshing(false);
     }
 
     @Override

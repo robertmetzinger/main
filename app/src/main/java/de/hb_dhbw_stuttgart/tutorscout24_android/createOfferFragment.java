@@ -247,6 +247,7 @@ public class createOfferFragment extends Fragment implements
             e.printStackTrace();
         }
     }
+
     @OnClick(R.id.btnCreateOffer)
     public void showConfirmationDialog() {
         new AlertDialog.Builder(getContext())
@@ -310,8 +311,12 @@ public class createOfferFragment extends Fragment implements
 
     public LatLng getLatLngFromSearchField() {
         String location = locationSearch.getQuery().toString();
+        List<Address> addresses;
         try {
-            List<Address> addresses = geocoder.getFromLocationName(location, 1);
+            int counter = 0;
+            do {
+                addresses = geocoder.getFromLocationName(location, 1);
+            } while (addresses.size() == 0 && counter < 10);
             Address address = addresses.get(0);
             double latitudeForOffer = address.getLatitude();
             double longitudeForOffer = address.getLongitude();

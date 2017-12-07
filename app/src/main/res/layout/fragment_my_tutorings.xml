@@ -35,18 +35,18 @@
                     android:paddingRight="16dp"
                     android:paddingTop="5dp">
 
-                    <Button
-                        android:id="@+id/btnRefreshMyOffers"
+                    <android.support.v4.widget.SwipeRefreshLayout
+                        android:id="@+id/swipeContainerTutorings"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Aktualisieren" />
+                        android:layout_height="wrap_content">
 
-                    <ListView
-                        android:id="@+id/myOffers_list_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:footerDividersEnabled="true"
-                        android:headerDividersEnabled="true" />
+                        <ListView
+                            android:id="@+id/myOffers_list_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:footerDividersEnabled="true"
+                            android:headerDividersEnabled="true" />
+                    </android.support.v4.widget.SwipeRefreshLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -59,18 +59,17 @@
                     android:paddingRight="16dp"
                     android:paddingTop="5dp">
 
-                    <Button
-                        android:id="@+id/btnRefreshMyRequests"
+                    <android.support.v4.widget.SwipeRefreshLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Aktualisieren" />
+                        android:layout_height="wrap_content">
 
-                    <ListView
-                        android:id="@+id/myRequests_list_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:footerDividersEnabled="true"
-                        android:headerDividersEnabled="true" />
+                        <ListView
+                            android:id="@+id/myRequests_list_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:footerDividersEnabled="true"
+                            android:headerDividersEnabled="true" />
+                    </android.support.v4.widget.SwipeRefreshLayout>
                 </LinearLayout>
 
             </FrameLayout>

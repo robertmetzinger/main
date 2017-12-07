@@ -1,6 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.createOfferFragment">
@@ -17,24 +17,24 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:background="@drawable/trans_white_background"
+            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:fillViewport="true">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
                 android:orientation="vertical">
 
                 <EditText
                     android:id="@+id/subjectTxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
                     android:ems="10"
                     android:hint="Fach"
                     android:inputType="textAutoComplete" />
@@ -43,8 +43,6 @@
                     android:id="@+id/infoTxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
                     android:ems="10"
                     android:gravity="bottom"
                     android:hint="Beschreibung"
@@ -55,23 +53,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
-
-                    <SearchView
-                        android:id="@+id/locationSearch"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:queryHint="Standort"
-                        android:inputType="textAutoComplete|textMultiLine"
-                        android:maxLines="3"
-                        android:iconifiedByDefault="false"
-                        android:searchIcon="@null">
-
-                    </SearchView>
-
 
                     <ImageButton
                         android:id="@+id/btnMyLocation"
@@ -81,27 +64,42 @@
                         android:layout_weight="1"
                         android:tooltipText="Meinen Standort verwenden"
                         app:srcCompat="@drawable/ic_my_location_black_24dp" />
+
+                    <SearchView
+                        android:id="@+id/locationSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:iconifiedByDefault="false"
+                        android:inputType="textAutoComplete|textMultiLine"
+                        android:maxLines="3"
+                        android:queryHint="Standort"
+                        android:searchIcon="@null" />
+
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Dauer des Angebots in Tagen" />
+                        android:ems="10"
+                        android:text="Dauer des Angebots in Tagen"
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spinnerDuration"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0"
-                        android:hint="Dauer" />
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="0" />
 
 
                 </LinearLayout>
@@ -114,12 +112,12 @@
                         android:id="@+id/btnCreateOffer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@drawable/login_buttonstyle"
-                        android:gravity="center"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
                         android:layout_marginBottom="20dp"
+                        android:background="@drawable/login_buttonstyle"
+                        android:gravity="center"
                         android:text="Erstellen" />
 
                 </RelativeLayout>
