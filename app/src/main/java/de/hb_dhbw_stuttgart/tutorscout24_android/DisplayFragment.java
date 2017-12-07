@@ -1,6 +1,8 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -13,15 +15,20 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -45,6 +52,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,13 +75,15 @@ public class DisplayFragment extends Fragment implements
     private int rowOffset = 0;
     private int rangeKm = 50000;
     private int rowLimit = 100;
+    private SwipeRefreshLayout swipeContainer;
     private SearchView searchView;
-    private SimpleCursorAdapter suggestionsAdapter;
-    String[] columns = new String[] {"adress", BaseColumns._ID};
+    private SimpleCursorAdapter suggestionsAdapterForMapSearch;
+    String[] columns = new String[]{"adress", BaseColumns._ID};
     Geocoder geocoder;
+    private SearchDialogFragment searchDialogFragment;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_display, container, false);
         ButterKnife.bind(this, rootView);
 
@@ -82,6 +92,7 @@ public class DisplayFragment extends Fragment implements
         builder.setLanguage("deu");
         Locale locale = builder.build();
         geocoder = new Geocoder(getContext(), Locale.getDefault());
+        getMyLocation();
 
         TabHost host = (TabHost) rootView.findViewById(R.id.tabHost);
         host.setup();
@@ -97,6 +108,17 @@ public class DisplayFragment extends Fragment implements
         spec.setIndicator("Map");
         host.addTab(spec);
 
+        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getTutoringOffersFromBackend();
+            }
+        });
+
+        searchDialogFragment = new SearchDialogFragment();
+        searchDialogFragment.setParams(this, inflater, getContext(), getActivity(), geocoder);
+        setUpFab(inflater);
         setUpSearchView();
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
@@ -148,17 +170,29 @@ public class DisplayFragment extends Fragment implements
         return rootView;
     }
 
+    public void setUpFab(final LayoutInflater inflater) {
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchDialogFragment.createDialog();
+                searchDialogFragment.openDialog();
+            }
+        });
+    }
+
+
     public void setUpSearchView() {
         searchView = (SearchView) rootView.findViewById(R.id.searchView);
 
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
-        suggestionsAdapter = new SimpleCursorAdapter(getActivity(),
+        suggestionsAdapterForMapSearch = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,
                 null,
                 columns,
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        searchView.setSuggestionsAdapter(suggestionsAdapter);
+        searchView.setSuggestionsAdapter(suggestionsAdapterForMapSearch);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -169,7 +203,7 @@ public class DisplayFragment extends Fragment implements
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                getSearchSuggestions(newText);
+                getSearchSuggestions(suggestionsAdapterForMapSearch, newText);
                 //if (suggestions != null) populateAdapter(suggestions);
                 return true;
             }
@@ -183,7 +217,7 @@ public class DisplayFragment extends Fragment implements
 
             @Override
             public boolean onSuggestionClick(int position) {
-                Cursor cursor = suggestionsAdapter.getCursor();
+                Cursor cursor = suggestionsAdapterForMapSearch.getCursor();
                 cursor.moveToPosition(position);
                 searchView.setQuery(cursor.getString(0), false);
                 cursor.moveToFirst();
@@ -192,7 +226,26 @@ public class DisplayFragment extends Fragment implements
         });
     }
 
-    public void getSearchSuggestions(String query) {
+    public void getMyLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
+            return;
+        }
+        try {
+
+            Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    googleApiClient);
+            if (myLastLocation != null) {
+
+                gpsBreitengrad = myLastLocation.getLatitude();
+                gpsLaengengrad = myLastLocation.getLongitude();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Standort konnte nicht erfasst werden", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void getSearchSuggestions(SimpleCursorAdapter suggestionsAdapter, String query) {
 
         if (!query.equals(null) && !query.trim().equals("")) {
 
@@ -215,7 +268,7 @@ public class DisplayFragment extends Fragment implements
                             adressText += address.getAddressLine(line);
                             if (line != address.getMaxAddressLineIndex()) adressText += ", ";
                         }
-                        matrixCursor.addRow(new Object[] {adressText, i});
+                        matrixCursor.addRow(new Object[]{adressText, i});
                     }
                     suggestionsAdapter.swapCursor(matrixCursor);
                 }
@@ -292,6 +345,7 @@ public class DisplayFragment extends Fragment implements
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
+        swipeContainer.setRefreshing(false);
 
         Marker currentMarker;
         for (FeedItem item : feedArrayList) {
@@ -304,12 +358,9 @@ public class DisplayFragment extends Fragment implements
         }
     }
 
-    @OnClick(R.id.btnReloadTutoringOffersFromBackend)
     public void getTutoringOffersFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
-
-        getMyLocation();
 
         //erstelle JSON Object für den Request
         JSONObject requestBody = new JSONObject();
@@ -342,7 +393,6 @@ public class DisplayFragment extends Fragment implements
 
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
-
     }
 
     public String trimMessage(String json, String key) {
@@ -358,7 +408,6 @@ public class DisplayFragment extends Fragment implements
 
         return trimmedString;
     }
-
 
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
@@ -400,20 +449,6 @@ public class DisplayFragment extends Fragment implements
 
     }
 
-    public void getMyLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
-            return;
-        }
-        Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                googleApiClient);
-        if (myLastLocation != null) {
-
-            gpsBreitengrad = myLastLocation.getLatitude();
-            gpsLaengengrad = myLastLocation.getLongitude();
-        }
-    }
-
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -422,5 +457,17 @@ public class DisplayFragment extends Fragment implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    public void setGpsBreitengrad(double gpsBreitengrad) {
+        this.gpsBreitengrad = gpsBreitengrad;
+    }
+
+    public void setGpsLaengengrad(double gpsLaengengrad) {
+        this.gpsLaengengrad = gpsLaengengrad;
+    }
+
+    public void setRangeKm(int rangeKm) {
+        this.rangeKm = rangeKm;
     }
 }

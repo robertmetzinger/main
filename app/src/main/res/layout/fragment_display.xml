@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <android.support.design.widget.CoordinatorLayout
                     android:id="@+id/tabFeed"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -36,20 +38,32 @@
                     android:paddingRight="16dp"
                     android:paddingTop="5dp">
 
-
-                    <Button
-                        android:id="@+id/btnReloadTutoringOffersFromBackend"
+                    <android.support.v4.widget.SwipeRefreshLayout
+                        android:id="@+id/swipeContainer"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ListView
+                            android:id="@+id/feed_list_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:footerDividersEnabled="true"
+                            android:headerDividersEnabled="true" />
+
+                    </android.support.v4.widget.SwipeRefreshLayout>
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Aktualisieren" />
+                        android:layout_gravity="bottom|right"
+                        android:src="@drawable/search_settings_icon"
+                        app:backgroundTint="@android:color/holo_orange_light"
+                        app:fabSize="normal"
+                        app:layout_anchorGravity="bottom|right|end"
+                        tools:layout_margin="16dp" />
 
-                    <ListView
-                        android:id="@+id/feed_list_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:footerDividersEnabled="true"
-                        android:headerDividersEnabled="true" />
-                </LinearLayout>
+                </android.support.design.widget.CoordinatorLayout>
 
                 <LinearLayout
                     android:id="@+id/tabMap"
