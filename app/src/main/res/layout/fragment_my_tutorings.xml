@@ -36,7 +36,7 @@
                     android:paddingTop="5dp">
 
                     <android.support.v4.widget.SwipeRefreshLayout
-                        android:id="@+id/swipeContainerTutorings"
+                        android:id="@+id/swipeContainerOffers"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -60,6 +60,7 @@
                     android:paddingTop="5dp">
 
                     <android.support.v4.widget.SwipeRefreshLayout
+                        android:id="@+id/swipeContainerRequests"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 

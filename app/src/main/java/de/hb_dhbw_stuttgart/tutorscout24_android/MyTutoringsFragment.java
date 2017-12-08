@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,8 @@ import butterknife.ButterKnife;
 public class MyTutoringsFragment extends Fragment {
 
     private View rootView;
-    private SwipeRefreshLayout swipeContainer;
+    private SwipeRefreshLayout swipeContainerOffers;
+    private SwipeRefreshLayout swipeContainerRequests;
 
     private OnFragmentInteractionListener mListener;
 
@@ -78,15 +78,24 @@ public class MyTutoringsFragment extends Fragment {
         spec.setIndicator("Meine Anfragen");
         host.addTab(spec);
 
-        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainerTutorings);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeContainerOffers = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainerOffers);
+        swipeContainerOffers.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getMyOffersFromBackend();
             }
         });
 
+        swipeContainerRequests = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainerRequests);
+        swipeContainerRequests.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getMyRequestsFromBackend();
+            }
+        });
+
         getMyOffersFromBackend();
+        getMyRequestsFromBackend();
 
         return rootView;
     }
@@ -106,15 +115,45 @@ public class MyTutoringsFragment extends Fragment {
         CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                ArrayList<FeedItem> feedArrayList = loadMyOffers(response);
-                showTutoringsInList(feedArrayList);
+                ArrayList<FeedItem> feedArrayList = loadTutorings(response);
+                showTutoringsInList(feedArrayList, "offers");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String json = new String(error.networkResponse.data);
+                /*String json = new String(error.networkResponse.data);
                 json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json);
+                Log.e("", "onErrorResponse: " + json);*/
+            }
+        });
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
+    }
+
+    public void getMyRequestsFromBackend() {
+
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/myRequests";
+
+        //erstelle JSON Object für den Request
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("authentication", getAuthenticationJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                ArrayList<FeedItem> feedArrayList = loadTutorings(response);
+                showTutoringsInList(feedArrayList, "requests");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                /*String json = new String(error.networkResponse.data);
+                json = trimMessage(json, "message");
+                Log.e("", "onErrorResponse: " + json);*/
             }
         });
         // Access the RequestQueue through your singleton class.
@@ -146,7 +185,7 @@ public class MyTutoringsFragment extends Fragment {
         return trimmedString;
     }
 
-    public ArrayList<FeedItem> loadMyOffers(JSONArray feedData) {
+    public ArrayList<FeedItem> loadTutorings(JSONArray feedData) {
         ArrayList<FeedItem> feedArrayList = new ArrayList<>();
 
         try {
@@ -171,12 +210,15 @@ public class MyTutoringsFragment extends Fragment {
         return feedArrayList;
     }
 
-    public void showTutoringsInList(ArrayList<FeedItem> feedArrayList) {
+    public void showTutoringsInList(ArrayList<FeedItem> feedArrayList, String type) {
         //erzeuge Listenobjekte für die ListView
+        ListView feedListView = null;
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
-        ListView feedListView = (ListView) rootView.findViewById(R.id.myOffers_list_view);
+        if (type.equals("offers")) feedListView = (ListView) rootView.findViewById(R.id.myOffers_list_view);
+        else if (type.equals("requests")) feedListView = (ListView) rootView.findViewById(R.id.myRequests_list_view);
         feedListView.setAdapter(adapter);
-        swipeContainer.setRefreshing(false);
+        swipeContainerOffers.setRefreshing(false);
+        swipeContainerRequests.setRefreshing(false);
     }
 
     @Override
