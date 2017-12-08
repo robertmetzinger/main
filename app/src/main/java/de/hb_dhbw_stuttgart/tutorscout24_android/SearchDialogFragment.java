@@ -124,7 +124,6 @@ public class SearchDialogFragment extends DialogFragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Toast.makeText(context, "Eingabe...", Toast.LENGTH_SHORT).show();
                 getSearchSuggestions(newText);
                 return true;
             }
@@ -170,6 +169,7 @@ public class SearchDialogFragment extends DialogFragment {
 
                 gpsBreitengrad = myLastLocation.getLatitude();
                 gpsLaengengrad = myLastLocation.getLongitude();
+                Toast.makeText(context, "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Toast.makeText(context, "Standort konnte nicht erfasst werden", Toast.LENGTH_SHORT).show();
@@ -177,7 +177,6 @@ public class SearchDialogFragment extends DialogFragment {
     }
 
     private void setCity() {
-        Toast.makeText(context, "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
         List<Address> addresses;
         try {
             int counter = 0;

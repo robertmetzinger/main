@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements
                 case R.id.navigation_create:
                     titleView.setText("Tutorium erstellen");
 
-                    createOfferFragment createOfferFragment = new createOfferFragment();
-                    ChangeFragment(createOfferFragment, "CreateOffer");
+                    CreateTutoringFragment CreateTutoringFragment = new CreateTutoringFragment();
+                    ChangeFragment(CreateTutoringFragment, "CreateOffer");
                     return true;
 
                 case R.id.navigation_notifications:
@@ -158,10 +158,7 @@ public class MainActivity extends AppCompatActivity implements
         loginFragment = new LoginFragment();
         ChangeFragment(loginFragment, "Login");
 
-        // Nötig da durch einen Fehler, vermutlich durch Focus einer EditText, autmoatisch sich die Tastatur beim Start öffnete.
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        getWindow().setBackgroundDrawableResource(R.drawable.background_screen_small);
+        getWindow().setBackgroundDrawableResource(R.drawable.background_learning);
     }
 
     @Override

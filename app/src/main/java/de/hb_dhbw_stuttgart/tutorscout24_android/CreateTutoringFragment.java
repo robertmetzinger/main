@@ -25,19 +25,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -47,10 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -59,13 +52,13 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link createOfferFragment.OnFragmentInteractionListener} interface
+ * {@link CreateTutoringFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link createOfferFragment#newInstance} factory method to
+ * Use the {@link CreateTutoringFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 @RequiresApi(api = Build.VERSION_CODES.M)
-public class createOfferFragment extends Fragment implements
+public class CreateTutoringFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     View rootView;
@@ -80,7 +73,7 @@ public class createOfferFragment extends Fragment implements
 
     private OnFragmentInteractionListener mListener;
 
-    public createOfferFragment() {
+    public CreateTutoringFragment() {
         // Required empty public constructor
     }
 
@@ -90,11 +83,11 @@ public class createOfferFragment extends Fragment implements
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment createOfferFragment.
+     * @return A new instance of fragment CreateTutoringFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static createOfferFragment newInstance(String param1, String param2) {
-        createOfferFragment fragment = new createOfferFragment();
+    public static CreateTutoringFragment newInstance(String param1, String param2) {
+        CreateTutoringFragment fragment = new CreateTutoringFragment();
         return fragment;
     }
 
@@ -221,6 +214,7 @@ public class createOfferFragment extends Fragment implements
 
             gpsBreitengrad = myLastLocation.getLatitude();
             gpsLaengengrad = myLastLocation.getLongitude();
+            Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
         }
     }
 

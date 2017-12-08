@@ -14,9 +14,69 @@
     android:layout_marginTop="20dp"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Suchen als"
+        android:textSize="18sp" />
+
+    <co.ceryle.segmentedbutton.SegmentedButtonGroup
+        android:id="@+id/segmentedButtonGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:elevation="2dp"
+        app:sbg_animateSelector="bounce"
+        app:sbg_animateSelectorDuration="750"
+        app:sbg_backgroundColor="@color/white"
+        app:sbg_backgroundDrawable="@drawable/gradient_drawable"
+        app:sbg_dividerBackgroundDrawable="@drawable/gradient_drawable_divider"
+        app:sbg_dividerColor="@color/grey_500"
+        app:sbg_dividerPadding="10dp"
+        app:sbg_dividerRadius="10dp"
+        app:sbg_dividerSize="4dp"
+        app:sbg_position="1"
+        app:sbg_radius="2dp"
+        app:sbg_ripple="true"
+        app:sbg_rippleColor="@color/blue_300"
+        app:sbg_draggable="false"
+        app:sbg_selectorBackgroundDrawable="@drawable/gradient_drawable_selector"
+        app:sbg_selectorColor="@color/colorPrimary"
+        app:sbg_borderColor="@color/colorPrimary"
+        app:sbg_borderSize="1dp">
+
+        <co.ceryle.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp"
+            app:sb_text="Student"
+            app:sb_textColor="@color/colorPrimary"
+            app:sb_textColor_onSelection="@color/white"
+            app:sb_textSize="18dp"
+            app:sb_textTypefacePath="fonts/neuropol.ttf" />
+
+        <co.ceryle.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp"
+            app:sb_text="Tutor"
+            app:sb_textColor="@color/colorPrimary"
+            app:sb_textColor_onSelection="@color/white"
+            app:sb_textSize="18dp"
+            app:sb_textTypefacePath="fonts/neuropol.ttf" />
+
+    </co.ceryle.segmentedbutton.SegmentedButtonGroup>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -67,4 +127,5 @@
             android:layout_weight="0"/>
     </LinearLayout>
 </LinearLayout>
+
 </FrameLayout>
