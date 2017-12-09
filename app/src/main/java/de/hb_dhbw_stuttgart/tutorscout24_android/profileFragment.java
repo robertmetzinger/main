@@ -331,7 +331,7 @@ public class profileFragment extends android.app.Fragment implements
     public void getUserInfo() {
 
 
-        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
+        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/myUserInfo";
 
 
         JSONObject requestBody = ((MainActivity)getActivity()).getUserInfoJsn();
@@ -348,11 +348,11 @@ public class profileFragment extends android.app.Fragment implements
                             currentUser.userName = response.getString("userid");
                             currentUser.firstName = response.getString("firstName");
                             currentUser.lastName = response.getString("lastName");
-                            currentUser.age = Integer.parseInt(response.getString("age"));
-                            //currentUser.email = response.getString("email");
-                           // currentUser.maxGraduation = response.getString("maxGraduation");
-                            // currentUser.placeOfResidence = response.getString("placeOfResidence");
-                            //currentUser.note = response.getString("note");
+                            currentUser.age = Integer.parseInt(response.getString("dayOfBirth"));
+                            currentUser.email = response.getString("email");
+                            currentUser.maxGraduation = response.getString("maxGraduation");
+                           // currentUser.placeOfResidence = response.getString("placeOfResidence");
+                            currentUser.note = response.getString("description");
 
                             SetUserInfo();
                         } catch (JSONException e) {
@@ -383,9 +383,8 @@ public class profileFragment extends android.app.Fragment implements
         firstName.setText(currentUser.firstName);
         lastName.setText(currentUser.lastName);
         alter.setText("" + currentUser.age);
-       // addresse.setText(currentUser.placeOfResidence);
-       // mail.setText(currentUser.email);
-
+        addresse.setText(currentUser.placeOfResidence);
+        mail.setText(currentUser.email);
     }
 
 }

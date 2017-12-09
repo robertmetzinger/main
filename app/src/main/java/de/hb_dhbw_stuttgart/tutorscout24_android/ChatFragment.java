@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,14 +27,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,6 +56,11 @@ public class ChatFragment extends android.app.Fragment {
     private ImageView enterChatView1;
     private ChatListAdapter listAdapter;
     private  String chatPartner;
+    private String chatMessageFileName;
+    private boolean sendloadSuccess = false;
+    private boolean recievedloadSuccess = false;
+
+
 
     public ChatFragment() {
         // Required empty public constructor
@@ -86,7 +98,11 @@ public class ChatFragment extends android.app.Fragment {
 
 
         loadRecievedMessages();
-        loadMessages();
+        loadSentMessages();
+        loadChatMessagesInFile();
+
+        sortMessages();
+
 
         setUser(((MainActivity)getActivity()).chatUser, view);
 
@@ -102,7 +118,7 @@ public class ChatFragment extends android.app.Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-            // loadMessages();
+            // loadSentMessages();
 
            // sendMessageBackend("Dies ist eine neue Nachricht.", "PatrickAndroid2");
 
@@ -113,6 +129,7 @@ public class ChatFragment extends android.app.Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+
     }
 
 
@@ -126,51 +143,18 @@ public class ChatFragment extends android.app.Fragment {
     public void sendMessage(){
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
         sendMessageBackend(editText.getText().toString(), ((MainActivity)getActivity()).chatUser);
-        sendMessageFrontend(editText.getText().toString(), UserType.SELF, new Date().getTime());
+        sendMessageFrontend();
         editText.setText("");
     }
 
-    private void sendMessageFrontend(final String messageText, final UserType userType, final long datetime)
+    private void sendMessageFrontend()
     {
         if(chatMessages == null){
             chatMessages = new ArrayList<>();
         }
-        if(messageText.trim().length()==0)
-            return;
-
-        final ChatMessage message = new ChatMessage();
-        message.setMessageText(messageText);
-        message.setUserType(userType);
-        message.setMessageTime(datetime);
-        chatMessages.add(message);
 
         if(listAdapter!=null)
             listAdapter.notifyDataSetChanged();
-
-        // Mark message as delivered after one second
-
-        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-
-        /*exec.schedule(new Runnable(){
-            @Override
-            public void run(){
-
-                final ChatMessage message = new ChatMessage();
-                message.setMessageText(messageText);
-                message.setUserType(UserType.SELF);
-                message.setMessageTime(datetime);
-                chatMessages.add(message);
-
-                ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
-                    public void run() {
-                        listAdapter.notifyDataSetChanged();
-                    }
-                });
-
-
-            }
-        }, 1, TimeUnit.SECONDS);*/
-
     }
 
     public void setUser(String user, View view){
@@ -203,7 +187,8 @@ public class ChatFragment extends android.app.Fragment {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, usercreateURL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+                    loadSentMessages();
+                   Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                     Log.e("", "onResponse: " + response);
 
                 }
@@ -253,15 +238,12 @@ public class ChatFragment extends android.app.Fragment {
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void loadMessages(){
+    private void loadSentMessages(){
 
         final JSONArray[] feedList = new JSONArray[1];
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getSentMessages";
 
         //erstelle JSON Object für den Request
-
-
-
 
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
@@ -272,18 +254,30 @@ public class ChatFragment extends android.app.Fragment {
                     try {
                         JSONObject o = (JSONObject) response.get(i);
 
+                        boolean exists = false;
+                        for (ChatMessage msgCompare :chatMessages) {
+                            if (msgCompare.getMessageId() ==Integer.parseInt(o.getString("messageId")) ){
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if(exists){
+                            continue;
+                        }
                         String toUserId = o.getString("toUserId");
 
                         if(!toUserId.equals(chatPartner)){
                             continue;
                         }
-
                         String string_date = o.getString("datetime");
 
-                        SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'");
+                        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                         try {
                             Date d = f.parse(string_date);
-                            sendMessageFrontend(o.getString("text"), UserType.SELF, d.getTime());
+                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.SELF, d,MainActivity.getUserName(),toUserId ));
+
+
+                           // sendMessageFrontend(o.getString("text"), UserType.SELF, d);
 
                         } catch (ParseException e) {
                             e.printStackTrace();
@@ -293,7 +287,8 @@ public class ChatFragment extends android.app.Fragment {
                         e.printStackTrace();
                     }
                 }
-
+                sendloadSuccess = true;
+                sortMessages();
             }
 
         }, new Response.ErrorListener() {
@@ -303,11 +298,11 @@ public class ChatFragment extends android.app.Fragment {
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse response = error.networkResponse;
 
-                String json = new String(response.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json );
-
-                Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+//                String json = new String(response.data);
+         //       json = trimMessage(json, "message");
+           //     Log.e("", "onErrorResponse: " + json );
+//
+  //              Log.e("Messages", "onErrorResponse:" + error.getMessage() );
             }
         });
 
@@ -344,22 +339,27 @@ public class ChatFragment extends android.app.Fragment {
 
 
 
-                        SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'");
+                        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                         try {
-
-
                             JSONObject o = (JSONObject) response.get(i);
+
+
+                            for (ChatMessage msgCompare :chatMessages) {
+                                if (msgCompare.getMessageId() == Integer.parseInt(o.getString("messageId")) ){
+                                    continue;
+                                }
+                            }
 
                             String fromUserId = o.getString("fromUserId");
 
                             if(!fromUserId.equals(chatPartner)){
                                 continue;
                             }
-
                             String string_date = o.getString("datetime");
-
                             Date d = f.parse(string_date);
-                            sendMessageFrontend(o.getString("text"), UserType.OTHER, d.getTime());
+                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.OTHER, d, fromUserId, MainActivity.getUserName() ));
+
+                           //- sendMessageFrontend(o.getString("text"), UserType.OTHER, d);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -368,6 +368,8 @@ public class ChatFragment extends android.app.Fragment {
 
                     }
                 }
+                recievedloadSuccess = true;
+                sortMessages();
             }
 
         }, new Response.ErrorListener() {
@@ -375,11 +377,11 @@ public class ChatFragment extends android.app.Fragment {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onErrorResponse(VolleyError error) {
-                String json = new String(error.networkResponse.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json );
+               // String json = new String(error.networkResponse.data);
+               // json = trimMessage(json, "message");
+          //      Log.e("", "onErrorResponse: " + json );
 
-                Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+             //   Log.e("Messages", "onErrorResponse:" + error.getMessage() );
             }
         });
 
@@ -410,5 +412,115 @@ public class ChatFragment extends android.app.Fragment {
             e.printStackTrace();
         }
         return authentication;
+    }
+
+    private void saveChatMessagesInFile() {
+
+        if(chatMessages.isEmpty()){
+            return;
+        }
+        chatMessageFileName = MainActivity.getUserName() + chatPartner + "TutorscoutChatMessages";
+
+        StringBuilder messagesString = new StringBuilder();
+
+
+        for (ChatMessage message : chatMessages) {
+            messagesString.append(message.toString());
+        }
+
+
+        try {
+
+            FileOutputStream fos = getContext().openFileOutput(chatMessageFileName, Context.MODE_PRIVATE);
+            fos.write(messagesString.toString().getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void loadChatMessagesInFile() {
+
+        chatMessageFileName = MainActivity.getUserName()+ chatPartner + "TutorscoutChatMessages";
+
+        try {
+            FileInputStream fis = getContext().openFileInput(chatMessageFileName);
+
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+
+            Log.e("TAG", "loadChatMessagesInFile: "+ sb.toString() );
+            fis.close();
+            if(sb.toString().isEmpty()){
+                return;
+            }
+            stringToMessage(sb.toString());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void stringToMessage(String messages){
+        String[] stringMessageArray = messages.split(Pattern.quote("|"));
+
+        for (String messageString : stringMessageArray) {
+            if(messageString.isEmpty()){
+                continue;
+            }
+            try {
+                Map<String, String> messageMap = new HashMap<>();
+                String[] pairs = messageString.split("~~#~~");
+                for (int i=0;i<pairs.length;i++) {
+                    String pair = pairs[i];
+                    String[] keyValue = pair.split("~~:~~");
+                    messageMap.put(keyValue[0], String.valueOf(keyValue[1]));
+                }
+
+                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                String userTypeString = messageMap.get("userType");
+            UserType userType;
+            if(userTypeString.compareTo("SELFE") == 0){
+                userType = UserType.SELF;
+            }else{
+                    userType = UserType.OTHER;
+                }
+
+                Date d = f.parse(messageMap.get("datetime"));
+                chatMessages.add(new ChatMessage(Integer.parseInt(messageMap.get("messageId")), messageMap.get("messageText"), userType,d, messageMap.get("fromUserId"), messageMap.get("toUserId")));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.i("messages", "stringToMessage: Messagesload successfull");
+        }
+    }
+
+    private void sortMessages(){
+        if(sendloadSuccess && recievedloadSuccess){
+
+// Sorting
+            Collections.sort(chatMessages, new Comparator<ChatMessage>() {
+                @Override
+                public int compare(ChatMessage msg1, ChatMessage msg2)
+                {
+
+                    return  msg1.getMessageTime().compareTo(msg2.getMessageTime());
+                }
+            });
+
+            saveChatMessagesInFile();
+            sendMessageFrontend();
+        }
     }
 }

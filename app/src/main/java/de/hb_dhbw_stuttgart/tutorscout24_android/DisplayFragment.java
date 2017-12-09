@@ -384,9 +384,9 @@ public class DisplayFragment extends Fragment implements
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String json = new String(error.networkResponse.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json);
+                //String json = new String(error.networkResponse.data);
+                //json = trimMessage(json, "message");
+                //Log.e("", "onErrorResponse: " + json);
 
             }
         });

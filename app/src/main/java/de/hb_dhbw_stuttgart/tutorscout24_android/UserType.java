@@ -5,5 +5,15 @@ package de.hb_dhbw_stuttgart.tutorscout24_android;
  */
 
 public enum UserType {
-    OTHER, SELF
+    OTHER("OTHER"), SELF("SELFE");
+
+    private final String fieldDescription;
+
+    private UserType(String value) {
+        fieldDescription = value;
+    }
+
+    public String getFieldDescription() {
+        return fieldDescription;
+    }
 };
