@@ -124,7 +124,7 @@ public class RegistrierenFragment extends android.app.Fragment {
                 params.put("password", passwort.getText().toString());
                 params.put("firstName", firstName.getText().toString());
                 params.put("lastName", lastName.getText().toString());
-                params.put("age", alter.getText().toString());
+                params.put("birthdate", alter.getText().toString());
                 params.put("gender", geschlecht.getText().toString());
                 params.put("email", mail.getText().toString());
                 params.put("note", "keine Notiz");

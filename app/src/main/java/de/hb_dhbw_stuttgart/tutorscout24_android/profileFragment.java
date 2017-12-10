@@ -134,17 +134,20 @@ public class profileFragment extends android.app.Fragment implements
             alter = getArguments().getString(USER_ALTER);
             adresse = getArguments().getString(USER_ADRESSE);
 
-            EditText firstNameEditText = getView().findViewById(R.id.txtFirstName);
-            EditText lastNameEditText = getView().findViewById(R.id.textLastName);
-            EditText alterEditText = getView().findViewById(R.id.txtAlter);
-            EditText addresseEditText = getView().findViewById(R.id.txtAdress);
-            EditText mailEditText = getView().findViewById(R.id.txtMail);
+            EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
+            EditText lastName = getView().findViewById(R.id.txtProfileLastName);
+            EditText geschlecht = getView().findViewById(R.id.txtProfileLastGender);
+            EditText txtalter = getView().findViewById(R.id.txtProfileAge);
+            EditText wohnort = getView().findViewById(R.id.txtProfileAdress);
+            EditText txtmail = getView().findViewById(R.id.txtProfileMail);
+            EditText akademischGrad = getView().findViewById(R.id.txtProfileGraduation);
+            EditText note = getView().findViewById(R.id.txtProfileNotiz);
 
-            firstNameEditText.setText(firstname.toString());
-            lastNameEditText.setText(lastname);
-            alterEditText.setText(alter);
-            mailEditText.setText(mail);
-            addresseEditText.setText(adresse);
+            firstName.setText(firstname.toString());
+            lastName.setText(lastname);
+            txtalter.setText(alter);
+            txtmail.setText(mail);
+            wohnort.setText(adresse);
         }
 
         if (googleApiClient == null) {
@@ -251,53 +254,89 @@ public class profileFragment extends android.app.Fragment implements
         t.setText(cityName);
     }
 
-   // @OnClick(R.id.btnSpeichern)
+    @OnClick(R.id.btnSpeichern)
     public void saveUser() {
 
-        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/create";
+        String updateUserURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/updateUser";
 
-        StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
-                new Response.Listener<String>() {
+        EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
+        EditText lastName = getView().findViewById(R.id.txtProfileLastName);
+        EditText geschlecht = getView().findViewById(R.id.txtProfileLastGender);
+        EditText alter = getView().findViewById(R.id.txtProfileAge);
+        EditText wohnort = getView().findViewById(R.id.txtProfileAdress);
+        EditText mail = getView().findViewById(R.id.txtProfileMail);
+        EditText akademischGrad = getView().findViewById(R.id.txtProfileGraduation);
+        EditText note = getView().findViewById(R.id.txtProfileNotiz);
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("password", MainActivity.getPassword());
+            params.put("firstName", firstName.getText().toString());
+            params.put("lastName", lastName.getText().toString());
+            params.put("birthdate", alter.getText().toString());
+            params.put("gender", geschlecht.getText().toString());
+            if(currentUser.email.compareTo( mail.getText().toString()) != 0){
+                params.put("email", mail.getText().toString());
+            }
+            params.put("note", note.getText().toString());
+            params.put("placeOfResidence", wohnort.getText().toString());
+            params.put("maxGraduation", akademischGrad.getText().toString());
+            params.put("authentication", getAuthenticationJsonb());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MyJsonObjectRequest jsObjRequest = new MyJsonObjectRequest
+                (Request.Method.PUT, updateUserURL, params,   new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+                    public void onResponse(JSONObject response) {
+                        Toast.makeText(getContext(), "Angebot wurde erfolgreich erstellt", Toast.LENGTH_SHORT).show();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                EditText firstName = getView().findViewById(R.id.txtFirstName);
-                EditText lastName = getView().findViewById(R.id.textLastName);
-                EditText alter = getView().findViewById(R.id.txtAlter);
-                EditText addresse = getView().findViewById(R.id.txtAdress);
-                EditText mail = getView().findViewById(R.id.txtMail);
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                String json = new String(error.networkResponse.data);
+                                json = trimMessage(json, "message");
+                                Log.e("", "onErrorResponse: " + json);
+                            }
+                        });
+
+// Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
 
 
-                Map<String, String> params = new HashMap<>();
-                params.put("userName", "android1234567");
-                params.put("password", "androidTest12");
-                params.put("firstName", firstName.getText().toString());
-                params.put("lastName", lastName.getText().toString());
-                params.put("age", alter.getText().toString());
-                params.put("gender", "male");
-                params.put("emaila", addresse.getText().toString());
-                params.put("note", "keine Notiz");
-                params.put("placeOfResidence", mail.getText().toString());
-                params.put("maxGraduation", "kein Abschluss");
+        }
 
-                return params;
-            }
-        };
+    public String trimMessage(String json, String key){
+        String trimmedString = null;
 
-        // Access the RequestQueue through your singleton class.
-        HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
+        try{
+            JSONObject obj = new JSONObject(json);
+            trimmedString = obj.getString(key);
+        } catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return trimmedString;
     }
 
+
+
+
+
+
+    public JSONObject getAuthenticationJsonb() {
+        JSONObject authentication = new JSONObject();
+        try {
+            authentication.put("userName", MainActivity.getUserName());
+            authentication.put("password", MainActivity.getPassword());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return authentication;
+    }
 
     @OnClick(R.id.btnHttpTest)
     public void htttpRequestTest() {
@@ -351,8 +390,9 @@ public class profileFragment extends android.app.Fragment implements
                             currentUser.age = Integer.parseInt(response.getString("dayOfBirth"));
                             currentUser.email = response.getString("email");
                             currentUser.maxGraduation = response.getString("maxGraduation");
-                           // currentUser.placeOfResidence = response.getString("placeOfResidence");
+                            currentUser.placeOfResidence = response.getString("placeOfResidence");
                             currentUser.note = response.getString("description");
+                            currentUser.gender = response.getString("gender");
 
                             SetUserInfo();
                         } catch (JSONException e) {
@@ -374,17 +414,24 @@ public class profileFragment extends android.app.Fragment implements
     }
 
     private void SetUserInfo(){
-        EditText firstName = getView().findViewById(R.id.txtFirstName);
-        EditText lastName = getView().findViewById(R.id.textLastName);
-        EditText alter = getView().findViewById(R.id.txtAlter);
-        EditText addresse = getView().findViewById(R.id.txtAdress);
-        EditText mail = getView().findViewById(R.id.txtMail);
+
+        EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
+        EditText lastName = getView().findViewById(R.id.txtProfileLastName);
+        EditText geschlecht = getView().findViewById(R.id.txtProfileLastGender);
+        EditText alter = getView().findViewById(R.id.txtProfileAge);
+        EditText wohnort = getView().findViewById(R.id.txtProfileAdress);
+        EditText mail = getView().findViewById(R.id.txtProfileMail);
+        EditText akademischGrad = getView().findViewById(R.id.txtProfileGraduation);
+        EditText note = getView().findViewById(R.id.txtProfileNotiz);
 
         firstName.setText(currentUser.firstName);
         lastName.setText(currentUser.lastName);
         alter.setText("" + currentUser.age);
-        addresse.setText(currentUser.placeOfResidence);
+        wohnort.setText(currentUser.placeOfResidence);
         mail.setText(currentUser.email);
+        geschlecht.setText(currentUser.gender);
+        akademischGrad.setText(currentUser.maxGraduation);
+        note.setText(currentUser.note);
     }
 
 }
