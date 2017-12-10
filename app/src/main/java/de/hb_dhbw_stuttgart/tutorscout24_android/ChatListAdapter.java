@@ -21,8 +21,7 @@ public class ChatListAdapter extends BaseAdapter {
 
     private ArrayList<ChatMessage> chatMessages;
     private Context context;
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("HH:mm");
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT2 = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("EE HH:mm");
 
 
     public ChatListAdapter(ArrayList<ChatMessage> chatMessages, Context context) {
@@ -52,28 +51,6 @@ public class ChatListAdapter extends BaseAdapter {
         ChatMessage message = chatMessages.get(position);
         ViewHolder1 holder1;
         ViewHolder2 holder2;
-        ViewHolder3 holder3;
-
-      /*  if(chatMessages.indexOf(message) != 0){
-            Calendar cal1 = Calendar.getInstance();
-            Calendar cal2 = Calendar.getInstance();
-            cal1.setTime(message.getMessageTime());
-            cal2.setTime((chatMessages.get(chatMessages.indexOf(message) -1).getMessageTime()));
-
-            boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-            if (!sameDay){
-                v = LayoutInflater.from(context).inflate(R.layout.chat_date, null, false);
-                holder3 = new ViewHolder3();
-
-                holder3.dateTextView = (TextView) v.findViewById(R.id.chat_date);
-
-                holder3.dateTextView.setText(SIMPLE_DATE_FORMAT2.format(message.getMessageTime()));
-                v.setTag(holder3);
-
-            }
-        }*/
-
 
         if (message.getUserType() == UserType.OTHER) {
             if (convertView == null) {
