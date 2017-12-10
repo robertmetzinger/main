@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    public String chatUser = "kein User";
+    public String chatUser = null;
 
     private MainActivity that = this;
     private MapFragment mapFragment;

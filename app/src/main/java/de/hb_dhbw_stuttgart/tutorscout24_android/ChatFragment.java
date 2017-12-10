@@ -83,6 +83,8 @@ public class ChatFragment extends android.app.Fragment {
         ButterKnife.bind(this, view);
 
 
+        setUser(((MainActivity)getActivity()).chatUser, view);
+
         // AndroidUtilities.statusBarHeight = getStatusBarHeight();
 
         chatEditText1 = view.findViewById(R.id.chat_edit_text1);
@@ -103,35 +105,21 @@ public class ChatFragment extends android.app.Fragment {
 
         sortMessages();
 
-
-        setUser(((MainActivity)getActivity()).chatUser, view);
-
-
         return view;
     }
-
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
             // loadSentMessages();
-
            // sendMessageBackend("Dies ist eine neue Nachricht.", "PatrickAndroid2");
-
     }
-
-
 
     @Override
     public void onDetach() {
         super.onDetach();
-
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -158,9 +146,9 @@ public class ChatFragment extends android.app.Fragment {
     }
 
     public void setUser(String user, View view){
-        TextView textView = view.findViewById(R.id.txtuserName);
-        textView.setText(user);
-
+        if(user == null || view == null){
+            return;
+        }
         chatPartner = user;
         ((MainActivity)getActivity()).changeTitle(user);
 
@@ -198,11 +186,16 @@ public class ChatFragment extends android.app.Fragment {
                    if(error == null){
                        return;
                    }
-                    NetworkResponse response = error.networkResponse;
+                   try{
+                       NetworkResponse response = error.networkResponse;
 
-                    String json = new String(response.data);
-                    json = trimMessage(json, "message");
-                    Log.e("", "onErrorResponse: " + json );
+                       String json = new String(response.data);
+                       json = trimMessage(json, "message");
+                       Log.e("", "onErrorResponse: " + json );
+                   }catch (NullPointerException e){
+                       Toast.makeText(getContext(), "Fehler beim senden der Nachricht", Toast.LENGTH_LONG);
+                   }
+
 
                 }
             }) {
@@ -275,9 +268,10 @@ public class ChatFragment extends android.app.Fragment {
                         try {
                             Date d = f.parse(string_date);
                             chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.SELF, d,MainActivity.getUserName(),toUserId ));
+                            Log.e("messages", "stringToMessage: Messageload send: " + o.getString("messageId"));
 
 
-                           // sendMessageFrontend(o.getString("text"), UserType.SELF, d);
+                            // sendMessageFrontend(o.getString("text"), UserType.SELF, d);
 
                         } catch (ParseException e) {
                             e.printStackTrace();
@@ -343,11 +337,15 @@ public class ChatFragment extends android.app.Fragment {
                         try {
                             JSONObject o = (JSONObject) response.get(i);
 
-
+                            boolean exists = false;
                             for (ChatMessage msgCompare :chatMessages) {
                                 if (msgCompare.getMessageId() == Integer.parseInt(o.getString("messageId")) ){
-                                    continue;
+                                    exists = true;
+                                    break;
                                 }
+                            }
+                            if(exists){
+                                continue;
                             }
 
                             String fromUserId = o.getString("fromUserId");
@@ -358,8 +356,9 @@ public class ChatFragment extends android.app.Fragment {
                             String string_date = o.getString("datetime");
                             Date d = f.parse(string_date);
                             chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.OTHER, d, fromUserId, MainActivity.getUserName() ));
+                            Log.e("messages", "stringToMessage: Messageload recieved: " + o.getString("messageId"));
 
-                           //- sendMessageFrontend(o.getString("text"), UserType.OTHER, d);
+                            //- sendMessageFrontend(o.getString("text"), UserType.OTHER, d);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -462,6 +461,7 @@ public class ChatFragment extends android.app.Fragment {
             if(sb.toString().isEmpty()){
                 return;
             }
+            Toast.makeText(getContext(),"Lade Nachrichten", Toast.LENGTH_SHORT).show();
             stringToMessage(sb.toString());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -498,11 +498,11 @@ public class ChatFragment extends android.app.Fragment {
 
                 Date d = f.parse(messageMap.get("datetime"));
                 chatMessages.add(new ChatMessage(Integer.parseInt(messageMap.get("messageId")), messageMap.get("messageText"), userType,d, messageMap.get("fromUserId"), messageMap.get("toUserId")));
+                Log.e("messages", "stringToMessage: Messageload lokal: " + messageMap.get("messageId"));
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.i("messages", "stringToMessage: Messagesload successfull");
         }
     }
 
