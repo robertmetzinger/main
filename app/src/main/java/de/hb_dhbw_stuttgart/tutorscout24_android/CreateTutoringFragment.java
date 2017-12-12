@@ -63,9 +63,13 @@ public class CreateTutoringFragment extends Fragment implements
 
     View rootView;
     GoogleApiClient googleApiClient;
+    private int mode = 0;
     private double gpsBreitengrad;
     private double gpsLaengengrad;
+    EditText subjectTxt;
+    EditText infoTxt;
     private SearchView locationSearch;
+    Spinner durationSpinner;
     private SimpleCursorAdapter suggestionsAdapter;
     String[] columns = new String[]{"adress", BaseColumns._ID};
     Geocoder geocoder;
@@ -96,16 +100,18 @@ public class CreateTutoringFragment extends Fragment implements
         super.onCreate(savedInstanceState);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_create_offer, container, false);
+        rootView = inflater.inflate(R.layout.fragment_create_tutoring, container, false);
         ButterKnife.bind(this, rootView);
         geocoder = new Geocoder(getContext(), Locale.getDefault());
         addItemsToSpinner();
         setUpLocationTextField();
+        subjectTxt = (EditText) rootView.findViewById(R.id.subjectTxt);
+        infoTxt = (EditText) rootView.findViewById(R.id.infoTxt);
+        durationSpinner = (Spinner) rootView.findViewById(R.id.spinnerDuration);
 
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(getContext())
@@ -246,23 +252,64 @@ public class CreateTutoringFragment extends Fragment implements
     public void showConfirmationDialog() {
         new AlertDialog.Builder(getContext())
                 .setTitle("")
-                .setMessage("Willst du wirklich dieses Angebot erstellen?")
+                .setMessage("Willst du wirklich dieses Tutoring erstellen?")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        createOffer();
+                        if (mode == 0) createRequest();
+                        else if (mode == 1) createOffer();
                     }
                 })
                 .setNegativeButton("Nein", null).show();
     }
 
+    public void createRequest() {
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/createRequest";
+
+        String subject = subjectTxt.getText().toString();
+        String text = infoTxt.getText().toString();
+        int duration = Integer.parseInt(durationSpinner.getSelectedItem().toString());
+        LatLng latLng = getLatLngFromSearchField();
+        double latitude = latLng.latitude;
+        double longitude = latLng.longitude;
+
+        //erstelle JSON Object für den Request
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("subject", subject);
+            requestBody.put("text", text);
+            requestBody.put("duration", duration);
+            requestBody.put("latitude", latitude);
+            requestBody.put("longitude", longitude);
+            requestBody.put("authentication", getAuthenticationJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("Request Body", requestBody.toString());
+
+        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.POST, url, requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Toast.makeText(getContext(), "Tutoring wurde erfolgreich erstellt", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //String json = new String(error.networkResponse.data);
+                        //json = trimMessage(json, "message");
+                        //Log.e("", "onErrorResponse: " + json);
+                    }
+                });
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(request);
+    }
+
     public void createOffer() {
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/createOffer";
 
-        EditText subjectTxt = (EditText) rootView.findViewById(R.id.subjectTxt);
-        EditText infoTxt = (EditText) rootView.findViewById(R.id.infoTxt);
-        Spinner durationSpinner = (Spinner) rootView.findViewById(R.id.spinnerDuration);
         String subject = subjectTxt.getText().toString();
         String text = infoTxt.getText().toString();
         int duration = Integer.parseInt(durationSpinner.getSelectedItem().toString());

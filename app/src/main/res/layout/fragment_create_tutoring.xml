@@ -18,6 +18,7 @@
             android:layout_marginTop="32dp"
             android:background="@drawable/trans_white_background"
             android:fillViewport="true"
+            android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -27,14 +28,67 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
                 android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Erstelle ein"
+                    android:textSize="18sp" />
+
+                <co.ceryle.segmentedbutton.SegmentedButtonGroup
+                    android:id="@+id/buttonGroupCreate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:elevation="2dp"
+                    app:sbg_animateSelector="bounce"
+                    app:sbg_animateSelectorDuration="750"
+                    app:sbg_backgroundColor="@color/white"
+                    app:sbg_backgroundDrawable="@drawable/gradient_drawable"
+                    app:sbg_borderColor="@color/colorPrimary"
+                    app:sbg_borderSize="1dp"
+                    app:sbg_draggable="false"
+                    app:sbg_position="0"
+                    app:sbg_radius="2dp"
+                    app:sbg_ripple="true"
+                    app:sbg_rippleColor="@color/blue_300"
+                    app:sbg_selectorBackgroundDrawable="@drawable/gradient_drawable_selector"
+                    app:sbg_selectorColor="@color/colorPrimary">
+
+                    <co.ceryle.segmentedbutton.SegmentedButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="2dp"
+                        android:paddingTop="2dp"
+                        app:sb_text="Request"
+                        app:sb_textColor="@color/colorPrimary"
+                        app:sb_textColor_onSelection="@color/white"
+                        app:sb_textSize="18dp"
+                        app:sb_textTypefacePath="fonts/neuropol.ttf" />
+
+                    <co.ceryle.segmentedbutton.SegmentedButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="2dp"
+                        android:paddingTop="2dp"
+                        app:sb_text="Offer"
+                        app:sb_textColor="@color/colorPrimary"
+                        app:sb_textColor_onSelection="@color/white"
+                        app:sb_textSize="18dp"
+                        app:sb_textTypefacePath="fonts/neuropol.ttf" />
+
+                </co.ceryle.segmentedbutton.SegmentedButtonGroup>
 
                 <EditText
                     android:id="@+id/subjectTxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:ems="10"
                     android:hint="Fach"
                     android:inputType="textAutoComplete" />
@@ -48,7 +102,7 @@
                     android:hint="Beschreibung"
                     android:inputType="textAutoComplete|textMultiLine"
                     android:maxLines="5"
-                    android:minLines="5" />
+                    android:minLines="2" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -91,7 +145,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
-                        android:text="Dauer des Angebots in Tagen"
+                        android:text="Dauer des Tutorings in Tagen"
                         android:textSize="18sp" />
 
                     <Spinner
@@ -104,25 +158,25 @@
 
                 </LinearLayout>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <Button
-                        android:id="@+id/btnCreateOffer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="20dp"
-                        android:background="@drawable/login_buttonstyle"
-                        android:gravity="center"
-                        android:text="Erstellen" />
-
-                </RelativeLayout>
-
             </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnCreateOffer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/login_buttonstyle"
+                    android:gravity="center"
+                    android:text="Erstellen" />
+
+            </RelativeLayout>
         </ScrollView>
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>
