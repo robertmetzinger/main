@@ -52,6 +52,7 @@ public class feedItemAdapter extends BaseAdapter {
         holder.creatorTextView = (TextView) feedItemView.findViewById(R.id.creatorTxt);
         holder.subjectTextView = (TextView) feedItemView.findViewById(R.id.subjectTxt);
         holder.infoTextView = (TextView) feedItemView.findViewById(R.id.infoTxt);
+        holder.distanceTextView = (TextView) feedItemView.findViewById(R.id.distanceTxt);
         holder.creationDateTextView = (TextView) feedItemView.findViewById(R.id.creationDateTxt);
         holder.expirationDateTextView = (TextView) feedItemView.findViewById(R.id.expirationDateTxt);
         holder.profilePic = (ImageView) feedItemView.findViewById(R.id.profilePic);
@@ -63,8 +64,8 @@ public class feedItemAdapter extends BaseAdapter {
         holder.infoTextView.setText(item.getText());
         holder.creationDateTextView.setText(formatDateString(item.getCreationDate()));
         holder.expirationDateTextView.setText(formatDateString(item.getExpirationDate()));
+        if (item.getDistanceKm() != null) holder.distanceTextView.setText(String.format("%.1f", item.getDistanceKm()) + " km");
 //        holder.profilePic.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.default_user_pic, null));
-
 
         return feedItemView;
     }
@@ -85,6 +86,7 @@ public class feedItemAdapter extends BaseAdapter {
         public TextView creatorTextView;
         public TextView subjectTextView;
         public TextView infoTextView;
+        public TextView distanceTextView;
         public TextView creationDateTextView;
         public TextView expirationDateTextView;
         public ImageView profilePic;

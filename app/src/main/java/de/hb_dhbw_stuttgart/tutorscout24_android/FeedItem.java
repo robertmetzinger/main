@@ -14,9 +14,9 @@ public class FeedItem {
     private String expirationDate;
     private Double latitude;
     private Double longitude;
-    private String distanceKm;
+    private Double distanceKm;
 
-    public FeedItem(String tutoringId, String creationDate, String userName, String subject, String text, String expirationDate, Double latitude, Double longitude, String distanceKm) {
+    public FeedItem(String tutoringId, String creationDate, String userName, String subject, String text, String expirationDate, Double latitude, Double longitude, Double distanceKm) {
         this.tutoringId = tutoringId;
         this.creationDate = creationDate;
         this.userName = userName;
@@ -60,7 +60,7 @@ public class FeedItem {
         return longitude;
     }
 
-    public String getDistanceKm() {
+    public Double getDistanceKm() {
         return distanceKm;
     }
 }

@@ -33,6 +33,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.ceryle.segmentedbutton.SegmentedButtonGroup;
 
 /**
  * Created by Robert on 06.12.2017.
@@ -46,10 +47,12 @@ public class SearchDialogFragment extends DialogFragment {
     private Context context;
     private Activity activity;
     private AlertDialog.Builder builder;
+    private int mode = 0;
     private String location;
+    private String rangeKm;
     private double gpsBreitengrad;
     private double gpsLaengengrad;
-    private String rangeKm;
+    private SegmentedButtonGroup segmentedButtonGroup;
     private SearchView feedSearchView;
     private Spinner rangeSpinner;
     private SimpleCursorAdapter suggestionsAdapter;
@@ -97,15 +100,24 @@ public class SearchDialogFragment extends DialogFragment {
                 parent.setGpsBreitengrad(gpsBreitengrad);
                 parent.setGpsLaengengrad(gpsLaengengrad);
                 parent.setRangeKm(Integer.parseInt(rangeKm));
-                parent.getTutoringOffersFromBackend();
+                if (mode == 0) parent.getTutoringOffersFromBackend();
+                else if (mode== 1) parent.getTutoringRequestsFromBackend();
+            }
+        });
+        segmentedButtonGroup.setOnClickedButtonListener(new SegmentedButtonGroup.OnClickedButtonListener() {
+            @Override
+            public void onClickedButton(int position) {
+                mode = position;
             }
         });
     }
 
     public void setUpSearchDialog(View dialogView) {
+        segmentedButtonGroup = (SegmentedButtonGroup) dialogView.findViewById(R.id.buttonGroupCreate);
         feedSearchView = (SearchView) dialogView.findViewById(R.id.feed_search_view);
         rangeSpinner = (Spinner) dialogView.findViewById(R.id.range_spinner);
         addItemsToSpinner();
+        segmentedButtonGroup.setPosition(mode);
         if (location != null) feedSearchView.setQuery(location, false);
         if (rangeKm != null) rangeSpinner.setPrompt(rangeKm);
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
@@ -191,8 +203,7 @@ public class SearchDialogFragment extends DialogFragment {
                     adressText += address.getAddressLine(line);
                     if (line != address.getMaxAddressLineIndex()) adressText += ", ";
                 }
-                SearchView t = getView().findViewById(R.id.feed_search_view);
-                t.setQuery(adressText, false);
+                feedSearchView.setQuery(adressText, false);
             }
         } catch (IOException e) {
             e.printStackTrace();
