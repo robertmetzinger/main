@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    public String chatUser = "kein User";
+    public String chatUser = null;
 
     private MainActivity that = this;
     private MapFragment mapFragment;
@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements
         titleView = findViewById(R.id.toolbar_title);
 
 
+
         loginFragment = new LoginFragment();
         ChangeFragment(loginFragment, "Login");
 
@@ -174,10 +175,10 @@ public class MainActivity extends AppCompatActivity implements
     public void ChangeFragment(Fragment fragment, String name) {
 
         transaction = getFragmentManager().beginTransaction();
-        transaction.replace(((ViewGroup) findViewById(R.id.contentFragment).getParent()).getId(), fragment);
+         transaction.replace((findViewById(R.id.contentFragment)).getId(), fragment);
 
         // Alternativ (neues Fragment wird nur drüber gesetzt (anderes evtl Fehlerhaft)
-        // transaction.replace(R.id.contentFragment, fragment);
+        // transaction.replace(R.id.mainFragment, fragment);
 
         transaction.addToBackStack(name);
         transaction.commit();

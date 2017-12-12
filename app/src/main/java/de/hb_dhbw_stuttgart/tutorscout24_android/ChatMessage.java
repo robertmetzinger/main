@@ -1,5 +1,9 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -9,19 +13,18 @@ public class ChatMessage {
 
     private String messageText;
     private UserType userType;
-    public Date datetime;
     private String fromUserId;
     public String toUserId;
-    private long messageTime;
+    private Date messageTime;
+    private int messageId;
 
 
 
 
-    public long getMessageTime() {
-        return messageTime;
+    public Date getMessageTime() {        return messageTime;
     }
 
-    public void setMessageTime(long messageTime) {
+    public void setMessageTime(Date messageTime) {
         this.messageTime = messageTime;
     }
 
@@ -41,7 +44,6 @@ public class ChatMessage {
         this.fromUserId = fromUserId;
     }
 
-
     public void setMessageText(String messageText) {
         this.messageText = messageText;
     }
@@ -49,6 +51,14 @@ public class ChatMessage {
     public void setUserType(UserType userType) {
         this.userType = userType;
     }
+
+    public int getMessageId() { return messageId; }
+
+    public void sentMessageId(int messageId) {
+        this.messageId = messageId;
+    }
+
+
 
 
     public String getMessageText() {
@@ -60,4 +70,28 @@ public class ChatMessage {
         return userType;
     }
 
+    public ChatMessage(int messageId, String messageText, UserType userType,Date messageTime, String fromUserId, String toUserId){
+        this.messageId = messageId;
+        this.messageText = messageText;
+        this.userType = userType;
+        this.fromUserId = fromUserId;
+        this.messageTime = messageTime;
+        this.toUserId = toUserId;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public String toString(){
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        StringBuilder chatMessage = new StringBuilder();
+        chatMessage.append("|" + System.lineSeparator());
+        chatMessage.append("messageId~~:~~"+ getMessageId() + "~~#~~");
+        chatMessage.append("datetime~~:~~"+ f.format(getMessageTime()) + "~~#~~");
+        chatMessage.append("fromUserId~~:~~"+ getFromUserId() + "~~#~~");
+        chatMessage.append("toUserId~~:~~"+ getToUserId() + "~~#~~");
+        chatMessage.append("messageText~~:~~"+ getMessageText() + "~~#~~");
+        chatMessage.append("userType~~:~~"+ getUserType().getFieldDescription() + "~~#~~");
+
+        return chatMessage.toString();
+    }
 }

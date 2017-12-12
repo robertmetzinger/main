@@ -24,10 +24,12 @@ public class MyJsonObjectRequest extends JsonObjectRequest {
 
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+
+
         try {
             String json = new String(response.data, "UTF-8");
 
-            if (json.length() == 0) {
+            if (json.length() != 0) {
                 JSONObject jsResponse = new JSONObject().put("response", "success");
                 return Response.success(jsResponse, HttpHeaderParser.parseCacheHeaders(response));
             } else {

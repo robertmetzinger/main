@@ -25,55 +25,83 @@
                 android:orientation="vertical">
 
                 <EditText
-                    android:id="@+id/txtFirstName"
+                    android:id="@+id/txtProfileFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Vorname"
-                    android:inputType="textPersonName"
                     android:layout_marginLeft="40dp"
                     android:layout_marginRight="40dp"
-                    android:layout_marginTop="10dp"/>/>
+                    android:layout_marginTop="10dp"
+                    android:ems="10"
+                    android:hint="Vorname"
+                    android:inputType="textPersonName" />/>
 
                 <EditText
-                    android:id="@+id/textLastName"
+                    android:id="@+id/txtProfileLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
                     android:ems="10"
                     android:hint="Nachname"
-                    android:inputType="textPersonName"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"/>
+                    android:inputType="textPersonName" />
 
                 <EditText
-                    android:id="@+id/txtAlter"
+                    android:id="@+id/txtProfileLastGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Geschlecht"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/txtProfileAge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
                     android:ems="10"
                     android:hint="Alter"
-                    android:inputType="textPersonName"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"/>
+                    android:inputType="textPersonName" />
 
                 <EditText
-                    android:id="@+id/txtAdress"
+                    android:id="@+id/txtProfileAdress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
                     android:ems="10"
                     android:hint="Adresse"
-                    android:inputType="textPersonName"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"/>
+                    android:inputType="textPersonName" />
 
                 <EditText
-                    android:id="@+id/txtMail"
+                    android:id="@+id/txtProfileMail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Mail"
+                    android:inputType="textEmailAddress" />
+
+                <EditText
+                    android:id="@+id/txtProfileGraduation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Akademischer Abschluss"
+                    android:inputType="textEmailAddress" />
+
+                <EditText
+                    android:id="@+id/txtProfileNotiz"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Mail"
-                    android:inputType="textEmailAddress"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"/>
+                    android:hint="Notiz"
+                    android:inputType="textMultiLine" />
 
                 <ImageView
                     android:id="@+id/imgViewProfile"

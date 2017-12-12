@@ -22,6 +22,14 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -171,8 +179,7 @@ public class KontakteFragment extends android.app.Fragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                kontakte.add(input.getText().toString());
-                listAdapter.notifyDataSetChanged();
+                getUserInfo(input.getText().toString());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -183,6 +190,55 @@ public class KontakteFragment extends android.app.Fragment {
         });
 
         builder.show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void getUserInfo(final String user) {
+
+        JSONObject js = new JSONObject();
+
+        try {
+            js.put("userToFind", user);
+            js.put("authentication", getAuthenticationJsonb());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/userInfo";
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.POST, usercreateURL, js, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        kontakte.add(user);
+                        listAdapter.notifyDataSetChanged();
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(), "Kontakt konnte nicht gefunden werden", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
+    }
+
+    public JSONObject getAuthenticationJsonb() {
+        JSONObject authentication = new JSONObject();
+        try {
+            authentication.put("userName", MainActivity.getUserName());
+            authentication.put("password", MainActivity.getPassword());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return authentication;
     }
 
     @OnClick(R.id.btnDeleteKontakt)

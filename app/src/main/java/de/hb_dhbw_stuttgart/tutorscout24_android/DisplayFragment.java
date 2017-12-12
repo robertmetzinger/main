@@ -331,7 +331,7 @@ public class DisplayFragment extends Fragment implements
                 String expirationDate = object.getString("expirationDate");
                 Double latitude = new Double(object.getString("latitude"));
                 Double longitude = new Double(object.getString("longitude"));
-                Double distanceKm = new Double(object.getString("distanceKm"));
+                String distanceKm = object.getString("distanceKm");
                 FeedItem item = new FeedItem(tutoringId, creationDate, userName, subject, text, expirationDate, latitude, longitude, distanceKm);
                 feedArrayList.add(item);
             }
@@ -342,7 +342,7 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
-    public void showTutoringsInFeedAndMap(final ArrayList<FeedItem> feedArrayList) {
+    public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
@@ -399,6 +399,7 @@ public class DisplayFragment extends Fragment implements
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
 /*                String json = new String(error.networkResponse.data);
                 json = trimMessage(json, "message");
                 Log.e("", "onErrorResponse: " + json);
