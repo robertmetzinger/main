@@ -158,25 +158,25 @@
 
                 </LinearLayout>
 
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btnCreateOffer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/login_buttonstyle"
+                        android:gravity="center"
+                        android:text="Erstellen" />
+
+                </RelativeLayout>
             </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/btnCreateOffer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/login_buttonstyle"
-                    android:gravity="center"
-                    android:text="Erstellen" />
-
-            </RelativeLayout>
         </ScrollView>
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>
