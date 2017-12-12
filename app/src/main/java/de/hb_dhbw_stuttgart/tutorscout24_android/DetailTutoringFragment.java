@@ -1,17 +1,26 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 /**
@@ -22,7 +31,11 @@ import java.util.Date;
  * Use the {@link DetailTutoringFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class DetailTutoringFragment extends Fragment {
+
+    private LayoutInflater inflater;
 
     private String userName;
     private String tutoringId;
@@ -62,7 +75,9 @@ public class DetailTutoringFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        this.inflater = inflater;
         View view = inflater.inflate(R.layout.fragment_detail_tutoring, container, false);
+        ButterKnife.bind(this,view);
 
         TextView userTitle = (TextView) view.findViewById(R.id.titleTxt);
         TextView subj = (TextView) view.findViewById(R.id.subjectTxt);
@@ -94,6 +109,27 @@ public class DetailTutoringFragment extends Fragment {
         }
         return dateString;
     }
+
+    @OnClick(R.id.btnContactUser)
+    public void OnContactButtonClick() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View dialogView = inflater.inflate(R.layout.contact_dialog, null);
+        builder.setView(dialogView);
+        final EditText messageTxt = dialogView.findViewById(R.id.chat_edit_text2);
+        ImageView sendBtn = (ImageView) dialogView.findViewById(R.id.enter_chat1);
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences settings = getContext().getSharedPreferences("KontaktListe", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("Kontakte",userName);
+                // Commit the edits!
+                editor.commit();
+            }
+        });
+        builder.show();
+    }
+
 
     @Override
     public void onAttach(Context context) {
