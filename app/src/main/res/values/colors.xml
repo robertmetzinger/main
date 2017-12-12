@@ -13,6 +13,7 @@
     <color name="background_tab_pressed">#6633B5E5</color>
 
     <color name="red_500">#F44336</color>
+    <color name="light_green_500">#8BC34A</color>
     <color name="green_500">#4CAF50</color>
     <color name="deep_orange_100">#FFCCBC</color>
     <color name="deep_orange_900">#BF360C</color>

@@ -2,6 +2,7 @@ package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CursorAdapter;
@@ -329,7 +331,7 @@ public class DisplayFragment extends Fragment implements
                 String expirationDate = object.getString("expirationDate");
                 Double latitude = new Double(object.getString("latitude"));
                 Double longitude = new Double(object.getString("longitude"));
-                String distanceKm = object.getString("distanceKm");
+                Double distanceKm = new Double(object.getString("distanceKm"));
                 FeedItem item = new FeedItem(tutoringId, creationDate, userName, subject, text, expirationDate, latitude, longitude, distanceKm);
                 feedArrayList.add(item);
             }
@@ -340,13 +342,24 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
-    public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
+    public void showTutoringsInFeedAndMap(final ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
+        feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                FeedItem item = feedArrayList.get(position);
+                DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
+                detailTutoringFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getDistanceKm(),item.getCreationDate(),item.getExpirationDate());
+                ((MainActivity)getActivity()).ChangeFragment(detailTutoringFragment,"DetailTutoring");
+                return false;
+            }
+        });
         swipeContainer.setRefreshing(false);
 
+        googleMap.clear();
         Marker currentMarker;
         for (FeedItem item : feedArrayList) {
             String tutoringId = item.getTutoringId();
@@ -356,6 +369,8 @@ public class DisplayFragment extends Fragment implements
             currentMarker = googleMap.addMarker(new MarkerOptions().position(pos).title(userName).snippet(subject));
             markerTutoringIdHashMap.put(currentMarker, tutoringId);
         }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(gpsBreitengrad, gpsLaengengrad)));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
     }
 
     public void getTutoringOffersFromBackend() {
@@ -384,10 +399,47 @@ public class DisplayFragment extends Fragment implements
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String json = new String(error.networkResponse.data);
+/*                String json = new String(error.networkResponse.data);
                 json = trimMessage(json, "message");
                 Log.e("", "onErrorResponse: " + json);
+*/
+            }
+        });
 
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
+    }
+
+    public void getTutoringRequestsFromBackend() {
+
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/requests";
+
+        //erstelle JSON Object für den Request
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("latitude", gpsBreitengrad);
+            requestBody.put("longitude", gpsLaengengrad);
+            requestBody.put("rangeKm", rangeKm);
+            requestBody.put("rowLimit", rowLimit);
+            requestBody.put("rowOffset", rowOffset);
+            requestBody.put("authentication", getAuthenticationJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                ArrayList<FeedItem> feedArrayList = loadData(response);
+                showTutoringsInFeedAndMap(feedArrayList);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+/*                String json = new String(error.networkResponse.data);
+                json = trimMessage(json, "message");
+                Log.e("", "onErrorResponse: " + json);
+*/
             }
         });
 
