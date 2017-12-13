@@ -188,9 +188,7 @@ public class MainActivity extends AppCompatActivity implements
         loginFragment = new LoginFragment();
         changeFragment(loginFragment, "Login");
 
-        getWindow().setBackgroundDrawableResource(R.drawable.background_learning);
-
-
+        getWindow().setBackgroundDrawableResource(R.drawable.background_screen_small);
 
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         exec.scheduleAtFixedRate(new Runnable() {
@@ -523,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_stat_chat_bubble)
                         .setContentTitle("Tutorscout")
-                        .setContentText("Sie haben eine neue Nachricht.");
+                        .setContentText("Neue Nachricht von: " + chatUser);
 // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -561,6 +559,16 @@ public class MainActivity extends AppCompatActivity implements
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                for(int i = 0; i < response.length(); i++) {
+
+                    try {
+                        JSONObject o = (JSONObject) response.get(i);
+                        chatUser = o.getString("fromuserid");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
                notification();
             }
 
