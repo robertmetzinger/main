@@ -47,6 +47,7 @@ import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.ceryle.segmentedbutton.SegmentedButtonGroup;
 
 
 /**
@@ -81,15 +82,6 @@ public class CreateTutoringFragment extends Fragment implements
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CreateTutoringFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CreateTutoringFragment newInstance(String param1, String param2) {
         CreateTutoringFragment fragment = new CreateTutoringFragment();
         return fragment;
@@ -112,6 +104,14 @@ public class CreateTutoringFragment extends Fragment implements
         subjectTxt = (EditText) rootView.findViewById(R.id.subjectTxt);
         infoTxt = (EditText) rootView.findViewById(R.id.infoTxt);
         durationSpinner = (Spinner) rootView.findViewById(R.id.spinnerDuration);
+
+        SegmentedButtonGroup group = rootView.findViewById(R.id.buttonGroupCreate);
+        group.setOnClickedButtonListener(new SegmentedButtonGroup.OnClickedButtonListener() {
+            @Override
+            public void onClickedButton(int position) {
+                mode = position;
+            }
+        });
 
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(getContext())
@@ -292,7 +292,7 @@ public class CreateTutoringFragment extends Fragment implements
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Toast.makeText(getContext(), "Tutoring wurde erfolgreich erstellt", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Anfrage wurde erfolgreich erstellt", Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
