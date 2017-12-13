@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,8 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,17 +35,26 @@ import com.google.android.gms.maps.MapFragment;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public String chatUser = null;
+    private static ArrayList<String> kontakte;
 
     private MainActivity that = this;
     private MapFragment mapFragment;
     FragmentTransaction transaction;
     TextView titleView;
+
+    //TODO rm
+    KontakteFragment kontateFragment;
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -91,28 +99,28 @@ public class MainActivity extends AppCompatActivity implements
                     titleView.setText("Tutorien");
 
                     DisplayFragment displayFragment = new DisplayFragment();
-                    ChangeFragment(displayFragment, "Display");
+                    changeFragment(displayFragment, "Display");
                     return true;
 
                 case R.id.navigation_tutorien:
                     titleView.setText("Eigene Tutorien");
 
                     MyTutoringsFragment myTutoringsFragment = new MyTutoringsFragment();
-                    ChangeFragment(myTutoringsFragment, "MyTutorings");
+                    changeFragment(myTutoringsFragment, "MyTutorings");
                     return true;
 
                 case R.id.navigation_create:
                     titleView.setText("Tutorium erstellen");
 
                     CreateTutoringFragment CreateTutoringFragment = new CreateTutoringFragment();
-                    ChangeFragment(CreateTutoringFragment, "CreateOffer");
+                    changeFragment(CreateTutoringFragment, "CreateOffer");
                     return true;
 
                 case R.id.navigation_notifications:
                     titleView.setText("Kontakte");
 
-                    KontakteFragment kontateFragment = new KontakteFragment();
-                    ChangeFragment(kontateFragment, "Kontakte");
+                    kontateFragment = new KontakteFragment();
+                    changeFragment(kontateFragment, "Kontakte");
                     return true;
 
                 case R.id.navigation_profile:
@@ -120,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements
                     titleView.setText("Profil");
 
                     Fragment profileFragment = new profileFragment();
-                    ChangeFragment(profileFragment, "Profil");
+                    changeFragment(profileFragment, "Profil");
 
                     return true;
             }
@@ -132,6 +140,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // lade Kontaktliste
+        SharedPreferences settings = getSharedPreferences("KontaktListe"+ userName, 0);
+        String[] defaultString = {"keine Kontakte gefunden"};
+        Set<String> defaultSet = new HashSet<String>(Arrays.asList(defaultString));
+        kontakte = new ArrayList<>();
+        kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -154,10 +170,8 @@ public class MainActivity extends AppCompatActivity implements
         nav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         titleView = findViewById(R.id.toolbar_title);
 
-
-
         loginFragment = new LoginFragment();
-        ChangeFragment(loginFragment, "Login");
+        changeFragment(loginFragment, "Login");
 
         getWindow().setBackgroundDrawableResource(R.drawable.background_learning);
     }
@@ -172,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void ChangeFragment(Fragment fragment, String name) {
+    public void changeFragment(Fragment fragment, String name) {
 
         transaction = getFragmentManager().beginTransaction();
          transaction.replace((findViewById(R.id.contentFragment)).getId(), fragment);
@@ -327,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements
                         if (status.isSuccess()) {
                             // Successfully read the credential without any user interaction, this
                             // means there was only a single credential and the user has auto
-                           // ChangeFragment(new BlankFragment(), "Blank");
+                           // changeFragment(new BlankFragment(), "Blank");
                             loginFragment.processRetrievedCredential(credentialRequestResult.getCredential(), false);
                             Log.d(TAG, "onResult: success");
                         } else if (status.getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
@@ -448,5 +462,32 @@ public class MainActivity extends AppCompatActivity implements
         if(titleView != null && title != null && !title.isEmpty()){
             titleView.setText(title);
         }
+    }
+
+    public ArrayList<String> getKontakte(){
+        SharedPreferences settings = getSharedPreferences("KontaktListe"+ userName, 0);
+        String[] defaultString = {"keine Kontakte gefunden"};
+        Set<String> defaultSet = new HashSet<String>(Arrays.asList(defaultString));
+        kontakte = new ArrayList<>();
+        kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
+        return kontakte;
+    }
+
+
+    public void addKontakt(String kontakt){
+        if(!kontakte.contains(kontakt)){
+            kontakte.add(kontakt);
+        }
+
+        if(kontateFragment != null){
+            kontateFragment.listAdapter.notifyDataSetChanged();
+        }
+
+        SharedPreferences settings = getSharedPreferences("KontaktListe"+ userName, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putStringSet("Kontakte", new HashSet<String>(kontakte));
+
+        // Commit the edits!
+        editor.commit();
     }
 }

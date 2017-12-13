@@ -139,7 +139,7 @@ public class RegistrierenFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
 
         android.app.Fragment blankFragment = new BlankFragment();
-        ((MainActivity) getActivity()).ChangeFragment(blankFragment, "Blank");
+        ((MainActivity) getActivity()).changeFragment(blankFragment, "Blank");
 
     }
 

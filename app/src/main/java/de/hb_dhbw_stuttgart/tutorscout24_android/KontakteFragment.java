@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,21 +28,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 
 
 public class KontakteFragment extends android.app.Fragment {
 
     public static final String PREFS_NAME = "KontaktListe";
 
-    ArrayList<String> kontakte;
+    private ArrayList<String> kontakte;
     ArrayAdapter<String> listAdapter;
     boolean isDeleteEnabled = false;
 
@@ -72,18 +65,10 @@ public class KontakteFragment extends android.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_kontakte, container, false);
         ButterKnife.bind(this, view);
 
-        // Restore preferences
-        SharedPreferences settings = getContext().getSharedPreferences(PREFS_NAME, 0);
+       // Restore preferences
         kontakte = new ArrayList<String>();
-
-        String[] defaultString = {"keine Kontakte gefunden"};
-        Set<String> defaultSet = new HashSet<String>(Arrays.asList(defaultString));
-
-        kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
-
+        kontakte = ((MainActivity)getActivity()).getKontakte();
         setKontakteList(view);
-
-
 
         return view;
     }
@@ -93,28 +78,46 @@ public class KontakteFragment extends android.app.Fragment {
 
         ListView kontakteListView = view.findViewById(R.id.chat_list_view);
 
+        if(kontakteListView == null){
+            return;
+        }
+
         kontakteListView.setOnItemClickListener(new ListView.OnItemClickListener(){
 
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                TextView v = (TextView) view;
+                final TextView v = (TextView) view;
 
                 if(isDeleteEnabled){
-                    deleteKontakt(v);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Sind Sie sicher, dass dieser Kontakt gelöscht werden soll?");
+
+                    // Set up the buttons
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteKontakt(v);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
+
+                    isDeleteEnabled = false;
                     return;
                 }
 
                 Toast.makeText(getContext(), v.getText(), Toast.LENGTH_SHORT).show();
-
                 ChatFragment chatFragment= new ChatFragment();
-
                 ((MainActivity)getActivity()).chatUser = v.getText().toString();
-
-
-                ((MainActivity)getActivity()).ChangeFragment(chatFragment,"Chat");
-
+                ((MainActivity)getActivity()).changeFragment(chatFragment,"Chat");
             }
         });
 
@@ -126,7 +129,9 @@ public class KontakteFragment extends android.app.Fragment {
                         kontakte
                 );
 
-        kontakteListView.setAdapter(listAdapter);
+
+           kontakteListView.setAdapter(listAdapter);
+
     }
 
     @Override
@@ -149,17 +154,19 @@ public class KontakteFragment extends android.app.Fragment {
 
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
-        SharedPreferences settings = getContext().getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
 
+        kontakte = (((MainActivity)getActivity()).getKontakte());
         if(kontakte.contains("keine Kontakte gefunden")){
             kontakte.remove("keine Kontakte gefunden");
         }
 
+        SharedPreferences settings = getContext().getSharedPreferences("KontaktListe"+ MainActivity.getUserName(), 0);
+        SharedPreferences.Editor editor = settings.edit();
         editor.putStringSet("Kontakte", new HashSet<String>(kontakte));
 
         // Commit the edits!
         editor.commit();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -212,7 +219,7 @@ public class KontakteFragment extends android.app.Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        kontakte.add(user);
+                        ((MainActivity)getActivity()).addKontakt(user);
                         listAdapter.notifyDataSetChanged();
 
 

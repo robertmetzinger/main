@@ -1,9 +1,6 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -24,13 +21,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -54,14 +48,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class DisplayFragment extends Fragment implements
@@ -353,7 +345,7 @@ public class DisplayFragment extends Fragment implements
                 FeedItem item = feedArrayList.get(position);
                 DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
                 detailTutoringFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getDistanceKm(),item.getCreationDate(),item.getExpirationDate());
-                ((MainActivity)getActivity()).ChangeFragment(detailTutoringFragment,"DetailTutoring");
+                ((MainActivity)getActivity()).changeFragment(detailTutoringFragment,"DetailTutoring");
                 return false;
             }
         });

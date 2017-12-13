@@ -112,8 +112,6 @@ public class ChatFragment extends android.app.Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-            // loadSentMessages();
-           // sendMessageBackend("Dies ist eine neue Nachricht.", "PatrickAndroid2");
     }
 
     @Override
@@ -319,9 +317,8 @@ public class ChatFragment extends android.app.Fragment {
         return trimmedString;
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void loadRecievedMessages(){
+    public void loadRecievedMessages(){
 
-        final JSONArray[] feedList = new JSONArray[1];
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getReceivedMessages";
 
         //erstelle JSON Object für den Request
@@ -331,11 +328,15 @@ public class ChatFragment extends android.app.Fragment {
             public void onResponse(JSONArray response) {
                 for(int i = 0; i < response.length(); i++) {
 
-
-
                         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                         try {
                             JSONObject o = (JSONObject) response.get(i);
+                            String fromUserId = o.getString("fromUserId");
+
+                            if(!fromUserId.equals(chatPartner)){
+                                ((MainActivity)getActivity()).addKontakt(fromUserId);
+                                continue;
+                            }
 
                             boolean exists = false;
                             for (ChatMessage msgCompare :chatMessages) {
@@ -348,11 +349,6 @@ public class ChatFragment extends android.app.Fragment {
                                 continue;
                             }
 
-                            String fromUserId = o.getString("fromUserId");
-
-                            if(!fromUserId.equals(chatPartner)){
-                                continue;
-                            }
                             String string_date = o.getString("datetime");
                             Date d = f.parse(string_date);
                             chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.OTHER, d, fromUserId, MainActivity.getUserName() ));

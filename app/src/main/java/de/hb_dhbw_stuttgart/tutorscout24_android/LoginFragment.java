@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -123,7 +122,7 @@ public class LoginFragment extends android.app.Fragment {
                 Log.e(TAG, "onResponse: " + response);
                 if (response.contains("200")) {
                     ((MainActivity) getActivity()).EnableNavigation();
-                    ((MainActivity) getActivity()).ChangeFragment(new BlankFragment(), "Blank");
+                    ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
 
                     savePassword();
                 }
@@ -191,7 +190,7 @@ public class LoginFragment extends android.app.Fragment {
         isLockedIn = true;
         ((MainActivity) getActivity()).requestCredentials();
         ((MainActivity) getActivity()).EnableNavigation();
-        ((MainActivity) getActivity()).ChangeFragment(new BlankFragment(), "Blank");
+        ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
     }
 
     @OnClick(R.id.btnRegistrien)
@@ -199,7 +198,7 @@ public class LoginFragment extends android.app.Fragment {
         RegistrierenFragment registrierenFragment = new RegistrierenFragment();
 
 
-        ((MainActivity) getActivity()).ChangeFragment(registrierenFragment, "Registrieren");
+        ((MainActivity) getActivity()).changeFragment(registrierenFragment, "Registrieren");
     }
 
 

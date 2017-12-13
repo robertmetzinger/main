@@ -112,22 +112,11 @@ public class DetailTutoringFragment extends Fragment {
 
     @OnClick(R.id.btnContactUser)
     public void OnContactButtonClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View dialogView = inflater.inflate(R.layout.contact_dialog, null);
-        builder.setView(dialogView);
-        final EditText messageTxt = dialogView.findViewById(R.id.chat_edit_text2);
-        ImageView sendBtn = (ImageView) dialogView.findViewById(R.id.enter_chat1);
-        sendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences settings = getContext().getSharedPreferences("KontaktListe", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("Kontakte",userName);
-                // Commit the edits!
-                editor.commit();
-            }
-        });
-        builder.show();
+        ((MainActivity)getActivity()).addKontakt(userName);
+        ((MainActivity)getActivity()).chatUser = userName;
+
+        ChatFragment chatFragment = new ChatFragment();
+        ((MainActivity)getActivity()).changeFragment(chatFragment, "ChatFragment");
     }
 
 
