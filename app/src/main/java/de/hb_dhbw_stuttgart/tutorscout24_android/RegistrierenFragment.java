@@ -1,15 +1,19 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -21,16 +25,23 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnFocusChange;
+import butterknife.OnItemClick;
+import butterknife.OnItemSelected;
 
 
 public class RegistrierenFragment extends android.app.Fragment {
 
-    private OnFragmentInteractionListener mListener;
+    final Calendar myCalendar = Calendar.getInstance();
+    private String userName;
+    private String password;
 
     public RegistrierenFragment() {
         // Required empty public constructor
@@ -55,6 +66,20 @@ public class RegistrierenFragment extends android.app.Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_registrieren, container, false);
         ButterKnife.bind(this, view);
+
+        EditText geburtstag = view.findViewById(R.id.txtGeburtstag);
+
+        geburtstag.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    setGeburtstag();
+                } else {
+                }
+            }
+        });
+
         return view;
     }
 
@@ -67,7 +92,6 @@ public class RegistrierenFragment extends android.app.Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
@@ -80,7 +104,6 @@ public class RegistrierenFragment extends android.app.Fragment {
     @OnClick(R.id.btnRegistrien)
     public void saveUser() {
 
-        ((MainActivity) getActivity()).EnableNavigation();
 
         if (!CeckPassword()) {
             return;
@@ -93,17 +116,27 @@ public class RegistrierenFragment extends android.app.Fragment {
                     public void onResponse(String response) {
                         Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                         Log.e("response ", response);
+
+                        ((MainActivity)getActivity()).setUser(userName,password);
+
+                        android.app.Fragment blankFragment = new BlankFragment();
+                        ((MainActivity) getActivity()).changeFragment(blankFragment, "Blank");
+                        ((MainActivity) getActivity()).EnableNavigation();
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        NetworkResponse response = error.networkResponse;
-
-                        String json = new String(response.data);
-                        json = trimMessage(json, "message");
-                        Log.e("", "onErrorResponse: " + json );
-                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                        try{
+                            NetworkResponse response = error.networkResponse;
+                            String json = new String(response.data);
+                            json = trimMessage(json, "message");
+                            Log.e("", "onErrorResponse: " + response.toString() );
+                            Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                        }catch (Exception e){
+                            Toast.makeText(getContext(),"Bitte überprüfen Sie ihre Internetverbindung.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }) {
             @Override
@@ -112,19 +145,23 @@ public class RegistrierenFragment extends android.app.Fragment {
                 EditText firstName = getView().findViewById(R.id.txtFirstName);
                 EditText lastName = getView().findViewById(R.id.textLastName);
                 EditText geschlecht = getView().findViewById(R.id.txtGeschlecht);
-                EditText alter = getView().findViewById(R.id.txtAlter);
                 EditText wohnort = getView().findViewById(R.id.txtWohnort);
                 EditText mail = getView().findViewById(R.id.txtMail);
                 EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
                 EditText akademischGrad = getView().findViewById(R.id.txtAbschluss);
 
+                String myFormat = "yyyyMMdd"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+
+                userName = benutzerName.getText().toString();
+                password = passwort.getText().toString();
 
                 Map<String, String> params = new HashMap<>();
-                params.put("userName", benutzerName.getText().toString());
-                params.put("password", passwort.getText().toString());
+                params.put("userName", userName);
+                params.put("password", password);
                 params.put("firstName", firstName.getText().toString());
                 params.put("lastName", lastName.getText().toString());
-                params.put("birthdate", alter.getText().toString());
+                params.put("birthdate", sdf.format(myCalendar.getTime()));
                 params.put("gender", geschlecht.getText().toString());
                 params.put("email", mail.getText().toString());
                 params.put("note", "keine Notiz");
@@ -134,13 +171,8 @@ public class RegistrierenFragment extends android.app.Fragment {
                 return params;
             }
         };
-
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
-
-        android.app.Fragment blankFragment = new BlankFragment();
-        ((MainActivity) getActivity()).changeFragment(blankFragment, "Blank");
-
     }
 
 
@@ -208,6 +240,40 @@ public class RegistrierenFragment extends android.app.Fragment {
             return false;
         }
         return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    //@OnClick( R.id.txtGeburtstag)
+    public void setGeburtstag(){
+
+        EditText geburtstag = getView().findViewById(R.id.txtGeburtstag);
+
+
+
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                EditText geburtstag = getView().findViewById(R.id.txtGeburtstag);
+
+                geburtstag.setText(sdf.format(myCalendar.getTime()));
+                EditText wohnort = getView().findViewById(R.id.txtWohnort);
+                wohnort.requestFocus();
+            }
+
+        };
+
+        new DatePickerDialog(getContext(), date, myCalendar
+                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+
     }
 }
 

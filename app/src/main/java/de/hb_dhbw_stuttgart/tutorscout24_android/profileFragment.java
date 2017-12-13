@@ -225,7 +225,7 @@ public class profileFragment extends android.app.Fragment implements
     }
 
 
-    @OnClick(R.id.btnGetAdresse)
+  //  @OnClick(R.id.btnGetAdresse)
     public void connectToGoogleGPSApi() {
 
         Log.e("Try connect", "gps: ");
@@ -250,7 +250,7 @@ public class profileFragment extends android.app.Fragment implements
             e.printStackTrace();
         }
 
-        TextView t = getView().findViewById(R.id.City);
+        TextView t = getView().findViewById(R.id.txtWohnort);
         t.setText(cityName);
     }
 
@@ -290,7 +290,7 @@ public class profileFragment extends android.app.Fragment implements
                 (Request.Method.PUT, updateUserURL, params,   new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Toast.makeText(getContext(), "Angebot wurde erfolgreich erstellt", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Daten wurden gespeichert.", Toast.LENGTH_SHORT).show();
                     }
                 },
                         new Response.ErrorListener() {
@@ -322,11 +322,6 @@ public class profileFragment extends android.app.Fragment implements
         return trimmedString;
     }
 
-
-
-
-
-
     public JSONObject getAuthenticationJsonb() {
         JSONObject authentication = new JSONObject();
         try {
@@ -336,35 +331,6 @@ public class profileFragment extends android.app.Fragment implements
             e.printStackTrace();
         }
         return authentication;
-    }
-
-    @OnClick(R.id.btnHttpTest)
-    public void htttpRequestTest() {
-        Log.e("test", "htttpRequestTest: ");
-        final TextView mTxtDisplay;
-
-        mTxtDisplay = (TextView) getView().findViewById(R.id.userInfo);
-        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/info";
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        mTxtDisplay.setText("Response: " + response.toString());
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        mTxtDisplay.setText("Response: " + error.toString());
-
-                    }
-                });
-
-        // Access the RequestQueue through your singleton class.
-        HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
     public void getUserInfo() {
@@ -405,7 +371,7 @@ public class profileFragment extends android.app.Fragment implements
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
 
                     }
                 });

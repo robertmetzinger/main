@@ -5,44 +5,54 @@
     android:layout_height="match_parent"
     tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.KontakteFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@drawable/trans_white_background"
-        >
 
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ImageButton
             android:id="@+id/btnNeuerChat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
             android:contentDescription="Neuer Chat hinzufügen"
-            android:src="@android:drawable/ic_input_add" />
-
+            android:src="@android:drawable/ic_input_add"
+            app:layout_constraintBottom_toTopOf="@+id/chat_list_view"
+            app:layout_constraintEnd_toStartOf="@+id/btnDeleteKontakt"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/btnDeleteKontakt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
             android:contentDescription="Chat löschen"
-            android:src="@android:drawable/ic_delete" />
+            android:src="@android:drawable/ic_delete"
+            app:layout_constraintBottom_toTopOf="@+id/chat_list_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnNeuerChat"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <ListView
             android:id="@+id/chat_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="80dp"
             android:divider="@drawable/chat_divider"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:scrollbarStyle="outsideOverlay" />
+            android:scrollbarStyle="outsideOverlay"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+    </android.support.constraint.ConstraintLayout>
 
-    </LinearLayout>
+
+
 
 </FrameLayout>

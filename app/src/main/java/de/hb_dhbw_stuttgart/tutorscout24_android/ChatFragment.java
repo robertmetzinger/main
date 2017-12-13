@@ -247,7 +247,7 @@ public class ChatFragment extends android.app.Fragment {
 
                         boolean exists = false;
                         for (ChatMessage msgCompare :chatMessages) {
-                            if (msgCompare.getMessageId() ==Integer.parseInt(o.getString("messageId")) ){
+                            if (msgCompare.getMessageId() ==Integer.parseInt(o.getString("messageid")) ){
                                 exists = true;
                                 break;
                             }
@@ -255,7 +255,7 @@ public class ChatFragment extends android.app.Fragment {
                         if(exists){
                             continue;
                         }
-                        String toUserId = o.getString("toUserId");
+                        String toUserId = o.getString("touserid");
 
                         if(!toUserId.equals(chatPartner)){
                             continue;
@@ -265,8 +265,8 @@ public class ChatFragment extends android.app.Fragment {
                         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                         try {
                             Date d = f.parse(string_date);
-                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.SELF, d,MainActivity.getUserName(),toUserId ));
-                            Log.e("messages", "stringToMessage: Messageload send: " + o.getString("messageId"));
+                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageid")), o.getString("text"),  UserType.SELF, d,MainActivity.getUserName(),toUserId ));
+                            Log.e("messages", "stringToMessage: Messageload send: " + o.getString("messageid"));
 
 
                             // sendMessageFrontend(o.getString("text"), UserType.SELF, d);
@@ -290,11 +290,11 @@ public class ChatFragment extends android.app.Fragment {
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse response = error.networkResponse;
 
-//                String json = new String(response.data);
-         //       json = trimMessage(json, "message");
-           //     Log.e("", "onErrorResponse: " + json );
-//
-  //              Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+                //String json = new String(response.data);
+                //json = trimMessage(json, "message");
+                //Log.e("", "onErrorResponse: " + json );
+
+                Log.e("Messages", "onErrorResponse:" + error.getMessage() );
             }
         });
 
@@ -331,7 +331,7 @@ public class ChatFragment extends android.app.Fragment {
                         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                         try {
                             JSONObject o = (JSONObject) response.get(i);
-                            String fromUserId = o.getString("fromUserId");
+                            String fromUserId = o.getString("fromuserid");
 
                             if(!fromUserId.equals(chatPartner)){
                                 ((MainActivity)getActivity()).addKontakt(fromUserId);
@@ -340,7 +340,7 @@ public class ChatFragment extends android.app.Fragment {
 
                             boolean exists = false;
                             for (ChatMessage msgCompare :chatMessages) {
-                                if (msgCompare.getMessageId() == Integer.parseInt(o.getString("messageId")) ){
+                                if (msgCompare.getMessageId() == Integer.parseInt(o.getString("messageid")) ){
                                     exists = true;
                                     break;
                                 }
@@ -351,8 +351,8 @@ public class ChatFragment extends android.app.Fragment {
 
                             String string_date = o.getString("datetime");
                             Date d = f.parse(string_date);
-                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"),  UserType.OTHER, d, fromUserId, MainActivity.getUserName() ));
-                            Log.e("messages", "stringToMessage: Messageload recieved: " + o.getString("messageId"));
+                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageid")), o.getString("text"),  UserType.OTHER, d, fromUserId, MainActivity.getUserName() ));
+                            Log.e("messages", "stringToMessage: Messageload recieved: " + o.getString("messageid"));
 
                             //- sendMessageFrontend(o.getString("text"), UserType.OTHER, d);
                         } catch (JSONException e) {

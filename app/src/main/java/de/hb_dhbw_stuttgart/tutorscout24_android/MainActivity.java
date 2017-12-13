@@ -3,6 +3,9 @@ package de.hb_dhbw_stuttgart.tutorscout24_android;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -12,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,6 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.auth.api.credentials.CredentialRequest;
@@ -33,12 +40,20 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.MapFragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 
@@ -173,7 +188,15 @@ public class MainActivity extends AppCompatActivity implements
         loginFragment = new LoginFragment();
         changeFragment(loginFragment, "Login");
 
-        getWindow().setBackgroundDrawableResource(R.drawable.background_learning);
+        getWindow().setBackgroundDrawableResource(R.drawable.background_screen_small);
+
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+               loadRecievedMessages();
+            }
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     @Override
@@ -489,5 +512,88 @@ public class MainActivity extends AppCompatActivity implements
 
         // Commit the edits!
         editor.commit();
+    }
+
+    public void notification(){
+       // The id of the channel.
+                String CHANNEL_ID = "my_channel_01";
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_stat_chat_bubble)
+                        .setContentTitle("Tutorscout")
+                        .setContentText("Neue Nachricht von: " + chatUser);
+// Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your app to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
+
+// mNotificationId is a unique integer your app uses to identify the
+// notification. For example, to cancel the notification, you can pass its ID
+// number to NotificationManager.cancel().
+        mNotificationManager.notify(1, mBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void loadRecievedMessages(){
+
+        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getUnreadMessages";
+
+        //erstelle JSON Object für den Request
+
+        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                for(int i = 0; i < response.length(); i++) {
+
+                    try {
+                        JSONObject o = (JSONObject) response.get(i);
+                        chatUser = o.getString("fromuserid");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+               notification();
+            }
+
+        }, new Response.ErrorListener() {
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        // Access the RequestQueue through your singleton class.
+        HttpRequestManager.getInstance(this).addToRequestQueue(a);
+    }
+
+    public JSONObject getAuthenticationJson() {
+        JSONObject authentication = new JSONObject();
+        JSONObject aut = new JSONObject();
+        try {
+            authentication.put("userName", getUserName());
+            authentication.put("password", getPassword());
+            aut.put("authentication", authentication);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return aut;
     }
 }
