@@ -148,6 +148,19 @@ public class DisplayFragment extends Fragment implements
                         return false;
                     }
                 });
+                googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                    @Override
+                    public void onMarkerDragStart(Marker marker) {
+                        FeedItem item = (FeedItem) marker.getTag();
+                        DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
+                        detailTutoringFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getDistanceKm(),item.getCreationDate(),item.getExpirationDate());
+                        ((MainActivity)getActivity()).changeFragment(detailTutoringFragment,"DetailTutoring");
+                    }
+                    @Override
+                    public void onMarkerDrag(Marker marker) {}
+                    @Override
+                    public void onMarkerDragEnd(Marker marker) {}
+                });
             }
         });
 
@@ -358,7 +371,8 @@ public class DisplayFragment extends Fragment implements
             LatLng pos = new LatLng(item.getLatitude(), item.getLongitude());
             String userName = item.getUserName();
             String subject = item.getSubject();
-            currentMarker = googleMap.addMarker(new MarkerOptions().position(pos).title(userName).snippet(subject));
+            currentMarker = googleMap.addMarker(new MarkerOptions().position(pos).title(userName).snippet(subject).draggable(true));
+            currentMarker.setTag(item);
             markerTutoringIdHashMap.put(currentMarker, tutoringId);
         }
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(gpsBreitengrad, gpsLaengengrad)));
