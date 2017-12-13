@@ -290,11 +290,11 @@ public class ChatFragment extends android.app.Fragment {
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse response = error.networkResponse;
 
-//                String json = new String(response.data);
-         //       json = trimMessage(json, "message");
-           //     Log.e("", "onErrorResponse: " + json );
-//
-  //              Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+                String json = new String(response.data);
+                json = trimMessage(json, "message");
+                Log.e("", "onErrorResponse: " + json );
+
+                Log.e("Messages", "onErrorResponse:" + error.getMessage() );
             }
         });
 
