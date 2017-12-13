@@ -101,33 +101,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Notiz"
-                    android:inputType="textMultiLine" />
-
-                <ImageView
-                    android:id="@+id/imgViewProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="87dp"
-                    android:contentDescription="@string/name"
-                    app:srcCompat="@drawable/ic_account_circle_black_24dp" />
-
-                <Button
-                    android:id="@+id/btnGetAdresse"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="GPS daten laden"
-                    tools:text="GPS date laden"
-                    android:layout_marginLeft="80dp"
-                    android:layout_marginRight="80dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="30dp"
-                    android:background="@drawable/login_buttonstyle"/>
-
-                <TextView
-                    android:id="@+id/City"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="City"
-                    tools:text="City"
+                    android:inputType="textMultiLine"
                     android:layout_marginLeft="40dp"
                     android:layout_marginRight="40dp"/>
 
@@ -142,24 +116,6 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="30dp"
                     android:background="@drawable/login_buttonstyle"/>
-
-                <Button
-                    android:id="@+id/btnHttpTest"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Test"
-                    tools:text="Test"
-                    android:layout_marginLeft="80dp"
-                    android:layout_marginRight="80dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="30dp"
-                    android:background="@drawable/login_buttonstyle"/>
-
-                <TextView
-                    android:id="@+id/userInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
 
             </LinearLayout>
 
