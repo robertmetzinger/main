@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
 
@@ -210,13 +211,23 @@ public class MyTutoringsFragment extends Fragment {
         return feedArrayList;
     }
 
-    public void showTutoringsInList(ArrayList<FeedItem> feedArrayList, String type) {
+    public void showTutoringsInList(final ArrayList<FeedItem> feedArrayList, String type) {
         //erzeuge Listenobjekte für die ListView
         ListView feedListView = null;
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         if (type.equals("offers")) feedListView = (ListView) rootView.findViewById(R.id.myOffers_list_view);
         else if (type.equals("requests")) feedListView = (ListView) rootView.findViewById(R.id.myRequests_list_view);
         feedListView.setAdapter(adapter);
+        feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                FeedItem item = feedArrayList.get(position);
+                MyTutoringDetailFragment myTutoringDetailFragment = new MyTutoringDetailFragment();
+                myTutoringDetailFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getCreationDate(),item.getExpirationDate());
+                ((MainActivity)getActivity()).changeFragment(myTutoringDetailFragment,"MyTutoringDetail");
+                return false;
+            }
+        });
         swipeContainerOffers.setRefreshing(false);
         swipeContainerRequests.setRefreshing(false);
     }
