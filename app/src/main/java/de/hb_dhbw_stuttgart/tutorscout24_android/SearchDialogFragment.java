@@ -184,7 +184,7 @@ public class SearchDialogFragment extends DialogFragment {
                 Toast.makeText(context, "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            Toast.makeText(context, "Standort konnte nicht erfasst werden", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Standort konnte nicht erfasst werden", Toast.LENGTH_SHORT).show();
         }
     }
 
