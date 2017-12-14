@@ -193,7 +193,7 @@ public class SearchDialogFragment extends DialogFragment {
         try {
             int counter = 0;
             do {
-                addresses = geocoder.getFromLocation(gpsBreitengrad, gpsLaengengrad, 1);
+                addresses = geocoder.getFromLocation(48.44503, 8.696500000000015, 1);
                 counter++;
             } while (addresses.size() == 0 && counter < 10);
             if (addresses.size() > 0) {
