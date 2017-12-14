@@ -563,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     try {
                         JSONObject o = (JSONObject) response.get(i);
-                        chatUser = o.getString("fromuserid");
+                        chatUser = o.getString("fromUserId");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
