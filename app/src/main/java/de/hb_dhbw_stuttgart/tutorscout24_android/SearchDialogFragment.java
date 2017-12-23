@@ -25,11 +25,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -58,6 +61,7 @@ public class SearchDialogFragment extends DialogFragment {
     private SimpleCursorAdapter suggestionsAdapter;
     GoogleApiClient googleApiClient;
     Geocoder geocoder;
+    FusedLocationProviderClient locationProviderClient;
     String[] columns = new String[]{"adress", BaseColumns._ID};
 
     public SearchDialogFragment() {
@@ -101,7 +105,7 @@ public class SearchDialogFragment extends DialogFragment {
                 parent.setGpsLaengengrad(gpsLaengengrad);
                 parent.setRangeKm(Integer.parseInt(rangeKm));
                 if (mode == 0) parent.getTutoringOffersFromBackend();
-                else if (mode== 1) parent.getTutoringRequestsFromBackend();
+                else if (mode == 1) parent.getTutoringRequestsFromBackend();
             }
         });
         segmentedButtonGroup.setOnClickedButtonListener(new SegmentedButtonGroup.OnClickedButtonListener() {
@@ -110,6 +114,7 @@ public class SearchDialogFragment extends DialogFragment {
                 mode = position;
             }
         });
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
     public void setUpSearchDialog(View dialogView) {
@@ -145,6 +150,7 @@ public class SearchDialogFragment extends DialogFragment {
             public boolean onSuggestionSelect(int position) {
                 return false;
             }
+
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = suggestionsAdapter.getCursor();
@@ -156,10 +162,10 @@ public class SearchDialogFragment extends DialogFragment {
         });
     }
 
-     @OnClick(R.id.btnMyLocation)
+    @OnClick(R.id.btnMyLocation)
     public void setMyLocationToSearchField() {
-         getMyLocation();
-         setCity();
+        getMyLocation();
+        setCity();
     }
 
     public void addItemsToSpinner() {
@@ -173,19 +179,14 @@ public class SearchDialogFragment extends DialogFragment {
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
             return;
         }
-        try {
-
-            Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    googleApiClient);
-            if (myLastLocation != null) {
-
-                gpsBreitengrad = myLastLocation.getLatitude();
-                gpsLaengengrad = myLastLocation.getLongitude();
+        locationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                gpsBreitengrad = location.getLatitude();
+                gpsLaengengrad = location.getLongitude();
                 Toast.makeText(context, "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
-        } catch (Exception e) {
-            //Toast.makeText(context, "Standort konnte nicht erfasst werden", Toast.LENGTH_SHORT).show();
-        }
+        });
     }
 
     private void setCity() {
@@ -193,7 +194,7 @@ public class SearchDialogFragment extends DialogFragment {
         try {
             int counter = 0;
             do {
-                addresses = geocoder.getFromLocation(48.44503, 8.696500000000015, 1);
+                addresses = geocoder.getFromLocation(gpsBreitengrad, gpsLaengengrad, 1);
                 counter++;
             } while (addresses.size() == 0 && counter < 10);
             if (addresses.size() > 0) {
