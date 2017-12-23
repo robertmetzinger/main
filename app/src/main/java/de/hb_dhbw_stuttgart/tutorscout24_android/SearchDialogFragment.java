@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
@@ -51,11 +52,13 @@ public class SearchDialogFragment extends DialogFragment {
     private Activity activity;
     private AlertDialog.Builder builder;
     private int mode = 0;
+    private String subjectContains;
     private String location;
     private String rangeKm;
     private double gpsBreitengrad;
     private double gpsLaengengrad;
     private SegmentedButtonGroup segmentedButtonGroup;
+    private EditText subjectFilterTxt;
     private SearchView feedSearchView;
     private Spinner rangeSpinner;
     private SimpleCursorAdapter suggestionsAdapter;
@@ -95,12 +98,14 @@ public class SearchDialogFragment extends DialogFragment {
         builder.setPositiveButton("Übernehmen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                subjectContains = subjectFilterTxt.getText().toString().trim();
                 LatLng latLng = getLatLngFromSearchField();
                 location = feedSearchView.getQuery().toString();
                 gpsBreitengrad = latLng.latitude;
                 gpsLaengengrad = latLng.longitude;
                 rangeKm = rangeSpinner.getSelectedItem().toString();
                 dialog.dismiss();
+                parent.setSubjectContains(subjectContains);
                 parent.setGpsBreitengrad(gpsBreitengrad);
                 parent.setGpsLaengengrad(gpsLaengengrad);
                 parent.setRangeKm(Integer.parseInt(rangeKm));
@@ -119,6 +124,7 @@ public class SearchDialogFragment extends DialogFragment {
 
     public void setUpSearchDialog(View dialogView) {
         segmentedButtonGroup = (SegmentedButtonGroup) dialogView.findViewById(R.id.buttonGroupCreate);
+        subjectFilterTxt = (EditText) dialogView.findViewById(R.id.subjectFilterTxt);
         feedSearchView = (SearchView) dialogView.findViewById(R.id.feed_search_view);
         rangeSpinner = (Spinner) dialogView.findViewById(R.id.range_spinner);
         addItemsToSpinner();

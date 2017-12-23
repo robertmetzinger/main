@@ -66,6 +66,7 @@ public class DisplayFragment extends Fragment implements
     GoogleApiClient googleApiClient;
     private double gpsBreitengrad;
     private double gpsLaengengrad;
+    private String subjectContains;
     private int rowOffset = 0;
     private int rangeKm = 50000;
     private int rowLimit = 100;
@@ -347,15 +348,25 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
-    public void showTutoringsInFeedAndMap(final ArrayList<FeedItem> feedArrayList) {
+    public ArrayList<FeedItem> filterFeedItemList (ArrayList<FeedItem> feedArrayList) {
+        ArrayList<FeedItem> filteredList = new ArrayList<>();
+        for (FeedItem item : feedArrayList) {
+            if (item.getSubject().toLowerCase().contains(subjectContains)) filteredList.add(item);
+        }
+        return filteredList;
+    }
+
+    public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
+        if (subjectContains != null && subjectContains != "") feedArrayList = filterFeedItemList(feedArrayList);
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
+        final ArrayList<FeedItem> finalFeedArrayList = feedArrayList;
         feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                FeedItem item = feedArrayList.get(position);
+                FeedItem item = finalFeedArrayList.get(position);
                 DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
                 detailTutoringFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getDistanceKm(),item.getCreationDate(),item.getExpirationDate());
                 ((MainActivity)getActivity()).changeFragment(detailTutoringFragment,"DetailTutoring");
@@ -516,6 +527,11 @@ public class DisplayFragment extends Fragment implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+
+    public void setSubjectContains(String subjectContains) {
+        this.subjectContains = subjectContains;
     }
 
     public void setGpsBreitengrad(double gpsBreitengrad) {
