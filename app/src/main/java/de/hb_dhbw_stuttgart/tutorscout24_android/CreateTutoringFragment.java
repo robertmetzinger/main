@@ -35,8 +35,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,6 +76,7 @@ public class CreateTutoringFragment extends Fragment implements
     private SimpleCursorAdapter suggestionsAdapter;
     String[] columns = new String[]{"adress", BaseColumns._ID};
     Geocoder geocoder;
+    FusedLocationProviderClient locationProviderClient;
 
 
     private OnFragmentInteractionListener mListener;
@@ -89,6 +92,7 @@ public class CreateTutoringFragment extends Fragment implements
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         super.onCreate(savedInstanceState);
     }
 
@@ -214,14 +218,14 @@ public class CreateTutoringFragment extends Fragment implements
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
             return;
         }
-        Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                googleApiClient);
-        if (myLastLocation != null) {
-
-            gpsBreitengrad = myLastLocation.getLatitude();
-            gpsLaengengrad = myLastLocation.getLongitude();
-            Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
-        }
+        locationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                gpsBreitengrad = location.getLatitude();
+                gpsLaengengrad = location.getLongitude();
+                Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setCity() {
@@ -230,7 +234,7 @@ public class CreateTutoringFragment extends Fragment implements
         try {
             int counter = 0;
             do {
-                addresses = geocoder.getFromLocation(48.44503, 8.696500000000015, 1);
+                addresses = geocoder.getFromLocation(gpsBreitengrad, gpsLaengengrad, 1);
                 counter++;
             } while (addresses.size() == 0 && counter < 10);
             if (addresses.size() > 0) {
