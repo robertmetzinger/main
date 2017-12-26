@@ -49,6 +49,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -359,6 +360,7 @@ public class DisplayFragment extends Fragment implements
     public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
         if (subjectContains != null && subjectContains != "") feedArrayList = filterFeedItemList(feedArrayList);
+        Collections.sort(feedArrayList, new FeedSorter());
         feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
         ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
