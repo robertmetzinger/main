@@ -16,7 +16,7 @@ public class FeedItem {
     private Double longitude;
     private Double distanceKm;
 
-    public FeedItem(String tutoringId, String creationDate, String userName, String subject, String text, String expirationDate, Double latitude, Double longitude, Double distanceKm) {
+    FeedItem(String tutoringId, String creationDate, String userName, String subject, String text, String expirationDate, Double latitude, Double longitude, Double distanceKm) {
         this.tutoringId = tutoringId;
         this.creationDate = creationDate;
         this.userName = userName;
@@ -28,11 +28,11 @@ public class FeedItem {
         this.distanceKm = distanceKm;
     }
 
-    public String getTutoringId() {
+    String getTutoringId() {
         return tutoringId;
     }
 
-    public String getCreationDate() {
+    String getCreationDate() {
         return creationDate;
     }
 
@@ -40,7 +40,7 @@ public class FeedItem {
         return userName;
     }
 
-    public String getSubject() {
+    String getSubject() {
         return subject;
     }
 
@@ -48,19 +48,19 @@ public class FeedItem {
         return text;
     }
 
-    public String getExpirationDate() {
+    String getExpirationDate() {
         return expirationDate;
     }
 
-    public Double getLatitude() {
+    Double getLatitude() {
         return latitude;
     }
 
-    public Double getLongitude() {
+    Double getLongitude() {
         return longitude;
     }
 
-    public Double getDistanceKm() {
+    Double getDistanceKm() {
         return distanceKm;
     }
 }

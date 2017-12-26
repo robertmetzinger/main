@@ -1,6 +1,7 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -9,10 +10,8 @@ import android.database.MatrixCursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -53,12 +52,6 @@ import co.ceryle.segmentedbutton.SegmentedButtonGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CreateTutoringFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CreateTutoringFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class CreateTutoringFragment extends Fragment implements
@@ -79,15 +72,8 @@ public class CreateTutoringFragment extends Fragment implements
     FusedLocationProviderClient locationProviderClient;
 
 
-    private OnFragmentInteractionListener mListener;
-
     public CreateTutoringFragment() {
         // Required empty public constructor
-    }
-
-    public static CreateTutoringFragment newInstance(String param1, String param2) {
-        CreateTutoringFragment fragment = new CreateTutoringFragment();
-        return fragment;
     }
 
     @Override
@@ -105,9 +91,9 @@ public class CreateTutoringFragment extends Fragment implements
         geocoder = new Geocoder(getContext(), Locale.getDefault());
         addItemsToSpinner();
         setUpLocationTextField();
-        subjectTxt = (EditText) rootView.findViewById(R.id.subjectTxt);
-        infoTxt = (EditText) rootView.findViewById(R.id.infoTxt);
-        durationSpinner = (Spinner) rootView.findViewById(R.id.spinnerDuration);
+        subjectTxt = rootView.findViewById(R.id.subjectTxt);
+        infoTxt = rootView.findViewById(R.id.infoTxt);
+        durationSpinner = rootView.findViewById(R.id.spinnerDuration);
 
         SegmentedButtonGroup group = rootView.findViewById(R.id.buttonGroupCreate);
         group.setOnClickedButtonListener(new SegmentedButtonGroup.OnClickedButtonListener() {
@@ -128,7 +114,7 @@ public class CreateTutoringFragment extends Fragment implements
     }
 
     public void setUpLocationTextField() {
-        locationSearch = (SearchView) rootView.findViewById(R.id.locationSearch);
+        locationSearch = rootView.findViewById(R.id.locationSearch);
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
         suggestionsAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,
@@ -171,7 +157,7 @@ public class CreateTutoringFragment extends Fragment implements
 
         if (!query.equals(null) && !query.trim().equals("")) {
 
-            List<Address> addresses = null;
+            List<Address> addresses;
 
             try {
                 // Getting a maximum of 3 Address that matches the input text
@@ -185,17 +171,17 @@ public class CreateTutoringFragment extends Fragment implements
                     MatrixCursor matrixCursor = new MatrixCursor(columns);
                     for (int i = 0; i < addresses.size(); i++) {
                         Address address = addresses.get(i);
-                        String adressText = "";
+                        StringBuilder adressText = new StringBuilder();
                         for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
-                            adressText += address.getAddressLine(line);
-                            if (line != address.getMaxAddressLineIndex()) adressText += ", ";
+                            adressText.append(address.getAddressLine(line));
+                            if (line != address.getMaxAddressLineIndex()) adressText.append(", ");
                         }
-                        matrixCursor.addRow(new Object[]{adressText, i});
+                        matrixCursor.addRow(new Object[]{adressText.toString(), i});
                     }
                     suggestionsAdapter.swapCursor(matrixCursor);
                 }
 
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
@@ -239,13 +225,13 @@ public class CreateTutoringFragment extends Fragment implements
             } while (addresses.size() == 0 && counter < 10);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
-                String adressText = "";
+                StringBuilder adressText = new StringBuilder();
                 for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
-                    adressText += address.getAddressLine(line);
-                    if (line != address.getMaxAddressLineIndex()) adressText += ", ";
+                    adressText.append(address.getAddressLine(line));
+                    if (line != address.getMaxAddressLineIndex()) adressText.append(", ");
                 }
                 SearchView t = getView().findViewById(R.id.locationSearch);
-                t.setQuery(adressText, false);
+                t.setQuery(adressText.toString(), false);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -383,20 +369,6 @@ public class CreateTutoringFragment extends Fragment implements
         return authentication;
     }
 
-    public String trimMessage(String json, String key) {
-        String trimmedString = null;
-
-        try {
-            JSONObject obj = new JSONObject(json);
-            trimmedString = obj.getString(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return trimmedString;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -405,7 +377,6 @@ public class CreateTutoringFragment extends Fragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -421,20 +392,5 @@ public class CreateTutoringFragment extends Fragment implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

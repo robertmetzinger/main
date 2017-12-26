@@ -1,7 +1,5 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android;
 
-import android.util.Log;
-
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
@@ -26,8 +24,8 @@ public class CustomJsonArrayRequest extends JsonRequest<JSONArray> {
      * @param listener      Listener to receive the JSON response
      * @param errorListener Error listener, or null to ignore errors.
      */
-    public CustomJsonArrayRequest(int method, String url, JSONObject jsonRequest,
-                                  Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+    CustomJsonArrayRequest(int method, String url, JSONObject jsonRequest,
+                           Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
         super(method, url, (jsonRequest == null) ? null : jsonRequest.toString(), listener,
                 errorListener);
     }

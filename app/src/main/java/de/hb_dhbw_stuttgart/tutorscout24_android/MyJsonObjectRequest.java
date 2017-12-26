@@ -17,14 +17,12 @@ import java.io.UnsupportedEncodingException;
 
 public class MyJsonObjectRequest extends JsonObjectRequest {
 
-
-    public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         super(method, url, jsonRequest, listener, errorListener);
     }
 
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-
 
         try {
             String json = new String(response.data, "UTF-8");

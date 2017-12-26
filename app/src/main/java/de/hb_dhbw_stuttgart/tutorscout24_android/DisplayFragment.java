@@ -16,7 +16,6 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,6 +43,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +54,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import butterknife.ButterKnife;
 
@@ -63,7 +65,7 @@ public class DisplayFragment extends Fragment implements
     View rootView;
     MapView mMapView;
     private GoogleMap googleMap;
-    private HashMap<Marker, String> markerTutoringIdHashMap = new HashMap<Marker, String>();
+    private HashMap<Marker, String> markerTutoringIdHashMap = new HashMap<>();
     GoogleApiClient googleApiClient;
     private double gpsBreitengrad;
     private double gpsLaengengrad;
@@ -76,6 +78,7 @@ public class DisplayFragment extends Fragment implements
     private SimpleCursorAdapter suggestionsAdapterForMapSearch;
     String[] columns = new String[]{"adress", BaseColumns._ID};
     Geocoder geocoder;
+    FusedLocationProviderClient locationProviderClient;
     private SearchDialogFragment searchDialogFragment;
 
     @Override
@@ -86,11 +89,10 @@ public class DisplayFragment extends Fragment implements
         Locale.Builder builder = new Locale.Builder();
         builder.setRegion("DE");
         builder.setLanguage("deu");
-        Locale locale = builder.build();
+        builder.build();
         geocoder = new Geocoder(getContext(), Locale.getDefault());
-        getMyLocation();
 
-        TabHost host = (TabHost) rootView.findViewById(R.id.tabHost);
+        TabHost host = rootView.findViewById(R.id.tabHost);
         host.setup();
         //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("Feed");
@@ -104,7 +106,7 @@ public class DisplayFragment extends Fragment implements
         spec.setIndicator("Map");
         host.addTab(spec);
 
-        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+        swipeContainer = rootView.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -113,11 +115,11 @@ public class DisplayFragment extends Fragment implements
         });
 
         searchDialogFragment = new SearchDialogFragment();
-        searchDialogFragment.setParams(this, inflater, getContext(), getActivity(), geocoder);
-        setUpFab(inflater);
+        searchDialogFragment.setParams(inflater, this, getContext(), getActivity(), geocoder);
+        setUpFab();
         setUpSearchView();
 
-        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+        mMapView = rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
 
@@ -155,13 +157,17 @@ public class DisplayFragment extends Fragment implements
                     public void onMarkerDragStart(Marker marker) {
                         FeedItem item = (FeedItem) marker.getTag();
                         DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
-                        detailTutoringFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getDistanceKm(),item.getCreationDate(),item.getExpirationDate());
-                        ((MainActivity)getActivity()).changeFragment(detailTutoringFragment,"DetailTutoring");
+                        detailTutoringFragment.setParams(item.getUserName(), item.getTutoringId(), item.getSubject(), item.getText(), item.getDistanceKm(), item.getCreationDate(), item.getExpirationDate());
+                        ((MainActivity) getActivity()).changeFragment(detailTutoringFragment, "DetailTutoring");
                     }
+
                     @Override
-                    public void onMarkerDrag(Marker marker) {}
+                    public void onMarkerDrag(Marker marker) {
+                    }
+
                     @Override
-                    public void onMarkerDragEnd(Marker marker) {}
+                    public void onMarkerDragEnd(Marker marker) {
+                    }
                 });
             }
         });
@@ -179,8 +185,8 @@ public class DisplayFragment extends Fragment implements
         return rootView;
     }
 
-    public void setUpFab(final LayoutInflater inflater) {
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+    public void setUpFab() {
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,7 +198,7 @@ public class DisplayFragment extends Fragment implements
 
 
     public void setUpSearchView() {
-        searchView = (SearchView) rootView.findViewById(R.id.searchView);
+        searchView = rootView.findViewById(R.id.searchView);
 
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
         suggestionsAdapterForMapSearch = new SimpleCursorAdapter(getActivity(),
@@ -240,25 +246,21 @@ public class DisplayFragment extends Fragment implements
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
             return;
         }
-        try {
-
-            Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    googleApiClient);
-            if (myLastLocation != null) {
-
-                gpsBreitengrad = myLastLocation.getLatitude();
-                gpsLaengengrad = myLastLocation.getLongitude();
+        locationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                gpsBreitengrad = location.getLatitude();
+                gpsLaengengrad = location.getLongitude();
+                Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Standort konnte nicht erfasst werden", Toast.LENGTH_SHORT).show();
-        }
+        });
     }
 
     public void getSearchSuggestions(SimpleCursorAdapter suggestionsAdapter, String query) {
 
         if (!query.equals(null) && !query.trim().equals("")) {
 
-            List<Address> addresses = null;
+            List<Address> addresses;
 
             try {
                 // Getting a maximum of 3 Address that matches the input text
@@ -272,24 +274,24 @@ public class DisplayFragment extends Fragment implements
                     MatrixCursor matrixCursor = new MatrixCursor(columns);
                     for (int i = 0; i < addresses.size(); i++) {
                         Address address = addresses.get(i);
-                        String adressText = "";
+                        StringBuilder adressText = new StringBuilder();
                         for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
-                            adressText += address.getAddressLine(line);
-                            if (line != address.getMaxAddressLineIndex()) adressText += ", ";
+                            adressText.append(address.getAddressLine(line));
+                            if (line != address.getMaxAddressLineIndex()) adressText.append(", ");
                         }
-                        matrixCursor.addRow(new Object[]{adressText, i});
+                        matrixCursor.addRow(new Object[]{adressText.toString(), i});
                     }
                     suggestionsAdapter.swapCursor(matrixCursor);
                 }
 
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
 
     public void search(String query) {
 
-        List<Address> addresses = null;
+        List<Address> addresses;
 
         try {
             // Getting a maximum of 3 Address that matches the input
@@ -300,26 +302,16 @@ public class DisplayFragment extends Fragment implements
                 counter++;
             } while (addresses.size() == 0 && counter < 10);
 
-            if (addresses != null && !addresses.equals("")) {
-                Address address = (Address) addresses.get(0);
+            if (addresses != null) {
+                Address address = addresses.get(0);
                 LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
             }
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
-    }
-
-    public void connectToGoogleGPSApi() {
-
-        Log.e("Try connect", "gps: ");
-
-        String[] LOCATION_PERMS = {
-                android.Manifest.permission.ACCESS_FINE_LOCATION};
-        requestPermissions(LOCATION_PERMS, 1);
-        googleApiClient.connect();
     }
 
     public ArrayList<FeedItem> loadData(JSONArray feedData) {
@@ -336,9 +328,9 @@ public class DisplayFragment extends Fragment implements
                 String subject = object.getString("subject");
                 String text = object.getString("text");
                 String expirationDate = object.getString("expirationDate");
-                Double latitude = new Double(object.getString("latitude"));
-                Double longitude = new Double(object.getString("longitude"));
-                Double distanceKm = new Double(object.getString("distanceKm"));
+                Double latitude = Double.valueOf(object.getString("latitude"));
+                Double longitude = Double.valueOf(object.getString("longitude"));
+                Double distanceKm = Double.valueOf(object.getString("distanceKm"));
                 FeedItem item = new FeedItem(tutoringId, creationDate, userName, subject, text, expirationDate, latitude, longitude, distanceKm);
                 feedArrayList.add(item);
             }
@@ -349,7 +341,7 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
-    public ArrayList<FeedItem> filterFeedItemList (ArrayList<FeedItem> feedArrayList) {
+    public ArrayList<FeedItem> filterFeedItemList(ArrayList<FeedItem> feedArrayList) {
         ArrayList<FeedItem> filteredList = new ArrayList<>();
         for (FeedItem item : feedArrayList) {
             if (item.getSubject().toLowerCase().contains(subjectContains)) filteredList.add(item);
@@ -359,10 +351,11 @@ public class DisplayFragment extends Fragment implements
 
     public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
         //erzeuge Listenobjekte für die ListView
-        if (subjectContains != null && subjectContains != "") feedArrayList = filterFeedItemList(feedArrayList);
+        if (subjectContains != null && !Objects.equals(subjectContains, ""))
+            feedArrayList = filterFeedItemList(feedArrayList);
         Collections.sort(feedArrayList, new FeedSorter());
-        feedItemAdapter adapter = new feedItemAdapter(feedArrayList, getContext());
-        ListView feedListView = (ListView) rootView.findViewById(R.id.feed_list_view);
+        FeedItemAdapter adapter = new FeedItemAdapter(feedArrayList, getContext());
+        ListView feedListView = rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
         final ArrayList<FeedItem> finalFeedArrayList = feedArrayList;
         feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -370,8 +363,8 @@ public class DisplayFragment extends Fragment implements
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 FeedItem item = finalFeedArrayList.get(position);
                 DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
-                detailTutoringFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getDistanceKm(),item.getCreationDate(),item.getExpirationDate());
-                ((MainActivity)getActivity()).changeFragment(detailTutoringFragment,"DetailTutoring");
+                detailTutoringFragment.setParams(item.getUserName(), item.getTutoringId(), item.getSubject(), item.getText(), item.getDistanceKm(), item.getCreationDate(), item.getExpirationDate());
+                ((MainActivity) getActivity()).changeFragment(detailTutoringFragment, "DetailTutoring");
                 return false;
             }
         });
@@ -465,20 +458,6 @@ public class DisplayFragment extends Fragment implements
 
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
-    }
-
-    public String trimMessage(String json, String key) {
-        String trimmedString = null;
-
-        try {
-            JSONObject obj = new JSONObject(json);
-            trimmedString = obj.getString(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return trimmedString;
     }
 
     public JSONObject getAuthenticationJson() {

@@ -25,7 +25,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,7 +32,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -46,8 +44,8 @@ import co.ceryle.segmentedbutton.SegmentedButtonGroup;
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class SearchDialogFragment extends DialogFragment {
 
-    private DisplayFragment parent;
     private LayoutInflater inflater;
+    private DisplayFragment parent;
     private Context context;
     private Activity activity;
     private AlertDialog.Builder builder;
@@ -62,7 +60,6 @@ public class SearchDialogFragment extends DialogFragment {
     private SearchView feedSearchView;
     private Spinner rangeSpinner;
     private SimpleCursorAdapter suggestionsAdapter;
-    GoogleApiClient googleApiClient;
     Geocoder geocoder;
     FusedLocationProviderClient locationProviderClient;
     String[] columns = new String[]{"adress", BaseColumns._ID};
@@ -71,9 +68,9 @@ public class SearchDialogFragment extends DialogFragment {
         super();
     }
 
-    public void setParams(DisplayFragment parent, LayoutInflater inflater, Context context, Activity activity, Geocoder geocoder) {
-        this.parent = parent;
+    public void setParams(LayoutInflater inflater, DisplayFragment parent, Context context, Activity activity, Geocoder geocoder) {
         this.inflater = inflater;
+        this.parent = parent;
         this.context = context;
         this.activity = activity;
         this.geocoder = geocoder;
@@ -84,8 +81,8 @@ public class SearchDialogFragment extends DialogFragment {
     }
 
     public void createDialog() {
-        builder = new AlertDialog.Builder(context);
         View dialogView = inflater.inflate(R.layout.search_dialog_layout, null);
+        builder = new AlertDialog.Builder(context);
         ButterKnife.bind(this, dialogView);
         builder.setView(dialogView);
         setUpSearchDialog(dialogView);
@@ -123,10 +120,10 @@ public class SearchDialogFragment extends DialogFragment {
     }
 
     public void setUpSearchDialog(View dialogView) {
-        segmentedButtonGroup = (SegmentedButtonGroup) dialogView.findViewById(R.id.buttonGroupCreate);
-        subjectFilterTxt = (EditText) dialogView.findViewById(R.id.subjectFilterTxt);
-        feedSearchView = (SearchView) dialogView.findViewById(R.id.feed_search_view);
-        rangeSpinner = (Spinner) dialogView.findViewById(R.id.range_spinner);
+        segmentedButtonGroup = dialogView.findViewById(R.id.buttonGroupCreate);
+        subjectFilterTxt = dialogView.findViewById(R.id.subjectFilterTxt);
+        feedSearchView = dialogView.findViewById(R.id.feed_search_view);
+        rangeSpinner = dialogView.findViewById(R.id.range_spinner);
         addItemsToSpinner();
         segmentedButtonGroup.setPosition(mode);
         if (location != null) feedSearchView.setQuery(location, false);
@@ -205,12 +202,12 @@ public class SearchDialogFragment extends DialogFragment {
             } while (addresses.size() == 0 && counter < 10);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
-                String adressText = "";
+                StringBuilder adressText = new StringBuilder();
                 for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
-                    adressText += address.getAddressLine(line);
-                    if (line != address.getMaxAddressLineIndex()) adressText += ", ";
+                    adressText.append(address.getAddressLine(line));
+                    if (line != address.getMaxAddressLineIndex()) adressText.append(", ");
                 }
-                feedSearchView.setQuery(adressText, false);
+                feedSearchView.setQuery(adressText.toString(), false);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -221,7 +218,7 @@ public class SearchDialogFragment extends DialogFragment {
 
         if (!query.equals(null) && !query.trim().equals("")) {
 
-            List<Address> addresses = null;
+            List<Address> addresses;
 
             try {
                 // Getting a maximum of 3 Address that matches the input text
@@ -235,17 +232,17 @@ public class SearchDialogFragment extends DialogFragment {
                     MatrixCursor matrixCursor = new MatrixCursor(columns);
                     for (int i = 0; i < addresses.size(); i++) {
                         Address address = addresses.get(i);
-                        String adressText = "";
+                        StringBuilder adressText = new StringBuilder();
                         for (int line = 0; line <= address.getMaxAddressLineIndex(); line++) {
-                            adressText += address.getAddressLine(line);
-                            if (line != address.getMaxAddressLineIndex()) adressText += ", ";
+                            adressText.append(address.getAddressLine(line));
+                            if (line != address.getMaxAddressLineIndex()) adressText.append(", ");
                         }
-                        matrixCursor.addRow(new Object[]{adressText, i});
+                        matrixCursor.addRow(new Object[]{adressText.toString(), i});
                     }
                     suggestionsAdapter.swapCursor(matrixCursor);
                 }
 
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
