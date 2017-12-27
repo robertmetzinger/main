@@ -1,0 +1,120 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.LoginFragment">
+
+   <!-- <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_screen"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/txtLoginUserName"
+        app:layout_constraintEnd_toStartOf="@+id/btnAdmin"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="294dp"
+            android:layout_height="441dp"
+            android:background="@drawable/trans_white_background"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="103dp"
+                android:layout_height="86dp"
+                android:src="@drawable/logo_w_shadow_2"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/btnAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:background="@color/white"
+                android:text="Admin"
+
+
+                />
+
+            <EditText
+                android:id="@+id/txtLoginUserName"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:hint="Benutzername"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                />
+
+            <EditText
+                android:id="@+id/txtLoginPasswort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:ems="10"
+                android:hint="Passwort"
+                android:inputType="textPassword" />
+
+            <CheckBox
+                android:id="@+id/checkRememberMe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:text="Remember me"
+
+                />
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Anmelden"
+                android:background="@color/gray"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"/>
+
+            <Button
+                android:id="@+id/btnRegistrien"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/login_buttonstyle"
+                android:text="Registrieren" />
+
+            <TextView
+                android:id="@+id/txtPasswortVergessen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="10dp"
+                android:text="Passwort Vergessen?"
+                android:fontFamily="@font/neuropol"/>
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

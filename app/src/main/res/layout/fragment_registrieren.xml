@@ -1,0 +1,157 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.RegistrierenFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="294dp"
+            android:layout_height="441dp"
+            android:background="@drawable/trans_white_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <EditText
+                    android:id="@+id/txtBenutzername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Benutzername"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="10dp"/>
+
+                <EditText
+                    android:id="@+id/txtFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Vorname"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/textLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Nachname"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtGeschlecht"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Geschlecht"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtGeburtstag"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Geburtstag"
+                    android:inputType="textPersonName"
+                    android:drawableLeft="@drawable/kalender"
+                    />
+
+                <EditText
+                    android:id="@+id/txtWohnort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Wohnort"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtMail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Mail"
+                    android:inputType="textEmailAddress"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtLoginPasswort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Passwort"
+                    android:inputType="textPassword"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtPasswortWdh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Passwort wiederholen"
+                    android:inputType="textPassword"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtAbschluss"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Höchster akademischer Abschluss"
+                    android:inputType="textPersonName"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <EditText
+                    android:id="@+id/txtNotiz"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Beschreibung"
+                    android:inputType="textMultiLine" />
+
+                <Button
+                    android:id="@+id/btnRegistrien"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Registrieren"
+                    tools:text="Registrieren"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/login_buttonstyle"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

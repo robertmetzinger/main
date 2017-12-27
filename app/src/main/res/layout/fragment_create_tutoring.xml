@@ -1,0 +1,182 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.CreateTutoringFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/trans_white_background"
+            android:fillViewport="true"
+            android:padding="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Erstelle ein"
+                    android:textSize="18sp" />
+
+                <co.ceryle.segmentedbutton.SegmentedButtonGroup
+                    android:id="@+id/buttonGroupCreate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:elevation="2dp"
+                    app:sbg_animateSelector="bounce"
+                    app:sbg_animateSelectorDuration="750"
+                    app:sbg_backgroundColor="@color/white"
+                    app:sbg_backgroundDrawable="@drawable/gradient_drawable"
+                    app:sbg_borderColor="@color/colorPrimary"
+                    app:sbg_borderSize="1dp"
+                    app:sbg_draggable="false"
+                    app:sbg_position="0"
+                    app:sbg_radius="2dp"
+                    app:sbg_ripple="true"
+                    app:sbg_rippleColor="@color/blue_300"
+                    app:sbg_selectorBackgroundDrawable="@drawable/gradient_drawable_selector"
+                    app:sbg_selectorColor="@color/colorPrimary">
+
+                    <co.ceryle.segmentedbutton.SegmentedButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="2dp"
+                        android:paddingTop="2dp"
+                        app:sb_text="Request"
+                        app:sb_textColor="@color/colorPrimary"
+                        app:sb_textColor_onSelection="@color/white"
+                        app:sb_textSize="18dp"
+                        app:sb_textTypefacePath="fonts/neuropol.ttf" />
+
+                    <co.ceryle.segmentedbutton.SegmentedButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingBottom="2dp"
+                        android:paddingTop="2dp"
+                        app:sb_text="Offer"
+                        app:sb_textColor="@color/colorPrimary"
+                        app:sb_textColor_onSelection="@color/white"
+                        app:sb_textSize="18dp"
+                        app:sb_textTypefacePath="fonts/neuropol.ttf" />
+
+                </co.ceryle.segmentedbutton.SegmentedButtonGroup>
+
+                <EditText
+                    android:id="@+id/subjectTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:ems="10"
+                    android:hint="Fach"
+                    android:inputType="textAutoComplete" />
+
+                <EditText
+                    android:id="@+id/infoTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:gravity="bottom"
+                    android:hint="Beschreibung"
+                    android:inputType="textAutoComplete|textMultiLine"
+                    android:maxLines="5"
+                    android:minLines="2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnMyLocation"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:tooltipText="Meinen Standort verwenden"
+                        app:srcCompat="@drawable/ic_my_location_black_24dp" />
+
+                    <SearchView
+                        android:id="@+id/locationSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:iconifiedByDefault="false"
+                        android:inputType="textAutoComplete|textMultiLine"
+                        android:maxLines="3"
+                        android:queryHint="Standort"
+                        android:searchIcon="@null" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:text="Dauer des Tutorings in Tagen"
+                        android:textSize="18sp" />
+
+                    <Spinner
+                        android:id="@+id/spinnerDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="0" />
+
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btnCreateOffer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/login_buttonstyle"
+                        android:gravity="center"
+                        android:text="Erstellen" />
+
+                </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

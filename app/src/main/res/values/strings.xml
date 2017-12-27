@@ -1,6 +1,34 @@
 <resources>
     <string name="app_name">Tutorscout24-Android</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Test123</string>
+    <string name="title_display">Anzeigen</string>
+    <string name="title_tutorien">Tutorien</string>
+    <string name="title_create">Erstellen</string>
+    <string name="title_notifications">Nachrichten</string>
+    <string name="title_profile">Profil</string>
+
+    <string name="type_your_message">Enter msg</string>
+    <string name="NoRecent">No recent</string>
+
+    <string name="inputSubject">Fach</string>
+    <string name="inputDescription_Label">Deine Beschreibung...</string>
+    <string name="btnCreate_Text">Anfrage Erstellen</string>
+    <string name="name">Name</string>
+    <string name="title_activity_profile">profileActivity</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+    <string-array name="duration_array">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+    <string-array name="range_array">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
 </resources>

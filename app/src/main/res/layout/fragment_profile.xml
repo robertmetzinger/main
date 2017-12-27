@@ -1,0 +1,125 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.profileFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="294dp"
+            android:layout_height="441dp"
+            android:background="@drawable/trans_white_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/txtProfileFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="10dp"
+                    android:ems="10"
+                    android:hint="Vorname"
+                    android:inputType="textPersonName" />/>
+
+                <EditText
+                    android:id="@+id/txtProfileLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Nachname"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/txtProfileLastGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Geschlecht"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/txtProfileAge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Alter"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/txtProfileAdress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Adresse"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/txtProfileMail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Mail"
+                    android:inputType="textEmailAddress" />
+
+                <EditText
+                    android:id="@+id/txtProfileGraduation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:ems="10"
+                    android:hint="Akademischer Abschluss"
+                    android:inputType="textEmailAddress" />
+
+                <EditText
+                    android:id="@+id/txtProfileNotiz"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Notiz"
+                    android:inputType="textMultiLine"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"/>
+
+                <Button
+                    android:id="@+id/btnSpeichern"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Speichern"
+                    tools:text="Speichern"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/login_buttonstyle"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>
