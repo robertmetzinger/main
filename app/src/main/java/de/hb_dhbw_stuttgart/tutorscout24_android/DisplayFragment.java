@@ -13,7 +13,6 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -57,7 +56,13 @@ import java.util.Locale;
 import java.util.Objects;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
+/**
+ * Created by Robert
+ */
+
+//Dieses Fragment enthält den Feed und die Map, in denen die Tutorings angezeigt werden
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class DisplayFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -86,10 +91,6 @@ public class DisplayFragment extends Fragment implements
         rootView = inflater.inflate(R.layout.fragment_display, container, false);
         ButterKnife.bind(this, rootView);
 
-        Locale.Builder builder = new Locale.Builder();
-        builder.setRegion("DE");
-        builder.setLanguage("deu");
-        builder.build();
         geocoder = new Geocoder(getContext(), Locale.getDefault());
 
         TabHost host = rootView.findViewById(R.id.tabHost);
@@ -110,13 +111,14 @@ public class DisplayFragment extends Fragment implements
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //Beim Runterswipen werden die Tutorings neu aus dem Backend geladen
                 getTutoringOffersFromBackend();
             }
         });
 
+        //Der Suchdialog wird zu Anfang erstellt, damit er später angezeigt werden kann
         searchDialogFragment = new SearchDialogFragment();
         searchDialogFragment.setParams(inflater, this, getContext(), getActivity(), geocoder);
-        setUpFab();
         setUpSearchView();
 
         mMapView = rootView.findViewById(R.id.mapView);
@@ -134,7 +136,7 @@ public class DisplayFragment extends Fragment implements
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
 
-                // For showing a move to my location button
+                // Prüfen, ob Standorterfassung erlaubt ist, zum Anzeigen des Standortes in der Map
                 if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
@@ -144,6 +146,7 @@ public class DisplayFragment extends Fragment implements
                 settings.setZoomControlsEnabled(true);
                 settings.setMapToolbarEnabled(true);
 
+                //Beim Klicken eines Markers auf der Map werden der entsprechende User und das Fach angezeigt, sowie eine Einblendung der Tutoring ID
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -152,6 +155,8 @@ public class DisplayFragment extends Fragment implements
                         return false;
                     }
                 });
+
+                //Bei Gedrückthalten eines Markers auf der Map wird ein DetailTutoringFragment geöffnet (um das Gedrückthalten zu erkennen wird hierfür der DragListener des Markers verwendet)
                 googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                     @Override
                     public void onMarkerDragStart(Marker marker) {
@@ -160,7 +165,6 @@ public class DisplayFragment extends Fragment implements
                         detailTutoringFragment.setParams(item.getUserName(), item.getTutoringId(), item.getSubject(), item.getText(), item.getDistanceKm(), item.getCreationDate(), item.getExpirationDate());
                         ((MainActivity) getActivity()).changeFragment(detailTutoringFragment, "DetailTutoring");
                     }
-
                     @Override
                     public void onMarkerDrag(Marker marker) {
                     }
@@ -180,26 +184,25 @@ public class DisplayFragment extends Fragment implements
                     .build();
         }
 
+        //Initiales Anzeigen der Tutorings vom aktuellen Standort aus
+        getMyLocation();
         getTutoringOffersFromBackend();
 
         return rootView;
     }
 
-    public void setUpFab() {
-        FloatingActionButton fab = rootView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchDialogFragment.createDialog();
-                searchDialogFragment.openDialog();
-            }
-        });
+    //Beim Drücken des Sucheinstellungs-Buttons wird der Suchdialog geöffnet
+    @OnClick(R.id.fab)
+    public void showDialog() {
+        searchDialogFragment.createDialog();
+        searchDialogFragment.openDialog();
     }
 
-
+    //Initialisieren des Suchfeldes in der Map
     public void setUpSearchView() {
         searchView = rootView.findViewById(R.id.searchView);
 
+        //Adapter für Suchvorschläge
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
         suggestionsAdapterForMapSearch = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,
@@ -210,16 +213,16 @@ public class DisplayFragment extends Fragment implements
         searchView.setSuggestionsAdapter(suggestionsAdapterForMapSearch);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //Suche starten wenn der Nutzer seine Eingabe bestätigt
             @Override
             public boolean onQueryTextSubmit(String query) {
                 search(query);
                 return false;
             }
-
+            //Suchvorchläge anzeigen, wenn der Nutzer etwas eingibt
             @Override
             public boolean onQueryTextChange(String newText) {
                 getSearchSuggestions(suggestionsAdapterForMapSearch, newText);
-                //if (suggestions != null) populateAdapter(suggestions);
                 return true;
             }
         });
@@ -230,6 +233,7 @@ public class DisplayFragment extends Fragment implements
                 return false;
             }
 
+            //wenn der Nutzer einen Suchvorschlag auswählt, wird dieser in das Suchfeld geschrieben
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = suggestionsAdapterForMapSearch.getCursor();
@@ -241,6 +245,7 @@ public class DisplayFragment extends Fragment implements
         });
     }
 
+    //Methode zum Ermitteln des aktuellen Standortes des Nutzers (nur möglich, wenn Zugriff auf den Standort erlaubt ist)
     public void getMyLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
@@ -256,6 +261,7 @@ public class DisplayFragment extends Fragment implements
         });
     }
 
+    //Bei einer Eingabe des Benutzers in das Suchfeld werden mittels Geocoder Suchvorschläge angezeigt
     public void getSearchSuggestions(SimpleCursorAdapter suggestionsAdapter, String query) {
 
         if (!query.equals(null) && !query.trim().equals("")) {
@@ -263,7 +269,7 @@ public class DisplayFragment extends Fragment implements
             List<Address> addresses;
 
             try {
-                // Getting a maximum of 3 Address that matches the input text
+                //versucht maximal 10-mal per Geocoder eine passende Adresse zu dem Eingabestring zu ermitteln, da manchmal die Adresse nicht gleich gefunden wird. Maximal werden 3 Vorschläge angezeigt
                 int counter = 0;
                 do {
                     addresses = geocoder.getFromLocationName(query, 3);
@@ -289,13 +295,13 @@ public class DisplayFragment extends Fragment implements
         }
     }
 
+    //bewegt die Kamera in der Map auf den Ort, nach dem gesucht wird
     public void search(String query) {
 
         List<Address> addresses;
 
         try {
-            // Getting a maximum of 3 Address that matches the input
-            // text
+            //versucht maximal 10-mal per Geocoder eine passende Adresse zu dem Eingabestring zu ermitteln, da manchmal die Adresse nicht gleich gefunden wird
             int counter = 0;
             do {
                 addresses = geocoder.getFromLocationName(query, 1);
@@ -314,11 +320,11 @@ public class DisplayFragment extends Fragment implements
         }
     }
 
+    //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
     public ArrayList<FeedItem> loadData(JSONArray feedData) {
         ArrayList<FeedItem> feedArrayList = new ArrayList<>();
 
         try {
-            //Backend Request um die Daten für den Feed zu erhalten
             //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
             for (int i = 0; i < feedData.length(); i++) {
                 JSONObject object = feedData.getJSONObject(i);
@@ -341,6 +347,7 @@ public class DisplayFragment extends Fragment implements
         return feedArrayList;
     }
 
+    //Filtern der Tutorings nach dem gesuchten Fach (nur diejenigen werden angezeigt, deren Fach den vom Nutzer angegebenen String enthalten)
     public ArrayList<FeedItem> filterFeedItemList(ArrayList<FeedItem> feedArrayList) {
         ArrayList<FeedItem> filteredList = new ArrayList<>();
         for (FeedItem item : feedArrayList) {
@@ -349,15 +356,21 @@ public class DisplayFragment extends Fragment implements
         return filteredList;
     }
 
+    //Anzeigen der Tutorings im Feed (aufsteigend nach Entfernung) und in der Map (Marker am jeweiligen Ort)
     public void showTutoringsInFeedAndMap(ArrayList<FeedItem> feedArrayList) {
-        //erzeuge Listenobjekte für die ListView
+
+        //Filtern der Tutorings, falls der Nutzer bei der Suche eine Eingabe zum Fach gemacht hat
         if (subjectContains != null && !Objects.equals(subjectContains, ""))
             feedArrayList = filterFeedItemList(feedArrayList);
         Collections.sort(feedArrayList, new FeedSorter());
+
+        //Hinzufügen der Tutorings zur ListView per FeedItemAdapter
         FeedItemAdapter adapter = new FeedItemAdapter(feedArrayList, getContext());
         ListView feedListView = rootView.findViewById(R.id.feed_list_view);
         feedListView.setAdapter(adapter);
         final ArrayList<FeedItem> finalFeedArrayList = feedArrayList;
+
+        //Bei Gedrückthalten eines Tutorings im Feed wird ein DetailTutoringFragment geöffnet
         feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -370,6 +383,7 @@ public class DisplayFragment extends Fragment implements
         });
         swipeContainer.setRefreshing(false);
 
+        //Für jedes Tutoring wird ein Marker in der Map hinzugefügt
         googleMap.clear();
         Marker currentMarker;
         for (FeedItem item : feedArrayList) {
@@ -381,10 +395,12 @@ public class DisplayFragment extends Fragment implements
             currentMarker.setTag(item);
             markerTutoringIdHashMap.put(currentMarker, tutoringId);
         }
+        //bewegen der Kamera zum aktuellen Standort
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(gpsBreitengrad, gpsLaengengrad)));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
     }
 
+    //Backend-Request zum Erhalten der Tutorings
     public void getTutoringOffersFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/offers";
@@ -405,24 +421,21 @@ public class DisplayFragment extends Fragment implements
         CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                //wenn der Request erfolgreich war, werden die Tutorings in Feed und Map angezeigt
                 ArrayList<FeedItem> feedArrayList = loadData(response);
                 showTutoringsInFeedAndMap(feedArrayList);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-/*                String json = new String(error.networkResponse.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json);
-*/
             }
         });
 
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
     }
 
+    //Senden eines Requests an das Backend zum Erhalten der Tutorings
     public void getTutoringRequestsFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/requests";
@@ -443,23 +456,21 @@ public class DisplayFragment extends Fragment implements
         CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                //wenn der Request erfolgreich war, werden die Tutorings in Feed und Map angezeigt
                 ArrayList<FeedItem> feedArrayList = loadData(response);
                 showTutoringsInFeedAndMap(feedArrayList);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-/*                String json = new String(error.networkResponse.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json);
-*/
             }
         });
 
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
     }
 
+    //erzeugt ein JSONObject mit den Username und Passwort zur Authentifizierung im Backend
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {
@@ -510,10 +521,9 @@ public class DisplayFragment extends Fragment implements
 
     }
 
+    //Setters
 
-    public void setSubjectContains(String subjectContains) {
-        this.subjectContains = subjectContains;
-    }
+    public void setSubjectContains(String subjectContains) {this.subjectContains = subjectContains;}
 
     public void setGpsBreitengrad(double gpsBreitengrad) {
         this.gpsBreitengrad = gpsBreitengrad;

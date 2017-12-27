@@ -4,6 +4,7 @@ package de.hb_dhbw_stuttgart.tutorscout24_android;
  * Created by Robert on 27.11.2017.
  */
 
+//Diese Klasse enthält alle Daten eines Tutorings, das im Feed angezeigt wird
 public class FeedItem {
 
     private String tutoringId;
@@ -27,6 +28,8 @@ public class FeedItem {
         this.longitude = longitude;
         this.distanceKm = distanceKm;
     }
+
+    //Getters
 
     String getTutoringId() {
         return tutoringId;

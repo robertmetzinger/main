@@ -31,7 +31,10 @@ import butterknife.OnClick;
 
 
 /**
+ * Created by Robert
  */
+
+//Dieses Fragment ist eine Detailansicht eines eigenen Tutorings
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class MyTutoringDetailFragment extends Fragment {
 
@@ -46,6 +49,7 @@ public class MyTutoringDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
+    //Die Daten des aufgerufenen Tutorings werden hier übergeben
     public void setParams(String userName, String tutoringId, String subject, String description, String creationDate, String expirationDate) {
         this.userName = userName;
         this.tutoringId = tutoringId;
@@ -74,6 +78,7 @@ public class MyTutoringDetailFragment extends Fragment {
         TextView creDate = view.findViewById(R.id.creationDateTxt2);
         TextView expDate = view.findViewById(R.id.expirationDateTxt2);
 
+        //Schreiben der Daten in die entsprechenden TextViews
         userTitle.setText(userName);
         subj.setText(subject);
         id.setText(tutoringId);
@@ -84,6 +89,7 @@ public class MyTutoringDetailFragment extends Fragment {
         return view;
     }
 
+    //Methode zum Umformatieren der Datumangaben für eine nutzerfreundliche Darstellung
     private String formatDateString(String dateString) {
         SimpleDateFormat stringToDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
         SimpleDateFormat dateToString = new SimpleDateFormat("dd.MM.yyyy\nHH:mm", Locale.getDefault());
@@ -96,6 +102,7 @@ public class MyTutoringDetailFragment extends Fragment {
         return dateString;
     }
 
+    //Beim Klicken des Löschen-Buttons wird ein Bestätigungs-Dialog geöffnet. Nach Akzeptieren wird ein Backend-Request zum Löschen des Tutorings erstellt
     @OnClick(R.id.btnDeleteTutoring)
     public void OnDeleteButtonPressed() {
         new AlertDialog.Builder(getContext())
@@ -110,6 +117,7 @@ public class MyTutoringDetailFragment extends Fragment {
                 .setNegativeButton("Abbrechen", null).show();
     }
 
+    //Senden eines Requests an das Backend zum Löschen des entsprechenden Tutorings
     public void deleteTutoring() {
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/delete";
 
@@ -139,10 +147,11 @@ public class MyTutoringDetailFragment extends Fragment {
                         Log.e("", "onErrorResponse: " + json);
                     }
                 });
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(request);
     }
 
+    //erzeugt ein JSONObject mit den Username und Passwort zur Authentifizierung im Backend
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {

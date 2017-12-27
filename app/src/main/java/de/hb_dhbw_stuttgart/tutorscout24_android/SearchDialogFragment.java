@@ -41,6 +41,8 @@ import co.ceryle.segmentedbutton.SegmentedButtonGroup;
  * Created by Robert on 06.12.2017.
  */
 
+
+//Dialog zum Anpassen der Sucheinstellungen im Feed
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class SearchDialogFragment extends DialogFragment {
 
@@ -68,6 +70,7 @@ public class SearchDialogFragment extends DialogFragment {
         super();
     }
 
+    //Übergeben einiger benötigter Parameter aus dem DisplayFragment
     public void setParams(LayoutInflater inflater, DisplayFragment parent, Context context, Activity activity, Geocoder geocoder) {
         this.inflater = inflater;
         this.parent = parent;
@@ -76,22 +79,29 @@ public class SearchDialogFragment extends DialogFragment {
         this.geocoder = geocoder;
     }
 
+    //öffnet den Dialog
     public void openDialog() {
         builder.show();
     }
 
+    //erzeugt den Dialog
     public void createDialog() {
+        //Erzeugen der View für den Dialog
         View dialogView = inflater.inflate(R.layout.search_dialog_layout, null);
         builder = new AlertDialog.Builder(context);
         ButterKnife.bind(this, dialogView);
-        builder.setView(dialogView);
         setUpSearchDialog(dialogView);
+        builder.setView(dialogView);
+
+        //Beim Klicken des Abbrechen-Buttons wird der Dialog geschlossen
         builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
+
+        //Beim Klicken des Übernehmen-Buttons werden die Nutzereingaben im Dialog an das DisplayFragment übergeben und mit diesen Daten ein Backend-Request gesendet
         builder.setPositiveButton("Übernehmen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -110,6 +120,8 @@ public class SearchDialogFragment extends DialogFragment {
                 else if (mode == 1) parent.getTutoringRequestsFromBackend();
             }
         });
+
+        //Auswählen des Suchmodus (Student oder Tutor) durch Klicken des entsprechenden Segmented Buttons
         segmentedButtonGroup.setOnClickedButtonListener(new SegmentedButtonGroup.OnClickedButtonListener() {
             @Override
             public void onClickedButton(int position) {
@@ -119,15 +131,22 @@ public class SearchDialogFragment extends DialogFragment {
         locationProviderClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
+    //Initialisieren des Dialogs
     public void setUpSearchDialog(View dialogView) {
+
+        //UI Elemente holen
         segmentedButtonGroup = dialogView.findViewById(R.id.buttonGroupCreate);
         subjectFilterTxt = dialogView.findViewById(R.id.subjectFilterTxt);
         feedSearchView = dialogView.findViewById(R.id.feed_search_view);
         rangeSpinner = dialogView.findViewById(R.id.range_spinner);
+
+        //UI Elemente auf Anfangswerte setzen (wenn der Dialog schon mal zuvor geöffnet wurde, werden die Daten vom letzten Mal jetzt wieder angezeigt)
         addItemsToSpinner();
         segmentedButtonGroup.setPosition(mode);
         if (location != null) feedSearchView.setQuery(location, false);
         if (rangeKm != null) rangeSpinner.setPrompt(rangeKm);
+
+        //Adapter für Suchvorschläge
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
         suggestionsAdapter = new SimpleCursorAdapter(activity,
                 android.R.layout.simple_list_item_1,
@@ -136,6 +155,8 @@ public class SearchDialogFragment extends DialogFragment {
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         feedSearchView.setSuggestionsAdapter(suggestionsAdapter);
+
+        //Suchfeld anpassen
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -144,6 +165,7 @@ public class SearchDialogFragment extends DialogFragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                //Anzeigen von Suchvorschlägen, wenn der Nutzer etwas eingibt
                 getSearchSuggestions(newText);
                 return true;
             }
@@ -156,6 +178,7 @@ public class SearchDialogFragment extends DialogFragment {
 
             @Override
             public boolean onSuggestionClick(int position) {
+                //wenn der Nutzer einen Suchvorschlag auswählt, wird dieser in das Eingabefeld geschrieben
                 Cursor cursor = suggestionsAdapter.getCursor();
                 cursor.moveToPosition(position);
                 feedSearchView.setQuery(cursor.getString(0), false);
@@ -165,18 +188,21 @@ public class SearchDialogFragment extends DialogFragment {
         });
     }
 
+    //Beim Klicken des MyLocation-Buttons wird der aktuelle Standort in das Eingabefeld geschrieben
     @OnClick(R.id.btnMyLocation)
     public void setMyLocationToSearchField() {
         getMyLocation();
         setCity();
     }
 
+    //Dem Spinner (Dropdown List) werden die vordefinierten Auswahlmöglichkeiten für die Entfernung, in der gesucht werden soll, hinzugefügt
     public void addItemsToSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.range_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         rangeSpinner.setAdapter(adapter);
     }
 
+    //Methode zum Ermitteln des aktuellen Standortes des Nutzers (nur möglich, wenn Zugriff auf den Standort erlaubt ist)
     public void getMyLocation() {
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
@@ -192,6 +218,7 @@ public class SearchDialogFragment extends DialogFragment {
         });
     }
 
+    //der aus Längen- und Breitengrad ermittlelte Standort wird in das Eingabefeld eingetragen
     private void setCity() {
         List<Address> addresses;
         try {
@@ -214,6 +241,7 @@ public class SearchDialogFragment extends DialogFragment {
         }
     }
 
+    //Bei einer Eingabe des Benutzers in das Suchfeld werden mittels Geocoder Suchvorschläge angezeigt
     public void getSearchSuggestions(String query) {
 
         if (!query.equals(null) && !query.trim().equals("")) {
@@ -247,6 +275,7 @@ public class SearchDialogFragment extends DialogFragment {
         }
     }
 
+    //ermittelt Längen- und Breitengrad aus der Eingabe des Nutzers per Geocoder
     public LatLng getLatLngFromSearchField() {
         String searchLocation = feedSearchView.getQuery().toString();
         List<Address> addresses;

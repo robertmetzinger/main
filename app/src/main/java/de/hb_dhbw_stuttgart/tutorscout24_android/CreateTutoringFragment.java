@@ -52,7 +52,10 @@ import co.ceryle.segmentedbutton.SegmentedButtonGroup;
 
 
 /**
+ * Created by Robert
  */
+
+//Dieses Fragment dient zum Erstellen von Tutorings (Offer oder Request)
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class CreateTutoringFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -113,8 +116,11 @@ public class CreateTutoringFragment extends Fragment implements
         return rootView;
     }
 
+    //Initialisieren des Suchfeldes für den Standort, an dem das Tutoring erstellt werden soll
     public void setUpLocationTextField() {
         locationSearch = rootView.findViewById(R.id.locationSearch);
+
+        //Adapter für Suchvorschläge
         final int[] to = new int[]{android.R.id.text1, android.R.id.text2};
         suggestionsAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,
@@ -130,6 +136,7 @@ public class CreateTutoringFragment extends Fragment implements
                 return false;
             }
 
+            //Suchvorchläge anzeigen, wenn der Nutzer etwas eingibt
             @Override
             public boolean onQueryTextChange(String newText) {
                 getSearchSuggestions(newText);
@@ -142,6 +149,7 @@ public class CreateTutoringFragment extends Fragment implements
                 return false;
             }
 
+            //wenn der Nutzer einen Suchvorschlag auswählt, wird dieser in das Suchfeld geschrieben
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = suggestionsAdapter.getCursor();
@@ -153,6 +161,7 @@ public class CreateTutoringFragment extends Fragment implements
         });
     }
 
+    //Bei einer Eingabe des Benutzers in das Suchfeld werden mittels Geocoder Suchvorschläge angezeigt
     public void getSearchSuggestions(String query) {
 
         if (!query.equals(null) && !query.trim().equals("")) {
@@ -160,7 +169,7 @@ public class CreateTutoringFragment extends Fragment implements
             List<Address> addresses;
 
             try {
-                // Getting a maximum of 3 Address that matches the input text
+                //versucht maximal 10-mal per Geocoder eine passende Adresse zu dem Eingabestring zu ermitteln, da manchmal die Adresse nicht gleich gefunden wird. Maximal werden 3 Vorschläge angezeigt
                 int counter = 0;
                 do {
                     addresses = geocoder.getFromLocationName(query, 3);
@@ -186,6 +195,7 @@ public class CreateTutoringFragment extends Fragment implements
         }
     }
 
+    //Dem Spinner (Dropdown List) werden die vordefinierten Auswahlmöglichkeiten für die Dauer des Tutorings hinzugefügt
     public void addItemsToSpinner() {
         Spinner spinner = rootView.findViewById(R.id.spinnerDuration);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.duration_array, android.R.layout.simple_spinner_item);
@@ -193,12 +203,14 @@ public class CreateTutoringFragment extends Fragment implements
         spinner.setAdapter(adapter);
     }
 
+    //Beim Klicken des MyLocation-Buttons wird der Standort des Nutzers in das Eingabefeld geschrieben
     @OnClick(R.id.btnMyLocation)
     public void setMyLocationToTextField() {
         getMyLocation();
         setCity();
     }
 
+    //Methode zum Ermitteln des aktuellen Standortes des Nutzers (nur möglich, wenn Zugriff auf den Standort erlaubt ist)
     public void getMyLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
@@ -209,13 +221,12 @@ public class CreateTutoringFragment extends Fragment implements
             public void onSuccess(Location location) {
                 gpsBreitengrad = location.getLatitude();
                 gpsLaengengrad = location.getLongitude();
-                Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    //der aus Längen- und Breitengrad ermittlelte Standort wird in das Eingabefeld eingetragen
     private void setCity() {
-        Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
         List<Address> addresses;
         try {
             int counter = 0;
@@ -232,12 +243,14 @@ public class CreateTutoringFragment extends Fragment implements
                 }
                 SearchView t = getView().findViewById(R.id.locationSearch);
                 t.setQuery(adressText.toString(), false);
+                Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    //bei Klicken des Erstellen-Buttons wird ein Bestätigungsdialog geöffnet. Nach Akzeptieren wird die Anfrage zum Erstellen des Tutorings an das Backend gesendet
     @OnClick(R.id.btnCreateOffer)
     public void showConfirmationDialog() {
         new AlertDialog.Builder(getContext())
@@ -254,6 +267,7 @@ public class CreateTutoringFragment extends Fragment implements
                 .setNegativeButton("Nein", null).show();
     }
 
+    //liest die Eingaben aus der View und sendet eine Anfrage zum Erstellen eines Requests an das Backend
     public void createRequest() {
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/createRequest";
 
@@ -288,18 +302,15 @@ public class CreateTutoringFragment extends Fragment implements
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        //String json = new String(error.networkResponse.data);
-                        //json = trimMessage(json, "message");
-                        //Log.e("", "onErrorResponse: " + json);
                     }
                 });
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(request);
     }
 
+    //liest die Eingaben aus der View und sendet eine Anfrage zum Erstellen eines Offers an das Backend
     public void createOffer() {
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/createOffer";
-
         String subject = subjectTxt.getText().toString();
         String text = infoTxt.getText().toString();
         int duration = Integer.parseInt(durationSpinner.getSelectedItem().toString());
@@ -331,15 +342,13 @@ public class CreateTutoringFragment extends Fragment implements
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        //String json = new String(error.networkResponse.data);
-                        //json = trimMessage(json, "message");
-                        //Log.e("", "onErrorResponse: " + json);
                     }
                 });
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(request);
     }
 
+    //ermittelt Längen- und Breitengrad aus der Eingabe des Nutzers per Geocoder
     public LatLng getLatLngFromSearchField() {
         String location = locationSearch.getQuery().toString();
         List<Address> addresses;
@@ -358,6 +367,7 @@ public class CreateTutoringFragment extends Fragment implements
         return null;
     }
 
+    //erzeugt ein JSONObject mit den Username und Passwort zur Authentifizierung im Backend
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {

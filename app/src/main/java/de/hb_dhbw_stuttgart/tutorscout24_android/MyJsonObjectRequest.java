@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
  * Created by Robert on 04.12.2017.
  */
 
+//Dieser Request liefert ein JSONObject an das Backend aber bekommt kein JSONObject zurück
 public class MyJsonObjectRequest extends JsonObjectRequest {
 
     MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {

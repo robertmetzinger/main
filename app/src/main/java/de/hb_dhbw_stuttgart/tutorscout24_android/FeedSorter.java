@@ -6,6 +6,7 @@ import java.util.Comparator;
  * Created by Robert on 26.12.2017.
  */
 
+//Klasse zum Sortieren der Tutorings nach aufsteigender Entfernung
 public class FeedSorter implements Comparator<FeedItem> {
 
     @Override

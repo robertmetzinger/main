@@ -18,6 +18,7 @@ import java.util.Locale;
  * Created by Robert on 27.11.2017.
  */
 
+//Dieser Adapter ermöglicht das Anzeigen von Tutorings in einer ListView
 public class FeedItemAdapter extends BaseAdapter {
 
     private ArrayList<FeedItem> feed;
@@ -43,6 +44,7 @@ public class FeedItemAdapter extends BaseAdapter {
         return 0;
     }
 
+    //erzeugt eine View, die das Tutoring im Feed darstellt. Hierfür wird das ViewHolder Pattern verwendet
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         FeedItem item = feed.get(position);
@@ -72,9 +74,10 @@ public class FeedItemAdapter extends BaseAdapter {
         return convertView;
     }
 
+    //Methode zum Umformatieren der Datumangaben für eine nutzerfreundliche Darstellung
     private String formatDateString(String dateString) {
         SimpleDateFormat stringToDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        SimpleDateFormat dateToString = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat dateToString = new SimpleDateFormat("dd.MM.yyyy\nHH:mm", Locale.getDefault());
         try {
             Date date = stringToDate.parse(dateString);
             dateString = dateToString.format(date);
@@ -84,6 +87,7 @@ public class FeedItemAdapter extends BaseAdapter {
         return dateString;
     }
 
+    //ViewHolder für das Tutoring
     private class ViewHolderForFeedItem{
         TextView creatorTextView;
         TextView subjectTextView;

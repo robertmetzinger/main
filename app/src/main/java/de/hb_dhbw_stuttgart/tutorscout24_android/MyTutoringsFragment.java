@@ -27,7 +27,10 @@ import butterknife.ButterKnife;
 
 
 /**
+ * Created by Robert
  */
+
+//Dieses Fragment dient zum Anzeigen der eigenen Tutorings in einer ListView
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class MyTutoringsFragment extends Fragment {
 
@@ -69,6 +72,7 @@ public class MyTutoringsFragment extends Fragment {
         swipeContainerOffers.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //Beim Runterswipen werden die eigenen Offers neu aus dem Backend geladen
                 getMyOffersFromBackend();
             }
         });
@@ -77,16 +81,19 @@ public class MyTutoringsFragment extends Fragment {
         swipeContainerRequests.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //Beim Runterswipen werden die eigenen Requests neu aus dem Backend geladen
                 getMyRequestsFromBackend();
             }
         });
 
+        //Initiales Anzeigen der eigenen Offers und Requests
         getMyOffersFromBackend();
         getMyRequestsFromBackend();
 
         return rootView;
     }
 
+    //Senden eines Requests an das Backend zum Erhalten der eigenen Tutoring-Offers
     public void getMyOffersFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/myOffers";
@@ -102,21 +109,20 @@ public class MyTutoringsFragment extends Fragment {
         CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                //wenn der Request erfolgreich war, werden die eigenen Tutoring-Offers in der ListView angezeigt
                 ArrayList<FeedItem> feedArrayList = loadTutorings(response);
                 showTutoringsInList(feedArrayList, "offers");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                /*String json = new String(error.networkResponse.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json);*/
             }
         });
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
     }
 
+    //Senden eines Requests an das Backend zum Erhalten der eigenen Tutoring-Requests
     public void getMyRequestsFromBackend() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/tutoring/myRequests";
@@ -132,21 +138,20 @@ public class MyTutoringsFragment extends Fragment {
         CustomJsonArrayRequest jsArrRequest = new CustomJsonArrayRequest(Request.Method.POST, url, requestBody, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                //wenn der Request erfolgreich war, werden die eigenen Tutoring-Requests in der ListView angezeigt
                 ArrayList<FeedItem> feedArrayList = loadTutorings(response);
                 showTutoringsInList(feedArrayList, "requests");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                /*String json = new String(error.networkResponse.data);
-                json = trimMessage(json, "message");
-                Log.e("", "onErrorResponse: " + json);*/
             }
         });
-        // Access the RequestQueue through your singleton class.
+        // Übergeben des Requests an den RequestManager
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsArrRequest);
     }
 
+    //erzeugt ein JSONObject mit den Username und Passwort zur Authentifizierung im Backend
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {
@@ -158,11 +163,11 @@ public class MyTutoringsFragment extends Fragment {
         return authentication;
     }
 
+    //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
     public ArrayList<FeedItem> loadTutorings(JSONArray feedData) {
         ArrayList<FeedItem> feedArrayList = new ArrayList<>();
 
         try {
-            //Backend Request um die Daten für den Feed zu erhalten
             //lese Infos aus dem JSON Array und schreibe sie in eine Liste von FeedItems
             for (int i = 0; i < feedData.length(); i++) {
                 JSONObject object = feedData.getJSONObject(i);
@@ -183,13 +188,19 @@ public class MyTutoringsFragment extends Fragment {
         return feedArrayList;
     }
 
+    //Anzeigen der Tutorings in der ListView
     public void showTutoringsInList(final ArrayList<FeedItem> feedArrayList, String type) {
-        //erzeuge Listenobjekte für die ListView
+
+        //Auswählen der jeweiligen ListView, in der die Tutorings angezeigt werden (Offers oder Requests)
         ListView feedListView = null;
-        FeedItemAdapter adapter = new FeedItemAdapter(feedArrayList, getContext());
         if (type.equals("offers")) feedListView = rootView.findViewById(R.id.myOffers_list_view);
         else if (type.equals("requests")) feedListView = rootView.findViewById(R.id.myRequests_list_view);
+
+        //Hinzufügen der Tutorings zur ListView per FeedItemAdapter
+        FeedItemAdapter adapter = new FeedItemAdapter(feedArrayList, getContext());
         feedListView.setAdapter(adapter);
+
+        //Bei Gedrückthalten eines Tutorings wird ein MyTutoringDetailFragment geöffnet
         feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {

@@ -20,8 +20,10 @@ import butterknife.OnClick;
 
 
 /**
+ * Created by Robert
  */
 
+//Dieses Fragment ist eine Detailansicht eines Tutorings
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class DetailTutoringFragment extends Fragment {
 
@@ -37,6 +39,7 @@ public class DetailTutoringFragment extends Fragment {
         // Required empty public constructor
     }
 
+    //Die Daten des aufgerufenen Tutorings werden hier übergeben
     public void setParams(String userName, String tutoringId, String subject, String description, Double distance, String creationDate, String expirationDate) {
         this.userName = userName;
         this.tutoringId = tutoringId;
@@ -67,6 +70,7 @@ public class DetailTutoringFragment extends Fragment {
         TextView creDate = view.findViewById(R.id.creationDateTxt);
         TextView expDate = view.findViewById(R.id.expirationDateTxt);
 
+        //Schreiben der Daten in die entsprechenden TextViews
         userTitle.setText(userName);
         subj.setText(subject);
         id.setText(tutoringId);
@@ -79,9 +83,10 @@ public class DetailTutoringFragment extends Fragment {
         return view;
     }
 
+    //Methode zum Umformatieren der Datumangaben für eine nutzerfreundliche Darstellung
     private String formatDateString(String dateString) {
         SimpleDateFormat stringToDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        SimpleDateFormat dateToString = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat dateToString = new SimpleDateFormat("dd.MM.yyyy\nHH:mm", Locale.getDefault());
         try {
             Date date = stringToDate.parse(dateString);
             dateString = dateToString.format(date);
@@ -91,6 +96,7 @@ public class DetailTutoringFragment extends Fragment {
         return dateString;
     }
 
+    //Beim Klicken des Kontaktieren-Buttons wird ein neuer Chat mit dem entsprechenden User angelegt und angezeigt
     @OnClick(R.id.btnContactUser)
     public void OnContactButtonClick() {
         ((MainActivity) getActivity()).addKontakt(userName);
