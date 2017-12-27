@@ -6,11 +6,13 @@ import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -54,6 +56,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import android.os.Vibrator;
 
 import butterknife.ButterKnife;
 
@@ -73,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String KEY_IS_RESOLVING = "is_resolving";
     private static final int RC_SAVE = 1;
     private static final int RC_HINT = 2;
     private static final int RC_READ = 3;
@@ -564,6 +566,10 @@ public class MainActivity extends AppCompatActivity implements
                     try {
                         JSONObject o = (JSONObject) response.get(i);
                         chatUser = o.getString("fromUserId");
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(500);
+                        addKontakt(chatUser);
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
