@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItem;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
+
 /**
  * Created by Robert on 27.11.2017.
  */
@@ -24,7 +27,7 @@ public class FeedItemAdapter extends BaseAdapter {
     private ArrayList<FeedItem> feed;
     private Context context;
 
-    FeedItemAdapter(ArrayList<FeedItem> feed, Context context) {
+    public FeedItemAdapter(ArrayList<FeedItem> feed, Context context) {
         this.feed = feed;
         this.context = context;
     }

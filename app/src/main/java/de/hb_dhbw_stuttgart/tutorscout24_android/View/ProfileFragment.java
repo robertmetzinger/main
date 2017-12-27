@@ -1,7 +1,6 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -22,55 +21,34 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnFocusChange;
-import butterknife.OnItemClick;
-import butterknife.OnItemSelected;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MyJsonObjectRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.User;
 
 
-/**
- * A simple {@link android.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link profileFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link profileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 @RequiresApi(api = Build.VERSION_CODES.M)
-public class profileFragment extends android.app.Fragment implements
+public class ProfileFragment extends android.app.Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private final static String USER_FIRSTNAME = "USER_FIRSTNAME";
@@ -94,13 +72,13 @@ public class profileFragment extends android.app.Fragment implements
     GoogleApiClient googleApiClient;
     private OnFragmentInteractionListener fragmentListener;
 
-    public profileFragment() {
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
 
-    public static profileFragment newInstance(String name, String mail) {
-        profileFragment fragment = new profileFragment();
+    public static ProfileFragment newInstance(String name, String mail) {
+        ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
         args.putString(USER_FIRSTNAME, name);
         args.putString(USER_LASTNAME, mail);
@@ -169,16 +147,12 @@ public class profileFragment extends android.app.Fragment implements
         Log.d("BIn", "onCreateView: ");
 
 
-
-
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
         getUserInfo();
-
-
 
 
         super.onAttach(context);
@@ -225,7 +199,7 @@ public class profileFragment extends android.app.Fragment implements
     }
 
 
-  //  @OnClick(R.id.btnGetAdresse)
+    //  @OnClick(R.id.btnGetAdresse)
     public void connectToGoogleGPSApi() {
 
         Log.e("Try connect", "gps: ");
@@ -275,7 +249,7 @@ public class profileFragment extends android.app.Fragment implements
             params.put("lastName", lastName.getText().toString());
             params.put("birthdate", alter.getText().toString());
             params.put("gender", geschlecht.getText().toString());
-            if(currentUser.email.compareTo( mail.getText().toString()) != 0){
+            if (currentUser.email.compareTo(mail.getText().toString()) != 0) {
                 params.put("email", mail.getText().toString());
             }
             params.put("note", note.getText().toString());
@@ -287,7 +261,7 @@ public class profileFragment extends android.app.Fragment implements
         }
 
         MyJsonObjectRequest jsObjRequest = new MyJsonObjectRequest
-                (Request.Method.PUT, updateUserURL, params,   new Response.Listener<JSONObject>() {
+                (Request.Method.PUT, updateUserURL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Toast.makeText(getContext(), "Daten wurden gespeichert.", Toast.LENGTH_SHORT).show();
@@ -306,15 +280,15 @@ public class profileFragment extends android.app.Fragment implements
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
 
 
-        }
+    }
 
-    public String trimMessage(String json, String key){
+    public String trimMessage(String json, String key) {
         String trimmedString = null;
 
-        try{
+        try {
             JSONObject obj = new JSONObject(json);
             trimmedString = obj.getString(key);
-        } catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
@@ -339,7 +313,7 @@ public class profileFragment extends android.app.Fragment implements
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/myUserInfo";
 
 
-        JSONObject requestBody = ((MainActivity)getActivity()).getUserInfoJsn();
+        JSONObject requestBody = ((MainActivity) getActivity()).getUserInfoJsn();
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.POST, usercreateURL, requestBody, new Response.Listener<JSONObject>() {
@@ -371,7 +345,7 @@ public class profileFragment extends android.app.Fragment implements
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                       // Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -379,7 +353,7 @@ public class profileFragment extends android.app.Fragment implements
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
-    private void SetUserInfo(){
+    private void SetUserInfo() {
 
         EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
         EditText lastName = getView().findViewById(R.id.txtProfileLastName);

@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Logic;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
@@ -40,25 +40,28 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvingResultCallbacks;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.MapFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import android.os.Vibrator;
 
 import butterknife.ButterKnife;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.BlankFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.CreateTutoringFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.DisplayFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.KontakteFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.LoginFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.MyTutoringsFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -66,8 +69,6 @@ public class MainActivity extends AppCompatActivity implements
     public String chatUser = null;
     private static ArrayList<String> kontakte;
 
-    private MainActivity that = this;
-    private MapFragment mapFragment;
     FragmentTransaction transaction;
     TextView titleView;
 
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     titleView.setText("Profil");
 
-                    Fragment profileFragment = new profileFragment();
+                    Fragment profileFragment = new ProfileFragment();
                     changeFragment(profileFragment, "Profil");
 
                     return true;

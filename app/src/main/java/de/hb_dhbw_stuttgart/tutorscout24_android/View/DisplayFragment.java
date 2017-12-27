@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.app.Fragment;
 import android.content.pm.PackageManager;
@@ -57,6 +57,13 @@ import java.util.Objects;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonArrayRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItem;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItemAdapter;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.FeedSorter;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 /**
  * Created by Robert
@@ -162,7 +169,7 @@ public class DisplayFragment extends Fragment implements
                     public void onMarkerDragStart(Marker marker) {
                         FeedItem item = (FeedItem) marker.getTag();
                         DetailTutoringFragment detailTutoringFragment = new DetailTutoringFragment();
-                        detailTutoringFragment.setParams(item.getUserName(), item.getTutoringId(), item.getSubject(), item.getText(), item.getDistanceKm(), item.getCreationDate(), item.getExpirationDate());
+                        detailTutoringFragment.setParams(item.getUserName(), item.getTutoringId(), item.getSubject(), item.getText(), item.getDistanceKm(), item.getCreationDate(), item.getCreationDate() );
                         ((MainActivity) getActivity()).changeFragment(detailTutoringFragment, "DetailTutoring");
                     }
                     @Override

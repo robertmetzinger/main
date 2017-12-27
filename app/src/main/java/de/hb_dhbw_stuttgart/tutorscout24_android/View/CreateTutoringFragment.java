@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -49,6 +49,10 @@ import java.util.Locale;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.ceryle.segmentedbutton.SegmentedButtonGroup;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MyJsonObjectRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
 /**

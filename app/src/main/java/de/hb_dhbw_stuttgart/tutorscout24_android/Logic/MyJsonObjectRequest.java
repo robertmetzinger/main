@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Logic;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -18,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 //Dieser Request liefert ein JSONObject an das Backend aber bekommt kein JSONObject zurück
 public class MyJsonObjectRequest extends JsonObjectRequest {
 
-    MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         super(method, url, jsonRequest, listener, errorListener);
     }
 

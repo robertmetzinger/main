@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -24,6 +24,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonArrayRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItem;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItemAdapter;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
 /**

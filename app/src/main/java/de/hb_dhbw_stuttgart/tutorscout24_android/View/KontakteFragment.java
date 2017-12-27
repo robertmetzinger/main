@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,9 @@ import java.util.HashSet;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
 public class KontakteFragment extends android.app.Fragment {
@@ -39,7 +41,7 @@ public class KontakteFragment extends android.app.Fragment {
     public static final String PREFS_NAME = "KontaktListe";
 
     private ArrayList<String> kontakte;
-    ArrayAdapter<String> listAdapter;
+    public ArrayAdapter<String> listAdapter;
     boolean isDeleteEnabled = false;
 
     public KontakteFragment() {

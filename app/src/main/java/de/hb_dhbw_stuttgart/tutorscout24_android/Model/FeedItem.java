@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
 
 /**
  * Created by Robert on 27.11.2017.
@@ -17,7 +17,7 @@ public class FeedItem {
     private Double longitude;
     private Double distanceKm;
 
-    FeedItem(String tutoringId, String creationDate, String userName, String subject, String text, String expirationDate, Double latitude, Double longitude, Double distanceKm) {
+    public FeedItem(String tutoringId, String creationDate, String userName, String subject, String text, String expirationDate, Double latitude, Double longitude, Double distanceKm) {
         this.tutoringId = tutoringId;
         this.creationDate = creationDate;
         this.userName = userName;
@@ -31,11 +31,11 @@ public class FeedItem {
 
     //Getters
 
-    String getTutoringId() {
+    public String getTutoringId() {
         return tutoringId;
     }
 
-    String getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
@@ -43,7 +43,7 @@ public class FeedItem {
         return userName;
     }
 
-    String getSubject() {
+    public String getSubject() {
         return subject;
     }
 
@@ -51,19 +51,19 @@ public class FeedItem {
         return text;
     }
 
-    String getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    Double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    Double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    Double getDistanceKm() {
+    public Double getDistanceKm() {
         return distanceKm;
     }
 }

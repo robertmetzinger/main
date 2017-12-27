@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Logic;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,7 +10,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 // Übernommen aus: https://developer.android.com/training/volley/requestqueue.html
-class HttpRequestManager {
+public class HttpRequestManager {
     private static HttpRequestManager instance;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;

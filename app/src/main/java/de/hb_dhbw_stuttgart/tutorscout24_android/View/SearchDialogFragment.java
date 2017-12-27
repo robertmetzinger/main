@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,6 +36,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.ceryle.segmentedbutton.SegmentedButtonGroup;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 /**
  * Created by Robert on 06.12.2017.

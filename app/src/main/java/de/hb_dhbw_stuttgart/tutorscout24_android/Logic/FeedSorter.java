@@ -1,6 +1,8 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Logic;
 
 import java.util.Comparator;
+
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItem;
 
 /**
  * Created by Robert on 26.12.2017.

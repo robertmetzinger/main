@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
 import android.content.Context;
 import android.os.Build;
@@ -28,6 +28,9 @@ import java.io.UnsupportedEncodingException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 /**
  * A simple {@link Fragment} subclass.

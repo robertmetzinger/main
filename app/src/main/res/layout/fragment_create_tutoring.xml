@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.CreateTutoringFragment">
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.View.CreateTutoringFragment">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Logic;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -19,8 +19,8 @@ import java.io.UnsupportedEncodingException;
 //Dieser Request liefert ein JSONObject an das Backend und erhält ein JSONArray als Antwort
 public class CustomJsonArrayRequest extends JsonRequest<JSONArray> {
 
-    CustomJsonArrayRequest(int method, String url, JSONObject jsonRequest,
-                           Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+    public CustomJsonArrayRequest(int method, String url, JSONObject jsonRequest,
+                                  Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
         super(method, url, (jsonRequest == null) ? null : jsonRequest.toString(), listener,
                 errorListener);
     }
