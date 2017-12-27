@@ -183,6 +183,7 @@ public class DisplayFragment extends Fragment implements
                     .addApi(LocationServices.API)
                     .build();
         }
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
         //Initiales Anzeigen der Tutorings vom aktuellen Standort aus
         getMyLocation();
@@ -256,7 +257,6 @@ public class DisplayFragment extends Fragment implements
             public void onSuccess(Location location) {
                 gpsBreitengrad = location.getLatitude();
                 gpsLaengengrad = location.getLongitude();
-                Toast.makeText(getContext(), "Dein aktueller Standort wird jetzt verwendet", Toast.LENGTH_SHORT).show();
             }
         });
     }
