@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 
 /**
  * Created by patrick.woehnl on 26.11.2017.
@@ -15,8 +15,6 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.ChatMessage;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.UserType;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 public class ChatListAdapter extends BaseAdapter {

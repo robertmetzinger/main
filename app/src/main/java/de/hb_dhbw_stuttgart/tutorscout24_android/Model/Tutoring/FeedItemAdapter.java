@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Tutoring;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.FeedItem;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 /**

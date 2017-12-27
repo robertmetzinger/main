@@ -1,12 +1,10 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.UserType;
 
 /**
  * Created by patrick.woehnl on 26.11.2017.

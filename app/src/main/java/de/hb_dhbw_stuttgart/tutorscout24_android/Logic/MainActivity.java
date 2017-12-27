@@ -56,11 +56,11 @@ import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.BlankFragment;
-import de.hb_dhbw_stuttgart.tutorscout24_android.View.CreateTutoringFragment;
-import de.hb_dhbw_stuttgart.tutorscout24_android.View.DisplayFragment;
-import de.hb_dhbw_stuttgart.tutorscout24_android.View.KontakteFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.CreateTutoringFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.DisplayFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.KontakteFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.LoginFragment;
-import de.hb_dhbw_stuttgart.tutorscout24_android.View.MyTutoringsFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.MyTutoringsFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity implements

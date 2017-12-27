@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 
 import android.content.Context;
 import android.content.res.Resources;

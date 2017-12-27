@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.View;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication;
 
 import android.content.Context;
 import android.os.Build;
@@ -44,13 +44,13 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.ChatListAdapter;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.ChatMessage;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.ChatListAdapter;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.ChatMessage;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonArrayRequest;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.UserType;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.UserType;
 
 /**
  * Das ChatFragment

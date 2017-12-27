@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.View;
+package de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring;
 
 import android.app.AlertDialog;
 import android.app.Fragment;

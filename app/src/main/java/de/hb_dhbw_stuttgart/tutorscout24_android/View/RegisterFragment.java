@@ -35,19 +35,19 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
-public class RegistrierenFragment extends android.app.Fragment {
+public class RegisterFragment extends android.app.Fragment {
 
     final Calendar myCalendar = Calendar.getInstance();
     private String userName;
     private String password;
 
-    public RegistrierenFragment() {
+    public RegisterFragment() {
         // Required empty public constructor
     }
 
 
-    public static RegistrierenFragment newInstance(String param1, String param2) {
-        RegistrierenFragment fragment = new RegistrierenFragment();
+    public static RegisterFragment newInstance(String param1, String param2) {
+        RegisterFragment fragment = new RegisterFragment();
 
         return fragment;
     }

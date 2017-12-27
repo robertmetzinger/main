@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
-
 /**
  * Das Blank Fragment.
  * Dient als Container für die anderen Fragments.
@@ -34,17 +33,5 @@ public class BlankFragment extends android.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_blank, container, false);
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 }

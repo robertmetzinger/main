@@ -198,7 +198,7 @@ public class LoginFragment extends android.app.Fragment {
 
     @OnClick(R.id.btnRegistrien)
     public void btnRegistrierenClicked() {
-        RegistrierenFragment registrierenFragment = new RegistrierenFragment();
+        RegisterFragment registrierenFragment = new RegisterFragment();
 
 
         ((MainActivity) getActivity()).changeFragment(registrierenFragment, "Registrieren");

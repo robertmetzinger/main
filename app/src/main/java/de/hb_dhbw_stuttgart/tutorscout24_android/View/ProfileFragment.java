@@ -44,7 +44,7 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MyJsonObjectRequest;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Model.User;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.User;
 
 
 @RequiresApi(api = Build.VERSION_CODES.M)

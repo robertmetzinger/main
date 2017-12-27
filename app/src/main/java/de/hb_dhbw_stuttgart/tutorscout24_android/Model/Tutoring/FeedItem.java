@@ -1,4 +1,4 @@
-package de.hb_dhbw_stuttgart.tutorscout24_android.Model;
+package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Tutoring;
 
 /**
  * Created by Robert on 27.11.2017.

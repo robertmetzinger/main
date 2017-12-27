@@ -73,21 +73,21 @@
 
             <fragment
                 android:id="@+id/display"
-                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.DisplayFragment"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.DisplayFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <fragment
                 android:id="@+id/chat"
-                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.ChatFragment"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.ChatFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <fragment
                 android:id="@+id/kontakte"
-                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.KontakteFragment"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.KontakteFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
