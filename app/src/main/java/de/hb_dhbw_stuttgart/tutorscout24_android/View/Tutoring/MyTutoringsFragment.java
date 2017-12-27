@@ -204,19 +204,23 @@ public class MyTutoringsFragment extends Fragment {
 
         //Hinzufügen der Tutorings zur ListView per FeedItemAdapter
         FeedItemAdapter adapter = new FeedItemAdapter(feedArrayList, getContext());
-        feedListView.setAdapter(adapter);
+        if (feedListView != null) {
+            feedListView.setAdapter(adapter);
+        }
 
         //Bei Gedrückthalten eines Tutorings wird ein MyTutoringDetailFragment geöffnet
-        feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                FeedItem item = feedArrayList.get(position);
-                MyTutoringDetailFragment myTutoringDetailFragment = new MyTutoringDetailFragment();
-                myTutoringDetailFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getCreationDate(),item.getExpirationDate());
-                ((MainActivity)getActivity()).changeFragment(myTutoringDetailFragment,"MyTutoringDetail");
-                return false;
-            }
-        });
+        if (feedListView != null) {
+            feedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    FeedItem item = feedArrayList.get(position);
+                    MyTutoringDetailFragment myTutoringDetailFragment = new MyTutoringDetailFragment();
+                    myTutoringDetailFragment.setParams(item.getUserName(),item.getTutoringId(),item.getSubject(),item.getText(),item.getCreationDate(),item.getExpirationDate());
+                    ((MainActivity)getActivity()).changeFragment(myTutoringDetailFragment,"MyTutoringDetail");
+                    return false;
+                }
+            });
+        }
         swipeContainerOffers.setRefreshing(false);
         swipeContainerRequests.setRefreshing(false);
     }

@@ -1,8 +1,5 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 
-/**
- * Created by patrick.woehnl on 15.11.2017.
- */
 import com.google.gson.annotations.SerializedName;
 
 
@@ -35,11 +32,9 @@ public class User {
     @SerializedName("maxGraduation")
     public String maxGraduation;
 
+    public User() {}
 
-    public void User(){
-
-    }
-    public void User(String userName, String firstName, String lastName, int age, String gender, String email, String note, String placeOfResidence, String maxGraduation) {
+    public User(String userName, String firstName, String lastName, int age, String gender, String email, String note, String placeOfResidence, String maxGraduation) {
 
         this.userName = userName;
         this.firstName = firstName;

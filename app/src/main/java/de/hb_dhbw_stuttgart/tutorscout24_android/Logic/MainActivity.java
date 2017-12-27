@@ -55,10 +55,9 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
-import de.hb_dhbw_stuttgart.tutorscout24_android.View.BlankFragment;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.ContactFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.CreateTutoringFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.DisplayFragment;
-import de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.KontakteFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.LoginFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.MyTutoringsFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.ProfileFragment;
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements
     TextView titleView;
 
     //TODO rm
-    KontakteFragment kontateFragment;
+    ContactFragment kontateFragment;
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -106,47 +105,42 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-            // Create new fragment and transaction
-            Fragment blankFragment = new BlankFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-
             switch (item.getItemId()) {
                 case R.id.navigation_display:
 
-                    titleView.setText("Tutorien");
+                    titleView.setText(R.string.NameDisplayFragment);
 
                     DisplayFragment displayFragment = new DisplayFragment();
-                    changeFragment(displayFragment, "Display");
+                    changeFragment(displayFragment, String.valueOf(R.string.NameDisplayFragment));
                     return true;
 
                 case R.id.navigation_tutorien:
-                    titleView.setText("Eigene Tutorien");
+                    titleView.setText(R.string.NameMyTutoringFragment);
 
                     MyTutoringsFragment myTutoringsFragment = new MyTutoringsFragment();
-                    changeFragment(myTutoringsFragment, "MyTutorings");
+                    changeFragment(myTutoringsFragment, String.valueOf(R.string.NameMyTutoringFragment));
                     return true;
 
                 case R.id.navigation_create:
-                    titleView.setText("Tutorium erstellen");
+                    titleView.setText(R.string.NameCreateTutoringFragment);
 
                     CreateTutoringFragment CreateTutoringFragment = new CreateTutoringFragment();
-                    changeFragment(CreateTutoringFragment, "CreateOffer");
+                    changeFragment(CreateTutoringFragment, String.valueOf(R.string.NameCreateTutoringFragment));
                     return true;
 
                 case R.id.navigation_notifications:
-                    titleView.setText("Kontakte");
+                    titleView.setText(R.string.NameContactFragment);
 
-                    kontateFragment = new KontakteFragment();
-                    changeFragment(kontateFragment, "Kontakte");
+                    kontateFragment = new ContactFragment();
+                    changeFragment(kontateFragment, String.valueOf(R.string.NameContactFragment));
                     return true;
 
                 case R.id.navigation_profile:
 
-                    titleView.setText("Profil");
+                    titleView.setText(R.string.NameProfileFragment);
 
                     Fragment profileFragment = new ProfileFragment();
-                    changeFragment(profileFragment, "Profil");
+                    changeFragment(profileFragment, String.valueOf(R.string.NameProfileFragment));
 
                     return true;
             }
@@ -160,9 +154,9 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         // lade Kontaktliste
-        SharedPreferences settings = getSharedPreferences("KontaktListe"+ userName, 0);
+        SharedPreferences settings = getSharedPreferences("KontaktListe" + userName, 0);
         String[] defaultString = {"keine Kontakte gefunden"};
-        Set<String> defaultSet = new HashSet<String>(Arrays.asList(defaultString));
+        Set<String> defaultSet = new HashSet<>(Arrays.asList(defaultString));
         kontakte = new ArrayList<>();
         kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
 
@@ -170,8 +164,7 @@ public class MainActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
 
 
-
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         mCredentialsApiClient = new GoogleApiClient.Builder(this)
@@ -197,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements
         exec.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-               loadRecievedMessages();
+                loadRecievedMessages();
             }
         }, 0, 5, TimeUnit.SECONDS);
     }
@@ -215,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements
     public void changeFragment(Fragment fragment, String name) {
 
         transaction = getFragmentManager().beginTransaction();
-         transaction.replace((findViewById(R.id.contentFragment)).getId(), fragment);
+        transaction.replace((findViewById(R.id.contentFragment)).getId(), fragment);
 
         // Alternativ (neues Fragment wird nur drüber gesetzt (anderes evtl Fehlerhaft)
         // transaction.replace(R.id.mainFragment, fragment);
@@ -302,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
     }
+
     /**
      * Called when the save button is clicked.  Reads the entries in the email and password
      * fields and attempts to save a new Credential to the Credentials API.
@@ -309,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements
     public void saveCredentialClicked(String email, String password) {
 
 
-        if(!mCredentialsApiClient.isConnected()){
+        if (!mCredentialsApiClient.isConnected()) {
             mCredentialsApiClient.connect();
 
         }
@@ -321,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setPassword(password)
                 .build();
 
-       // showProgress();
+        // showProgress();
 
         // NOTE: this method unconditionally saves the Credential built, even if all the fields
         // are blank or it is invalid in some other way.  In a real application you should contact
@@ -355,30 +349,25 @@ public class MainActivity extends AppCompatActivity implements
                 .setPasswordLoginSupported(true)
                 .build();
 
-       // showProgress();
+        // showProgress();
 
         Auth.CredentialsApi.request(mCredentialsApiClient, request).setResultCallback(
                 new ResultCallback<CredentialRequestResult>() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onResult(@NonNull CredentialRequestResult credentialRequestResult) {
-                       // hideProgress();
+                        // hideProgress();
                         Status status = credentialRequestResult.getStatus();
                         if (status.isSuccess()) {
                             // Successfully read the credential without any user interaction, this
                             // means there was only a single credential and the user has auto
-                           // changeFragment(new BlankFragment(), "Blank");
+                            // changeFragment(new BlankFragment(), "Blank");
                             loginFragment.processRetrievedCredential(credentialRequestResult.getCredential(), false);
                             Log.d(TAG, "onResult: success");
                         } else if (status.getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
                             // This is most likely the case where the user has multiple saved
                             // credentials and needs to pick one
                             resolveResult(status, RC_READ);
-                        } else if (status.getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED) {
-                            // This means only a hint is available, but we are handling that
-                            // elsewhere so no need to act here.
-                        } else {
-                            Log.w(TAG, "Unexpected status code: " + status.getStatusCode());
                         }
                     }
                 });
@@ -387,7 +376,8 @@ public class MainActivity extends AppCompatActivity implements
 
     /**
      * Attempt to resolve a non-successful Status from an asynchronous request.
-     * @param status the Status to resolve.
+     *
+     * @param status      the Status to resolve.
      * @param requestCode the request code to use when starting an Activity for result,
      *                    this will be passed back to onActivityResult.
      */
@@ -407,12 +397,12 @@ public class MainActivity extends AppCompatActivity implements
                 mIsResolving = true;
             } catch (IntentSender.SendIntentException e) {
                 Log.e(TAG, "STATUS: Failed to send resolution.", e);
-              //  hideProgress();
+                //  hideProgress();
             }
         } else {
             Log.e(TAG, "STATUS: FAIL");
             showToast("Could Not Resolve Error");
-           // hideProgress();
+            // hideProgress();
         }
     }
 
@@ -442,7 +432,9 @@ public class MainActivity extends AppCompatActivity implements
                 });
     }
 
-    /** Make a password into asterisks of the right length, for logging. **/
+    /**
+     * Make a password into asterisks of the right length, for logging.
+     **/
     private String anonymizePassword(String password) {
         if (password == null) {
             return "null";
@@ -455,7 +447,9 @@ public class MainActivity extends AppCompatActivity implements
         return sb.toString();
     }
 
-    /** Display a short Toast message **/
+    /**
+     * Display a short Toast message
+     **/
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -463,7 +457,6 @@ public class MainActivity extends AppCompatActivity implements
     public JSONObject getUserInfoJsn() {
         JSONObject jsonObject = new JSONObject();
         JSONObject userJson = new JSONObject();
-
 
 
         try {
@@ -479,47 +472,47 @@ public class MainActivity extends AppCompatActivity implements
         return jsonObject;
     }
 
-    public void setUser(String userName, String password){
-        this.userName = userName;
-        this.password = password;
+    public void setUser(String userName, String password) {
+        MainActivity.userName = userName;
+        MainActivity.password = password;
     }
 
-    public void changeTitle(String title){
-        if(titleView != null && title != null && !title.isEmpty()){
+    public void changeTitle(String title) {
+        if (titleView != null && title != null && !title.isEmpty()) {
             titleView.setText(title);
         }
     }
 
-    public ArrayList<String> getKontakte(){
-        SharedPreferences settings = getSharedPreferences("KontaktListe"+ userName, 0);
+    public ArrayList<String> getKontakte() {
+        SharedPreferences settings = getSharedPreferences("KontaktListe" + userName, 0);
         String[] defaultString = {"keine Kontakte gefunden"};
-        Set<String> defaultSet = new HashSet<String>(Arrays.asList(defaultString));
+        Set<String> defaultSet = new HashSet<>(Arrays.asList(defaultString));
         kontakte = new ArrayList<>();
         kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
         return kontakte;
     }
 
 
-    public void addKontakt(String kontakt){
-        if(!kontakte.contains(kontakt)){
+    public void addKontakt(String kontakt) {
+        if (!kontakte.contains(kontakt)) {
             kontakte.add(kontakt);
         }
 
-        if(kontateFragment != null){
+        if (kontateFragment != null) {
             kontateFragment.listAdapter.notifyDataSetChanged();
         }
 
-        SharedPreferences settings = getSharedPreferences("KontaktListe"+ userName, 0);
+        SharedPreferences settings = getSharedPreferences("KontaktListe" + userName, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putStringSet("Kontakte", new HashSet<String>(kontakte));
+        editor.putStringSet("Kontakte", new HashSet<>(kontakte));
 
         // Commit the edits!
-        editor.commit();
+        editor.apply();
     }
 
-    public void notification(){
-       // The id of the channel.
-                String CHANNEL_ID = "my_channel_01";
+    public void notification() {
+        // The id of the channel.
+        String CHANNEL_ID = "my_channel_01";
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_stat_chat_bubble)
@@ -544,16 +537,18 @@ public class MainActivity extends AppCompatActivity implements
                 );
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 // mNotificationId is a unique integer your app uses to identify the
 // notification. For example, to cancel the notification, you can pass its ID
 // number to NotificationManager.cancel().
-        mNotificationManager.notify(1, mBuilder.build());
+        if (null != mNotificationManager) {
+            mNotificationManager.notify(1, mBuilder.build());
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void loadRecievedMessages(){
+    public void loadRecievedMessages() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getUnreadMessages";
 
@@ -562,13 +557,15 @@ public class MainActivity extends AppCompatActivity implements
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                for(int i = 0; i < response.length(); i++) {
+                for (int i = 0; i < response.length(); i++) {
 
                     try {
                         JSONObject o = (JSONObject) response.get(i);
                         chatUser = o.getString("fromUserId");
                         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        v.vibrate(500);
+                        if (v != null) {
+                            v.vibrate(500);
+                        }
                         addKontakt(chatUser);
 
 
@@ -576,7 +573,7 @@ public class MainActivity extends AppCompatActivity implements
                         e.printStackTrace();
                     }
                 }
-               notification();
+                notification();
             }
 
         }, new Response.ErrorListener() {

@@ -87,7 +87,7 @@
 
             <fragment
                 android:id="@+id/kontakte"
-                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.KontakteFragment"
+                android:name="de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.ContactFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />

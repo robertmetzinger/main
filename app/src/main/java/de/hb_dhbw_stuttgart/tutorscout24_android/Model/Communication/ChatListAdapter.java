@@ -1,9 +1,6 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 
-/**
- * Created by patrick.woehnl on 26.11.2017.
- */
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +11,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
@@ -21,7 +19,7 @@ public class ChatListAdapter extends BaseAdapter {
 
     private ArrayList<ChatMessage> chatMessages;
     private Context context;
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("EE HH:mm");
+    private final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("EE HH:mm", Locale.GERMANY);
 
 
     public ChatListAdapter(ArrayList<ChatMessage> chatMessages, Context context) {
@@ -45,6 +43,7 @@ public class ChatListAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = null;
@@ -58,8 +57,8 @@ public class ChatListAdapter extends BaseAdapter {
                 holder1 = new ViewHolder1();
 
 
-                holder1.messageTextView = (TextView) v.findViewById(R.id.message_text);
-                holder1.timeTextView = (TextView) v.findViewById(R.id.time_text);
+                holder1.messageTextView = v.findViewById(R.id.message_text);
+                holder1.timeTextView = v.findViewById(R.id.time_text);
 
 
                 v.setTag(holder1);
@@ -82,9 +81,9 @@ public class ChatListAdapter extends BaseAdapter {
                 holder2 = new ViewHolder2();
 
 
-                holder2.messageTextView = (TextView) v.findViewById(R.id.message_text);
-                holder2.timeTextView = (TextView) v.findViewById(R.id.time_text);
-                holder2.messageStatus = (ImageView) v.findViewById(R.id.user_reply_status);
+                holder2.messageTextView = v.findViewById(R.id.message_text);
+                holder2.timeTextView = v.findViewById(R.id.time_text);
+                holder2.messageStatus = v.findViewById(R.id.user_reply_status);
                 v.setTag(holder2);
 
             } else {
@@ -116,20 +115,16 @@ public class ChatListAdapter extends BaseAdapter {
     }
 
     private class ViewHolder1 {
-        public TextView messageTextView;
-        public TextView timeTextView;
+        private TextView messageTextView;
+        private TextView timeTextView;
 
 
     }
 
     private class ViewHolder2 {
-        public ImageView messageStatus;
-        public TextView messageTextView;
-        public TextView timeTextView;
+        private ImageView messageStatus;
+        private TextView messageTextView;
+        private TextView timeTextView;
 
     }
-    private class ViewHolder3 {
-        public TextView dateTextView;
-    }
-
 }

@@ -59,7 +59,6 @@ public class ProfileFragment extends android.app.Fragment implements
 
 
     private Serializable firstname;
-    private String mail;
     private String alter;
     private String adresse;
     private String lastname;
@@ -108,7 +107,7 @@ public class ProfileFragment extends android.app.Fragment implements
 
             firstname = savedInstanceState.getSerializable("firstname");
             lastname = getArguments().getString(USER_LASTNAME);
-            mail = getArguments().getString(USER_MAIL);
+            String mail = getArguments().getString(USER_MAIL);
             alter = getArguments().getString(USER_ALTER);
             adresse = getArguments().getString(USER_ADRESSE);
 

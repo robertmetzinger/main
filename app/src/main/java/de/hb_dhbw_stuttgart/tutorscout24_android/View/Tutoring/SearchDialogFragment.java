@@ -1,5 +1,6 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -88,7 +89,7 @@ public class SearchDialogFragment extends DialogFragment {
     //erzeugt den Dialog
     public void createDialog() {
         //Erzeugen der View für den Dialog
-        View dialogView = inflater.inflate(R.layout.search_dialog_layout, null);
+        @SuppressLint("InflateParams") View dialogView = inflater.inflate(R.layout.search_dialog_layout, null);
         builder = new AlertDialog.Builder(context);
         ButterKnife.bind(this, dialogView);
         setUpSearchDialog(dialogView);

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.auth.api.credentials.Credential;
 
 import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 
 import butterknife.ButterKnife;
@@ -32,13 +32,6 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoginFragment extends android.app.Fragment {
 
 
@@ -48,12 +41,6 @@ public class LoginFragment extends android.app.Fragment {
 
     public LoginFragment() {
         // Required empty public constructor
-    }
-
-
-    public static LoginFragment newInstance() {
-        LoginFragment fragment = new LoginFragment();
-        return fragment;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -70,8 +57,6 @@ public class LoginFragment extends android.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         ButterKnife.bind(this, view);
-
-
 
 
         return view;
@@ -94,6 +79,9 @@ public class LoginFragment extends android.app.Fragment {
 
     public void savePassword() {
 
+        if (getView() == null) {
+            return;
+        }
         CheckBox saveCred = getView().findViewById(R.id.checkRememberMe);
         if (saveCred.isChecked()) {
             EditText userName = getView().findViewById(R.id.txtLoginUserName);
@@ -111,12 +99,16 @@ public class LoginFragment extends android.app.Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnLogin)
-    public void checKAuthentification() {
+    public void checkAuthentification() {
 
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/checkAuthentication";
 
 
+        if(getAutentificationJSON() == null){
+            return;
+        }
         final String requestBody = getAutentificationJSON().toString();
+
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, usercreateURL, new Response.Listener<String>() {
             @Override
@@ -158,7 +150,10 @@ public class LoginFragment extends android.app.Fragment {
                     responseString = String.valueOf(response.statusCode);
                     // can get more details such as response.headers
                 }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                if (response != null) {
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+                return null;
             }
         };
 
@@ -170,6 +165,9 @@ public class LoginFragment extends android.app.Fragment {
         JSONObject jsonObject = new JSONObject();
         JSONObject userJson = new JSONObject();
 
+        if (getView() == null) {
+            return null;
+        }
         EditText benutzerName = getView().findViewById(R.id.txtLoginUserName);
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
@@ -237,6 +235,9 @@ public class LoginFragment extends android.app.Fragment {
         }
 
         isLockedIn = true;
+        if(getView() == null){
+            return;
+        }
         EditText userName = getView().findViewById(R.id.txtLoginUserName);
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
         userName.setText(credential.getId());

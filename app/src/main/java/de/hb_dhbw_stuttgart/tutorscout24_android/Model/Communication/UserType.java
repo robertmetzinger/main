@@ -9,11 +9,11 @@ public enum UserType {
 
     private final String fieldDescription;
 
-    private UserType(String value) {
+    UserType(String value) {
         fieldDescription = value;
     }
 
     public String getFieldDescription() {
         return fieldDescription;
     }
-};
+}

@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -55,12 +56,11 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.UserType;
 /**
  * Das ChatFragment
  * Dies stellt den Chat, welcher immer zwischen 2 Benutztern stattfinde.
- * (Dem angemeldetem und der, der im KontakteFragment ausgewählt wird)
+ * (Dem angemeldetem und der, der im ContactFragment ausgewählt wird)
  */
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ChatFragment extends android.app.Fragment {
 
-    private ListView chatListView;
     private ArrayList<ChatMessage> chatMessages;
     private ChatListAdapter listAdapter;
     private String chatPartner;
@@ -74,19 +74,6 @@ public class ChatFragment extends android.app.Fragment {
      */
     public ChatFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Erzeugt eine Neue Instanz des ChatFragment.
-     *
-     * @return Das ChatFragment.
-     */
-    public static ChatFragment newInstance() {
-        ChatFragment chatFragment = new ChatFragment();
-        Bundle args = new Bundle();
-
-        chatFragment.setArguments(args);
-        return chatFragment;
     }
 
     /**
@@ -111,7 +98,7 @@ public class ChatFragment extends android.app.Fragment {
         chatMessages = new ArrayList<>();
         listAdapter = new ChatListAdapter(chatMessages, getContext());
 
-        chatListView = view.findViewById(R.id.chat_list_view);
+        ListView chatListView = view.findViewById(R.id.chat_list_view);
 
         chatListView.setAdapter(listAdapter);
 
@@ -161,6 +148,9 @@ public class ChatFragment extends android.app.Fragment {
      */
     @OnClick(R.id.enter_chat1)
     public void sendMessage() {
+        if(getView() == null){
+            return;
+        }
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
         sendMessageBackend(editText.getText().toString(), ((MainActivity) getActivity()).chatUser);
         updateListAdapter();
@@ -236,7 +226,7 @@ public class ChatFragment extends android.app.Fragment {
                 try {
                     NetworkResponse response = error.networkResponse;
                     String json = new String(response.data);
-                    json = trimMessage(json, "message");
+                    json = trimMessage(json);
                     Log.e("", "onErrorResponse: " + json);
                 } catch (NullPointerException e) {
                     Toast.makeText(getContext(),"Bitte überprüfen Sie ihre Internetverbindung.", Toast.LENGTH_SHORT).show();
@@ -264,7 +254,10 @@ public class ChatFragment extends android.app.Fragment {
                 if (response != null) {
                     responseString = String.valueOf(response.headers);
                 }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                if(response != null){
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+                return null;
             }
         };
 
@@ -276,11 +269,9 @@ public class ChatFragment extends android.app.Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void loadSentMessages() {
 
-        final JSONArray[] feedList = new JSONArray[1];
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getSentMessages";
 
         //erstelle JSON Object für den Request
-
         CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -307,7 +298,7 @@ public class ChatFragment extends android.app.Fragment {
                         }
                         String string_date = o.getString("datetime");
 
-                        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMANY);
                         try {
                             Date d = f.parse(string_date);
                             chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"), UserType.SELF, d, MainActivity.getUserName(), toUserId));
@@ -333,13 +324,16 @@ public class ChatFragment extends android.app.Fragment {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onErrorResponse(VolleyError error) {
-                NetworkResponse response = error.networkResponse;
+                try {
 
-                //String json = new String(response.data);
-                //json = trimMessage(json, "message");
-                //Log.e("", "onErrorResponse: " + json );
-
-                Log.e("Messages", "onErrorResponse:" + error.getMessage());
+                    NetworkResponse response = error.networkResponse;
+                    String json = new String(response.data);
+                    json = trimMessage(json);
+                    Log.e("", "onErrorResponse: " + json );
+                    Log.e("Messages", "onErrorResponse:" + error.getMessage());
+                }catch (Exception e){
+                    Log.e(TAG, "onErrorResponse", e);
+                }
             }
         });
 
@@ -348,12 +342,12 @@ public class ChatFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(a);
     }
 
-    public String trimMessage(String json, String key) {
-        String trimmedString = null;
+    public String trimMessage(String json) {
+        String trimmedString;
 
         try {
             JSONObject obj = new JSONObject(json);
-            trimmedString = obj.getString(key);
+            trimmedString = obj.getString("message");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -374,7 +368,7 @@ public class ChatFragment extends android.app.Fragment {
             public void onResponse(JSONArray response) {
                 for (int i = 0; i < response.length(); i++) {
 
-                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMANY);
                     try {
                         JSONObject o = (JSONObject) response.get(i);
                         String fromUserId = o.getString("fromUserId");
@@ -524,13 +518,12 @@ public class ChatFragment extends android.app.Fragment {
             try {
                 Map<String, String> messageMap = new HashMap<>();
                 String[] pairs = messageString.split("~~#~~");
-                for (int i = 0; i < pairs.length; i++) {
-                    String pair = pairs[i];
+                for (String pair : pairs) {
                     String[] keyValue = pair.split("~~:~~");
                     messageMap.put(keyValue[0], String.valueOf(keyValue[1]));
                 }
 
-                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMANY);
                 String userTypeString = messageMap.get("userType");
                 UserType userType;
                 if (userTypeString.compareTo("SELFE") == 0) {

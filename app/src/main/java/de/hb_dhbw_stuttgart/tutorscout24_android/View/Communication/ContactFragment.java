@@ -36,21 +36,14 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
-public class KontakteFragment extends android.app.Fragment {
-
-    public static final String PREFS_NAME = "KontaktListe";
+public class ContactFragment extends android.app.Fragment {
 
     private ArrayList<String> kontakte;
     public ArrayAdapter<String> listAdapter;
     boolean isDeleteEnabled = false;
 
-    public KontakteFragment() {
+    public ContactFragment() {
         // Required empty public constructor
-    }
-
-    public static KontakteFragment newInstance() {
-        KontakteFragment fragment = new KontakteFragment();
-        return fragment;
     }
 
     @Override
@@ -68,7 +61,7 @@ public class KontakteFragment extends android.app.Fragment {
         ButterKnife.bind(this, view);
 
        // Restore preferences
-        kontakte = new ArrayList<String>();
+        kontakte = new ArrayList<>();
         kontakte = ((MainActivity)getActivity()).getKontakte();
         setKontakteList(view);
 
@@ -124,12 +117,12 @@ public class KontakteFragment extends android.app.Fragment {
         });
 
        listAdapter =
-                new ArrayAdapter<String>(
-                        getActivity(),
-                        R.layout.kontakt_item,
-                        R.id.kontakt_item_textview,
-                        kontakte
-                );
+               new ArrayAdapter<>(
+                       getActivity(),
+                       R.layout.kontakt_item,
+                       R.id.kontakt_item_textview,
+                       kontakte
+               );
 
 
            kontakteListView.setAdapter(listAdapter);
@@ -164,10 +157,10 @@ public class KontakteFragment extends android.app.Fragment {
 
         SharedPreferences settings = getContext().getSharedPreferences("KontaktListe"+ MainActivity.getUserName(), 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putStringSet("Kontakte", new HashSet<String>(kontakte));
+        editor.putStringSet("Kontakte", new HashSet<>(kontakte));
 
         // Commit the edits!
-        editor.commit();
+        editor.apply();
 
     }
 

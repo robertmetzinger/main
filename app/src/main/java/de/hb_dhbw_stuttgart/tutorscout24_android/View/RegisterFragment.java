@@ -20,12 +20,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -44,14 +42,7 @@ public class RegisterFragment extends android.app.Fragment {
     public RegisterFragment() {
         // Required empty public constructor
     }
-
-
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment = new RegisterFragment();
-
-        return fragment;
-    }
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +64,6 @@ public class RegisterFragment extends android.app.Fragment {
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
                     setGeburtstag();
-                } else {
                 }
             }
         });
@@ -142,11 +132,18 @@ public class RegisterFragment extends android.app.Fragment {
                 if (response != null) {
                     responseString = String.valueOf(response.headers);
                 }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                if (response != null) {
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+                return null;
             }
 
             @Override
             protected Map<String, String> getParams() {
+                if(getView() == null){
+                    return null;
+                }
+
                 EditText benutzerName = getView().findViewById(R.id.txtBenutzername);
                 EditText firstName = getView().findViewById(R.id.txtFirstName);
                 EditText lastName = getView().findViewById(R.id.textLastName);
@@ -158,7 +155,7 @@ public class RegisterFragment extends android.app.Fragment {
                 EditText notiz = getView().findViewById(R.id.txtNotiz);
 
                 String myFormat = "yyyyMMdd"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.GERMANY);
 
                 userName = benutzerName.getText().toString();
                 password = passwort.getText().toString();
@@ -184,6 +181,9 @@ public class RegisterFragment extends android.app.Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean validateEmpty() {
+        if(getView() == null){
+            return false;
+        }
 
         EditText benutzerName = getView().findViewById(R.id.txtBenutzername);
         EditText firstName = getView().findViewById(R.id.txtFirstName);
@@ -192,8 +192,6 @@ public class RegisterFragment extends android.app.Fragment {
         EditText wohnort = getView().findViewById(R.id.txtWohnort);
         EditText mail = getView().findViewById(R.id.txtMail);
         EditText akademischGrad = getView().findViewById(R.id.txtAbschluss);
-        EditText notiz = getView().findViewById(R.id.txtNotiz);
-
 
         if (benutzerName.getText().toString().isEmpty()) {
             Toast.makeText(getContext(), "Der Benutzername darf nicht leer sein.", Toast.LENGTH_SHORT).show();
@@ -232,29 +230,15 @@ public class RegisterFragment extends android.app.Fragment {
             Toast.makeText(getContext(), "Der Akademische Grad darf nicht leer sein.", Toast.LENGTH_SHORT).show();
             return false;
         }
-
-
         return true;
-    }
-
-
-    public String trimMessage(String json, String key) {
-        String trimmedString = null;
-
-        try {
-            JSONObject obj = new JSONObject(json);
-            trimmedString = obj.getString(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return trimmedString;
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean CeckPassword() {
+        if(getView() == null){
+            return false;
+        }
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
         EditText passwortwdh = getView().findViewById(R.id.txtPasswortWdh);
 
@@ -305,11 +289,11 @@ public class RegisterFragment extends android.app.Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    //@OnClick( R.id.txtGeburtstag)
     public void setGeburtstag() {
 
-        EditText geburtstag = getView().findViewById(R.id.txtGeburtstag);
-
+        if(getView() == null){
+            return;
+        }
 
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
@@ -321,7 +305,7 @@ public class RegisterFragment extends android.app.Fragment {
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
                 String myFormat = "dd/MM/yyyy"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.GERMANY);
                 EditText geburtstag = getView().findViewById(R.id.txtGeburtstag);
 
                 geburtstag.setText(sdf.format(myCalendar.getTime()));

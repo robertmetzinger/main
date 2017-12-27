@@ -1,6 +1,5 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,6 @@ public class BlankFragment extends android.app.Fragment {
 
     public BlankFragment() {
         // Required empty public constructor
-    }
-
-    public static BlankFragment newInstance(String param1, String param2) {
-        return new BlankFragment();
     }
 
     @Override
