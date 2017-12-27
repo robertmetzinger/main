@@ -16,15 +16,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -95,30 +99,28 @@ public class RegistrierenFragment extends android.app.Fragment {
     }
 
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnRegistrien)
     public void saveUser() {
 
+        if (!validateEmpty()) {
+            return;
+        }
 
         if (!CeckPassword()) {
             return;
         }
+
+
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/create";
 
         StringRequest strRequest = new StringRequest(Request.Method.POST, usercreateURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                         Log.e("response ", response);
-
-                        ((MainActivity)getActivity()).setUser(userName,password);
-
+                        ((MainActivity) getActivity()).setUser(userName, password);
+                        
                         android.app.Fragment blankFragment = new BlankFragment();
                         ((MainActivity) getActivity()).changeFragment(blankFragment, "Blank");
                         ((MainActivity) getActivity()).EnableNavigation();
@@ -128,17 +130,27 @@ public class RegistrierenFragment extends android.app.Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        try{
+                        try {
                             NetworkResponse response = error.networkResponse;
+
                             String json = new String(response.data);
-                            json = trimMessage(json, "message");
-                            Log.e("", "onErrorResponse: " + response.toString() );
-                            Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
-                        }catch (Exception e){
-                            Toast.makeText(getContext(),"Bitte überprüfen Sie ihre Internetverbindung.", Toast.LENGTH_SHORT).show();
+
+                            Log.e("", "onErrorResponse: " + json);
+                            Toast.makeText(getContext(), json, Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Bitte überprüfen Sie ihre Internetverbindung.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }) {
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.headers);
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+
             @Override
             protected Map<String, String> getParams() {
                 EditText benutzerName = getView().findViewById(R.id.txtBenutzername);
@@ -149,6 +161,7 @@ public class RegistrierenFragment extends android.app.Fragment {
                 EditText mail = getView().findViewById(R.id.txtMail);
                 EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
                 EditText akademischGrad = getView().findViewById(R.id.txtAbschluss);
+                EditText notiz = getView().findViewById(R.id.txtNotiz);
 
                 String myFormat = "yyyyMMdd"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
@@ -164,7 +177,7 @@ public class RegistrierenFragment extends android.app.Fragment {
                 params.put("birthdate", sdf.format(myCalendar.getTime()));
                 params.put("gender", geschlecht.getText().toString());
                 params.put("email", mail.getText().toString());
-                params.put("note", "keine Notiz");
+                params.put("note", notiz.getText().toString());
                 params.put("placeOfResidence", wohnort.getText().toString());
                 params.put("maxGraduation", akademischGrad.getText().toString());
 
@@ -175,14 +188,69 @@ public class RegistrierenFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean validateEmpty() {
 
-    public String trimMessage(String json, String key){
+        EditText benutzerName = getView().findViewById(R.id.txtBenutzername);
+        EditText firstName = getView().findViewById(R.id.txtFirstName);
+        EditText lastName = getView().findViewById(R.id.textLastName);
+        EditText geschlecht = getView().findViewById(R.id.txtGeschlecht);
+        EditText wohnort = getView().findViewById(R.id.txtWohnort);
+        EditText mail = getView().findViewById(R.id.txtMail);
+        EditText akademischGrad = getView().findViewById(R.id.txtAbschluss);
+        EditText notiz = getView().findViewById(R.id.txtNotiz);
+
+
+        if (benutzerName.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Der Benutzername darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+
+        if (firstName.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Der Vorname darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+
+        if (lastName.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Der Nachname darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (geschlecht.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Das Geschlecht darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+
+        if (wohnort.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Der Wohnort darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (mail.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Die Email Adresse darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (akademischGrad.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Der Akademische Grad darf nicht leer sein.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    public String trimMessage(String json, String key) {
         String trimmedString = null;
 
-        try{
+        try {
             JSONObject obj = new JSONObject(json);
             trimmedString = obj.getString(key);
-        } catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
@@ -244,10 +312,9 @@ public class RegistrierenFragment extends android.app.Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     //@OnClick( R.id.txtGeburtstag)
-    public void setGeburtstag(){
+    public void setGeburtstag() {
 
         EditText geburtstag = getView().findViewById(R.id.txtGeburtstag);
-
 
 
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
