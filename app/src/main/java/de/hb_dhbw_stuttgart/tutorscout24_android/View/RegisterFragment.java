@@ -173,7 +173,7 @@ public class RegisterFragment extends android.app.Fragment {
                 EditText akademischGrad = getView().findViewById(R.id.txtAbschluss);
                 EditText notiz = getView().findViewById(R.id.txtNotiz);
 
-                String myFormat = "yyyyMMdd"; //In which you need put here
+                String myFormat = "yyyyMMdd";
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.GERMANY);
 
                 userName = benutzerName.getText().toString();

@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements
         exec.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                utils.loadRecievedMessages(getApplicationContext());
+                utils.loadUnreadMessages(getApplicationContext());
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
@@ -228,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements
         transaction.commit();
     }
 
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
     }
@@ -240,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     }
-
 
     /**
      * Das onActivityResult Event.
@@ -280,7 +278,6 @@ public class MainActivity extends AppCompatActivity implements
                     Log.e(TAG, "Credential Save: NOT OK");
                     showToast("Credential Save Failed");
                 }
-
                 mIsResolving = false;
                 break;
         }
@@ -505,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * gibt die aktuelle Utils zurück.
+     * Gibt die aktuelle Utils zurück.
      * @return Die Utils.
      */
     public Utils getUtils() {

@@ -49,6 +49,7 @@ public class User {
 
     /**
      * Der Konstuktor.
+     * Wird aktuell noch nicht benötigt.
      *
      * @param userName         Der userName.
      * @param firstName        Der firstName.

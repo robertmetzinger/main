@@ -20,6 +20,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
@@ -56,7 +61,7 @@ public class ProfileFragment extends android.app.Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        utils = (((MainActivity)getActivity()).getUtils());
+        utils = (((MainActivity) getActivity()).getUtils());
         super.onCreate(savedInstanceState);
 
     }
@@ -75,7 +80,7 @@ public class ProfileFragment extends android.app.Fragment {
 
     @Override
     public void onAttach(Context context) {
-        utils = (((MainActivity)getActivity()).getUtils());
+        utils = (((MainActivity) getActivity()).getUtils());
         getUserInfo();
         super.onAttach(context);
     }
@@ -90,7 +95,7 @@ public class ProfileFragment extends android.app.Fragment {
 
         String updateUserURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/updateUser";
 
-        if(getView() == null){
+        if (getView() == null) {
             return;
         }
         EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
@@ -104,6 +109,18 @@ public class ProfileFragment extends android.app.Fragment {
 
         JSONObject params = new JSONObject();
         try {
+
+            //Umwandlung des Formates in das des Backends
+            SimpleDateFormat newFormat = new SimpleDateFormat("yyyyMMdd", Locale.GERMANY);
+            SimpleDateFormat oldFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.GERMANY);
+            try {
+                Date date = oldFormat.parse("" + alter.getText().toString());
+                alter.setText(newFormat.format(date));
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             params.put("password", utils.getPassword());
             params.put("firstName", firstName.getText().toString());
             params.put("lastName", lastName.getText().toString());
@@ -130,6 +147,8 @@ public class ProfileFragment extends android.app.Fragment {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(getContext(), "Fehler beim Speichern der Daten.", Toast.LENGTH_SHORT).show();
+
                                 String json = new String(error.networkResponse.data);
                                 json = trimMessage(json);
                                 Log.e("", "onErrorResponse: " + json);
@@ -204,7 +223,7 @@ public class ProfileFragment extends android.app.Fragment {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(utils.getUserName() == null){
+                        if (utils.getUserName() == null) {
                             return;
                         }
 
@@ -219,7 +238,7 @@ public class ProfileFragment extends android.app.Fragment {
     @SuppressLint("SetTextI18n")
     private void SetUserInfo() {
 
-        if(getView() == null){
+        if (getView() == null) {
             return;
         }
         EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
@@ -231,9 +250,20 @@ public class ProfileFragment extends android.app.Fragment {
         EditText akademischGrad = getView().findViewById(R.id.txtProfileGraduation);
         EditText note = getView().findViewById(R.id.txtProfileNotiz);
 
+        //Umwandlung des Formates vom Backand in ein Normales
+        SimpleDateFormat oldFormat = new SimpleDateFormat("yyyyMMdd", Locale.GERMANY);
+        SimpleDateFormat newFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.GERMANY);
+        try {
+            Date date = oldFormat.parse("" + currentUser.age);
+            alter.setText(newFormat.format(date));
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
         firstName.setText(currentUser.firstName);
         lastName.setText(currentUser.lastName);
-        alter.setText("" + currentUser.age);
         wohnort.setText(currentUser.placeOfResidence);
         mail.setText(currentUser.email);
         geschlecht.setText(currentUser.gender);

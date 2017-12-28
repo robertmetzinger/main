@@ -40,7 +40,7 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.DisplayFragment;
 
 /**
  * Das LoginFragment
- *
+ * <p>
  * Übernimmt das Login des Benutzers
  */
 public class LoginFragment extends android.app.Fragment {
@@ -113,7 +113,7 @@ public class LoginFragment extends android.app.Fragment {
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/checkAuthentication";
 
 
-        if(getAutentificationJSON() == null){
+        if (getAutentificationJSON() == null) {
             return;
         }
         final String requestBody = getAutentificationJSON().toString();
@@ -127,7 +127,7 @@ public class LoginFragment extends android.app.Fragment {
                 Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onResponse: " + response);
                 if (response.contains("200")) {
-                    ((MainActivity)getActivity()).enableNavigation();
+                    ((MainActivity) getActivity()).enableNavigation();
                     ((MainActivity) getActivity()).changeFragment(new DisplayFragment(), String.valueOf(R.string.NameDisplayFragment));
 
                     savePassword();
@@ -201,7 +201,7 @@ public class LoginFragment extends android.app.Fragment {
     public void accessKeyStore() {
         isLockedIn = true;
         ((MainActivity) getActivity()).requestCredentials();
-        ((MainActivity)getActivity()).enableNavigation();
+        ((MainActivity) getActivity()).enableNavigation();
         ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
     }
 
@@ -248,7 +248,7 @@ public class LoginFragment extends android.app.Fragment {
         }
 
         isLockedIn = true;
-        if(getView() == null){
+        if (getView() == null) {
             return;
         }
         EditText userName = getView().findViewById(R.id.txtLoginUserName);
@@ -264,6 +264,7 @@ public class LoginFragment extends android.app.Fragment {
 
     /**
      * Anonymisiert das Passwort.
+     *
      * @param password Dass password.
      * @return Das Passwort als Sternchen.
      */
@@ -282,6 +283,7 @@ public class LoginFragment extends android.app.Fragment {
 
     /**
      * Zeigt einen Toast.
+     *
      * @param msg Die msg.
      */
     @RequiresApi(api = Build.VERSION_CODES.M)

@@ -267,8 +267,6 @@ public class ChatFragment extends android.app.Fragment {
     }
 
 
-
-
     /**
      * Schickt eine Anfrage an das Backend für die SentMessages.
      */
@@ -347,6 +345,7 @@ public class ChatFragment extends android.app.Fragment {
 
     /**
      * Trimt die Nachricht für bessere Informationen.
+     *
      * @param json Das json.
      * @return Die message.
      */
@@ -420,8 +419,8 @@ public class ChatFragment extends android.app.Fragment {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onErrorResponse(VolleyError error) {
-                 String json = new String(error.networkResponse.data);
-                 Log.e("", "onErrorResponse: " + json );
+                String json = new String(error.networkResponse.data);
+                Log.e("", "onErrorResponse: " + json);
             }
         });
 
@@ -539,7 +538,6 @@ public class ChatFragment extends android.app.Fragment {
     private void sortMessages() {
         if (sendloadSuccess && recievedloadSuccess) {
 
-// Sorting
             Collections.sort(chatMessages, new Comparator<ChatMessage>() {
                 @Override
                 public int compare(ChatMessage msg1, ChatMessage msg2) {

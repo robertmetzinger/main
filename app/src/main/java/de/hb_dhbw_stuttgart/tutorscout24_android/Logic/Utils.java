@@ -57,7 +57,7 @@ public class Utils {
         this.userName = userName;
     }
 
-    public void setPassword(String password) {
+    void setPassword(String password) {
         this.password = password;
     }
 
@@ -120,6 +120,11 @@ public class Utils {
         view.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * GIbt das AuthenticationJson zurück.
+     *
+     * @return Das JSONObject.
+     */
     public JSONObject getFullAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         JSONObject aut = new JSONObject();
@@ -133,7 +138,11 @@ public class Utils {
         return aut;
     }
 
-
+    /**
+     * GIbt das UserPasswordAuthenticationJson zurück.
+     *
+     * @return Das JSONObject.
+     */
     public JSONObject getUserPasswordAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {
@@ -146,8 +155,13 @@ public class Utils {
     }
 
 
+    /**
+     * Läd die ungelesenen Nachrichten.
+     *
+     * @param context Der context.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    void loadRecievedMessages(Context context) {
+    void loadUnreadMessages(Context context) {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getUnreadMessages";
 
@@ -185,7 +199,11 @@ public class Utils {
         HttpRequestManager.getInstance(context).addToRequestQueue(a);
     }
 
-
+    /**
+     * GIbt die KontaktListe zurück.
+     *
+     * @return Die Kontakte als ArrayList.
+     */
     public ArrayList<String> getKontakte() {
         SharedPreferences settings = mainActivity.getSharedPreferences("KontaktListe" + getUserName(), 0);
         String[] defaultString = {"Keine Kontakte gefunden"};
@@ -195,7 +213,11 @@ public class Utils {
         return kontakte;
     }
 
-
+    /**
+     * Fügt einen Kontakt der Liste hinzu.
+     *
+     * @param kontakt Der kontakt.
+     */
     public void addKontakt(String kontakt) {
         if (!kontakte.contains(kontakt)) {
             kontakte.add(kontakt);

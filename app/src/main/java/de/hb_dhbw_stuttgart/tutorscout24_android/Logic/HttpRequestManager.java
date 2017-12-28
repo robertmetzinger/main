@@ -7,8 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-/**
- * Created by Patrick Woehnl on 04.11.2017.
+/*
+  Created by Patrick Woehnl on 04.11.2017.
  */
 
 /**
