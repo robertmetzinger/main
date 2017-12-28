@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.LoginFragment">
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.View.LoginFragment">
 
    <!-- <ImageView
         android:id="@+id/imageView"
@@ -23,10 +23,16 @@
 
 
         <LinearLayout
-            android:layout_width="294dp"
-            android:layout_height="441dp"
-            android:background="@drawable/trans_white_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
+            android:layout_marginBottom="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/trans_white_background"
+            android:fillViewport="true"
+            android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -41,18 +47,6 @@
                 android:src="@drawable/logo_w_shadow_2"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"/>
-
-            <Button
-                android:id="@+id/btnAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="60dp"
-                android:layout_marginRight="60dp"
-                android:background="@color/white"
-                android:text="Admin"
-
-
-                />
 
             <EditText
                 android:id="@+id/txtLoginUserName"

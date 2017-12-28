@@ -6,7 +6,7 @@
     android:background="@drawable/bottom_border_on_light"
     android:fillViewport="true"
     android:padding="10dp"
-    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.DetailTutoringFragment">
+    tools:context="de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.DetailTutoringFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -17,6 +17,11 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
+    <string name="NameDisplayFragment">Tutorien</string>
+    <string name="NameMyTutoringFragment">Eigene Tutorien</string>
+    <string name="NameCreateTutoringFragment">Tutorium erstellen</string>
+    <string name="NameContactFragment">Kontakte</string>
+    <string name="NameProfileFragment">Profil</string>
     <string-array name="duration_array">
         <item>10</item>
         <item>20</item>
