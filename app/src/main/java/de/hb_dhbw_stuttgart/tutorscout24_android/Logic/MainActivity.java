@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -475,7 +473,7 @@ public class MainActivity extends AppCompatActivity implements
                         .setContentTitle("Tutorscout")
                         .setContentText("Neue Nachricht von: " + utils.getChatUser());
         // Creates an explicit intent for an Activity in your app
-       
+
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
