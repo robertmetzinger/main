@@ -195,16 +195,6 @@ public class LoginFragment extends android.app.Fragment {
         return jsonObject;
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @OnClick(R.id.btnAdmin)
-    public void accessKeyStore() {
-        isLockedIn = true;
-        ((MainActivity) getActivity()).requestCredentials();
-        ((MainActivity) getActivity()).enableNavigation();
-        ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
-    }
-
     /**
      * Öffnet das Registrieren Fragment.
      */

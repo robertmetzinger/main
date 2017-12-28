@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final int RC_HINT = 2;
     private static final int RC_READ = 3;
 
+    private int notificationId = 1;
+
     LoginFragment loginFragment;
     Utils utils;
 
@@ -473,23 +475,7 @@ public class MainActivity extends AppCompatActivity implements
                         .setContentTitle("Tutorscout")
                         .setContentText("Neue Nachricht von: " + utils.getChatUser());
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, MainActivity.class);
-
-// The stack builder object will contain an artificial back stack for the
-// started Activity.
-// This ensures that navigating backward from the Activity leads out of
-// your app to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-// Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
+       
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -497,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements
 // notification. For example, to cancel the notification, you can pass its ID
 // number to NotificationManager.cancel().
         if (null != mNotificationManager) {
-            mNotificationManager.notify(1, mBuilder.build());
+            mNotificationManager.notify(notificationId++, mBuilder.build());
         }
     }
 

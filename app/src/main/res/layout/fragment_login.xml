@@ -48,18 +48,6 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"/>
 
-            <Button
-                android:id="@+id/btnAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="60dp"
-                android:layout_marginRight="60dp"
-                android:background="@color/white"
-                android:text="Admin"
-
-
-                />
-
             <EditText
                 android:id="@+id/txtLoginUserName"
                 android:layout_width="match_parent"
