@@ -32,6 +32,11 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
+
+/**
+ * Created by patrick.woehnl on 25.11.2017.
+ */
+
 public class LoginFragment extends android.app.Fragment {
 
 

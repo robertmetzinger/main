@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MyJsonObjectRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
@@ -135,7 +135,7 @@ public class MyTutoringDetailFragment extends Fragment {
             e.printStackTrace();
         }
         Log.d("Request Body", requestBody.toString());
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.DELETE, url, requestBody,
+        CustomJsonObjectRequest request = new CustomJsonObjectRequest(Request.Method.DELETE, url, requestBody,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

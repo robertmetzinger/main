@@ -7,7 +7,16 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-// Übernommen aus: https://developer.android.com/training/volley/requestqueue.html
+
+/**
+ * Created by Patrick Woehnl on 04.11.2017.
+ */
+
+/**
+ * Diese Klasse Managed die Requests an das Backend
+ *
+ * Übernommen aus: https://developer.android.com/training/volley/requestqueue.html
+ */
 public class HttpRequestManager {
     @SuppressLint("StaticFieldLeak")
     private static HttpRequestManager instance;

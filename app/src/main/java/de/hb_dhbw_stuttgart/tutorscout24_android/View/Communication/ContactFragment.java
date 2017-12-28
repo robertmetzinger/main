@@ -36,6 +36,10 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
+/**
+ * Created by patrick.woehnl on 26.11.2017.
+ */
+
 public class ContactFragment extends android.app.Fragment {
 
     private ArrayList<String> kontakte;

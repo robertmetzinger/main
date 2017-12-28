@@ -42,10 +42,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MyJsonObjectRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.User;
 
+
+/**
+ * Created by patrick.woehnl on 03.11.2017.
+ */
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ProfileFragment extends android.app.Fragment implements
@@ -259,7 +263,7 @@ public class ProfileFragment extends android.app.Fragment implements
             e.printStackTrace();
         }
 
-        MyJsonObjectRequest jsObjRequest = new MyJsonObjectRequest
+        CustomJsonObjectRequest jsObjRequest = new CustomJsonObjectRequest
                 (Request.Method.PUT, updateUserURL, params, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

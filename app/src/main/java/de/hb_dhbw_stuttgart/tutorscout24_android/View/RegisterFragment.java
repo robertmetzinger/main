@@ -33,6 +33,10 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
+/**
+ * Created by patrick.woehnl on 19.11.2017.
+ */
+
 public class RegisterFragment extends android.app.Fragment {
 
     final Calendar myCalendar = Calendar.getInstance();
@@ -42,7 +46,7 @@ public class RegisterFragment extends android.app.Fragment {
     public RegisterFragment() {
         // Required empty public constructor
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

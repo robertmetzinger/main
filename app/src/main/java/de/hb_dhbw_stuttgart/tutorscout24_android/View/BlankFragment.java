@@ -7,6 +7,11 @@ import android.view.ViewGroup;
 
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
+
+/**
+ * Created by patrick.woehnl on 03.11.2017.
+ */
+
 /**
  * Das Blank Fragment.
  * Dient als Container für die anderen Fragments.

@@ -7,6 +7,11 @@ import android.util.DisplayMetrics;
 import android.widget.RelativeLayout;
 
 
+
+/**
+ * Created by Patrick Woehnl on 26.11.2017.
+ */
+
 public class ChatLayout extends RelativeLayout {
 
 

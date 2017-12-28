@@ -16,7 +16,12 @@ import java.io.UnsupportedEncodingException;
  * Created by Robert
  */
 
-//Dieser Request liefert ein JSONObject an das Backend und erhält ein JSONArray als Antwort
+/**
+ * Der CustomJsonArrayRequest.
+ * <p>
+ * Diese Klasse dient dazu, einen JSONObject Request zu machen und als Antwort ein JSONArray zu erhalten.
+ * (JSONObject senden und JSONArray als Antwort erhalten)
+ */
 public class CustomJsonArrayRequest extends JsonRequest<JSONArray> {
 
     public CustomJsonArrayRequest(int method, String url, JSONObject jsonRequest,
@@ -25,6 +30,12 @@ public class CustomJsonArrayRequest extends JsonRequest<JSONArray> {
                 errorListener);
     }
 
+    /**
+     * Parst die Antwort des Netzwerks (JSONObject -> JSONArray).
+     *
+     * @param response Die NetworkResponse.
+     * @return Das JSONArray.
+     */
     @Override
     protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
         try {

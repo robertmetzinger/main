@@ -3,6 +3,10 @@ package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 import com.google.gson.annotations.SerializedName;
 
 
+/**
+ * Created by patrick.woehnl on 15.11.2017.
+ */
+
 public class User {
 
     @SerializedName("userName")

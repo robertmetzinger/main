@@ -62,6 +62,12 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.View.LoginFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.MyTutoringsFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.ProfileFragment;
 
+
+
+/**
+ * Created by Patrick Woehnl on 26.10.2017.
+ */
+
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 

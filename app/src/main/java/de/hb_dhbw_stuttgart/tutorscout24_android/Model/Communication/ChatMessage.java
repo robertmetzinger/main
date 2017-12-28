@@ -10,6 +10,7 @@ import java.util.Locale;
 /**
  * Created by patrick.woehnl on 26.11.2017.
  */
+
 public class ChatMessage {
 
     private String messageText;

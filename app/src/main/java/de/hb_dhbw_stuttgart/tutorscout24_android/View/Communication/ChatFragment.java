@@ -53,6 +53,11 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.UserType;
 
+
+/**
+ * Created by patrick.woehnl on 23.11.2017.
+ */
+
 /**
  * Das ChatFragment
  * Dies stellt den Chat, welcher immer zwischen 2 Benutztern stattfinde.

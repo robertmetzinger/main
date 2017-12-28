@@ -15,6 +15,11 @@ import java.util.Locale;
 
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
+
+/**
+ * Created by Patrick Woehnl on 26.11.2017.
+ */
+
 public class ChatListAdapter extends BaseAdapter {
 
     private ArrayList<ChatMessage> chatMessages;
