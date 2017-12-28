@@ -3,10 +3,15 @@ package de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication;
 import com.google.gson.annotations.SerializedName;
 
 
-/**
- * Created by patrick.woehnl on 15.11.2017.
+/*
+  Created by patrick.woehnl on 15.11.2017.
  */
 
+/**
+ * Die User Klasse.
+ * <p>
+ * Beiinhaltet alle Bestandtteile des Users.
+ */
 public class User {
 
     @SerializedName("userName")
@@ -36,8 +41,26 @@ public class User {
     @SerializedName("maxGraduation")
     public String maxGraduation;
 
-    public User() {}
+    /**
+     * Der Empty Konstruktor
+     */
+    public User() {
+    }
 
+    /**
+     * Der Konstuktor.
+     *
+     * @param userName         Der userName.
+     * @param firstName        Der firstName.
+     * @param lastName         Der lastName
+     * @param age              Das age.
+     * @param gender           Das gender.
+     * @param email            Die email.
+     * @param note             Die note.
+     * @param placeOfResidence Der placeOfResidence.
+     * @param maxGraduation    Die maxGraduation.
+     */
+    @SuppressWarnings("unused")
     public User(String userName, String firstName, String lastName, int age, String gender, String email, String note, String placeOfResidence, String maxGraduation) {
 
         this.userName = userName;

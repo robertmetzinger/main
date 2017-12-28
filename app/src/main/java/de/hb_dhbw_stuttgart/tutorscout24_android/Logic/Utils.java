@@ -20,46 +20,30 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.ContactFragment;
 
-/**
- * Created by patrick.woehnl on 28.12.2017.
+/*
+  Created by patrick.woehnl on 28.12.2017.
  */
 
+/**
+ * Die Utils Klasse.
+ * <p>
+ * Diese Klasse übernimmt verschiedene Funktionen, wie das Managment des Benutzers, der Kontakte und
+ * dem Abfragen von neuen Nachrichten.
+ */
 public class Utils {
 
     private MainActivity mainActivity;
 
-    public void setKontateFragment(ContactFragment kontateFragment) {
+    private ContactFragment kontateFragment;
+
+    void setKontateFragment(ContactFragment kontateFragment) {
         this.kontateFragment = kontateFragment;
     }
 
-    private ContactFragment kontateFragment;
-
     private String userName = null;
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     private String password = null;
-
-    public ArrayList<String> kontakte;
-
-    public String getChatUser() {
-        return chatUser;
-    }
-
-    public void setChatUser(String chatUser) {
-        this.chatUser = chatUser;
-    }
-
-    public String chatUser = null;
 
     public String getUserName() {
         return userName;
@@ -69,7 +53,35 @@ public class Utils {
         return password;
     }
 
-    Utils(MainActivity mainActivity, ContactFragment kontateFragment){
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+    ArrayList<String> kontakte;
+
+    public String chatUser = null;
+
+    public String getChatUser() {
+        return chatUser;
+    }
+
+    public void setChatUser(String chatUser) {
+        this.chatUser = chatUser;
+    }
+
+
+    /**
+     * Der Konstruktor.
+     *
+     * @param mainActivity    Die mainActivity.
+     * @param kontateFragment Das kontaktFragment.
+     */
+    Utils(MainActivity mainActivity, ContactFragment kontateFragment) {
         this.mainActivity = mainActivity;
         this.kontateFragment = kontateFragment;
         kontakte = new ArrayList<>();
@@ -79,7 +91,7 @@ public class Utils {
     /**
      * Disabled die BottomNavigationView.
      */
-    public void DisableNavigation(BottomNavigationView view) {
+    void DisableNavigation(BottomNavigationView view) {
 
         view.setEnabled(false);
 
@@ -96,7 +108,7 @@ public class Utils {
     /**
      * Disabled die BottomNavigationView.
      */
-    public void EnableNavigation(BottomNavigationView view) {
+    void EnableNavigation(BottomNavigationView view) {
         view.setEnabled(true);
 
         view.getMenu().getItem(0).setEnabled(true);
@@ -135,7 +147,7 @@ public class Utils {
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void loadRecievedMessages(Context context) {
+    void loadRecievedMessages(Context context) {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getUnreadMessages";
 
@@ -157,6 +169,7 @@ public class Utils {
                         e.printStackTrace();
                     }
                 }
+                mainActivity.vibrate();
                 mainActivity.notification();
             }
 
@@ -171,8 +184,6 @@ public class Utils {
         // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(context).addToRequestQueue(a);
     }
-
-
 
 
     public ArrayList<String> getKontakte() {

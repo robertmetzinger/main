@@ -7,10 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Created by patrick.woehnl on 26.11.2017.
+/*
+  Created by patrick.woehnl on 26.11.2017.
  */
 
+/**
+ * Die ChatMessage Klasse.
+ * <p>
+ * Beinhaltet alle Teile eine ChatNachricht.
+ */
 public class ChatMessage {
 
     private String messageText;
@@ -20,32 +25,42 @@ public class ChatMessage {
     private Date messageTime;
     private int messageId;
 
-
-
-
-    public Date getMessageTime() {        return messageTime;
+    public Date getMessageTime() {
+        return messageTime;
     }
 
-    public String getToUserId() {
+    private String getToUserId() {
         return toUserId;
     }
 
-    public String getFromUserId() {
+    private String getFromUserId() {
         return fromUserId;
     }
 
-    public int getMessageId() { return messageId; }
+    public int getMessageId() {
+        return messageId;
+    }
 
-    public String getMessageText() {
+    String getMessageText() {
 
         return messageText;
     }
 
-    public UserType getUserType() {
+    UserType getUserType() {
         return userType;
     }
 
-    public ChatMessage(int messageId, String messageText, UserType userType,Date messageTime, String fromUserId, String toUserId){
+    /**
+     * Der Konstruktor.
+     *
+     * @param messageId   Die messageId.
+     * @param messageText Der messageText.
+     * @param userType    Der userType.
+     * @param messageTime Die messageTime.
+     * @param fromUserId  Die fromUserId.
+     * @param toUserId    Die toUserId.
+     */
+    public ChatMessage(int messageId, String messageText, UserType userType, Date messageTime, String fromUserId, String toUserId) {
         this.messageId = messageId;
         this.messageText = messageText;
         this.userType = userType;
@@ -54,8 +69,13 @@ public class ChatMessage {
         this.toUserId = toUserId;
     }
 
+    /**
+     * Wandelt eine Nachricht zur Lokalen Speicherung in einen String um.
+     *
+     * @return Die ChatMessage als String.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public String toString(){
+    public String toString() {
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMANY);
 
         return ("|" + System.lineSeparator()) +

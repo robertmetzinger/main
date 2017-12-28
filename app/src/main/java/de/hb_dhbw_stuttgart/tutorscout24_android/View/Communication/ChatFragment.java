@@ -55,14 +55,17 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.UserType;
 
 
-/**
- * Created by patrick.woehnl on 23.11.2017.
+/*
+  Created by patrick.woehnl on 23.11.2017.
  */
 
 /**
  * Das ChatFragment
  * Dies stellt den Chat, welcher immer zwischen 2 Benutztern stattfinde.
  * (Dem angemeldetem und der, der im ContactFragment ausgewählt wird)
+ * <p>
+ * Die funktionalitäten des Chats sowie die Hintergründe wurden zum Teil übernommen aus:
+ * https://github.com/madhur/android-chat-starter
  */
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ChatFragment extends android.app.Fragment {
@@ -99,7 +102,7 @@ public class ChatFragment extends android.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.bind(this, view);
 
-        utils = (((MainActivity)getActivity()).getUtils());
+        utils = (((MainActivity) getActivity()).getUtils());
 
         setChatPartner(utils.chatUser, view);
 
@@ -127,28 +130,19 @@ public class ChatFragment extends android.app.Fragment {
      */
     @Override
     public void onAttach(Context context) {
-        utils = (((MainActivity)getActivity()).getUtils());
+        utils = (((MainActivity) getActivity()).getUtils());
         Log.i(TAG, "onAttach");
         super.onAttach(context);
     }
 
 
-    /**
-     * Event onDetach.
-     */
     @Override
     public void onDetach() {
-        Log.i(TAG, "onDetach");
         super.onDetach();
     }
 
-
-    /**
-     * Event onCreate.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
     }
 
@@ -157,7 +151,7 @@ public class ChatFragment extends android.app.Fragment {
      */
     @OnClick(R.id.enter_chat1)
     public void sendMessage() {
-        if(getView() == null){
+        if (getView() == null) {
             return;
         }
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
@@ -209,7 +203,7 @@ public class ChatFragment extends android.app.Fragment {
         try {
             messageJson.put("toUserId", toUserId);
             messageJson.put("text", msg);
-            messageJson.put("authentication", getAuthenticationJsonb());
+            messageJson.put("authentication", utils.getUserPasswordAuthenticationJson());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -227,7 +221,7 @@ public class ChatFragment extends android.app.Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-               // Bei einem Error wird dieser geloggt und der User erhät einen Toast
+                // Bei einem Error wird dieser geloggt und der User erhät einen Toast
                 Toast.makeText(getContext(), "Fehler beim senden der Nachricht", Toast.LENGTH_LONG).show();
                 if (error == null) {
                     return;
@@ -238,7 +232,7 @@ public class ChatFragment extends android.app.Fragment {
                     json = trimMessage(json);
                     Log.e("", "onErrorResponse: " + json);
                 } catch (NullPointerException e) {
-                    Toast.makeText(getContext(),"Bitte überprüfen Sie ihre Internetverbindung.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Bitte überprüfen Sie ihre Internetverbindung.", Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -263,25 +257,28 @@ public class ChatFragment extends android.app.Fragment {
                 if (response != null) {
                     responseString = String.valueOf(response.headers);
                 }
-                if(response != null){
+                if (response != null) {
                     return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
                 }
                 return null;
             }
         };
-
-        // fügt den Requesst dem HttpRequestManager hinzu.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 
 
+
+
+    /**
+     * Schickt eine Anfrage an das Backend für die SentMessages.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void loadSentMessages() {
 
         String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getSentMessages";
 
         //erstelle JSON Object für den Request
-        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
+        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, utils.getFullAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
@@ -338,19 +335,21 @@ public class ChatFragment extends android.app.Fragment {
                     NetworkResponse response = error.networkResponse;
                     String json = new String(response.data);
                     json = trimMessage(json);
-                    Log.e("", "onErrorResponse: " + json );
+                    Log.e("", "onErrorResponse: " + json);
                     Log.e("Messages", "onErrorResponse:" + error.getMessage());
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.e(TAG, "onErrorResponse", e);
                 }
             }
         });
-
-
-        // Access the RequestQueue through your singleton class.
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(a);
     }
 
+    /**
+     * Trimt die Nachricht für bessere Informationen.
+     * @param json Das json.
+     * @return Die message.
+     */
     public String trimMessage(String json) {
         String trimmedString;
 
@@ -365,6 +364,9 @@ public class ChatFragment extends android.app.Fragment {
         return trimmedString;
     }
 
+    /**
+     * Schickt eine Anfrage an das Backend für die RecievedMessages.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void loadRecievedMessages() {
 
@@ -372,7 +374,7 @@ public class ChatFragment extends android.app.Fragment {
 
         //erstelle JSON Object für den Request
 
-        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
+        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, utils.getFullAuthenticationJson(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 for (int i = 0; i < response.length(); i++) {
@@ -403,13 +405,10 @@ public class ChatFragment extends android.app.Fragment {
                         chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"), UserType.OTHER, d, fromUserId, utils.getUserName()));
                         Log.e("messages", "stringToMessage: Messageload recieved: " + o.getString("messageId"));
 
-                        //- updateListAdapter(o.getString("text"), UserType.OTHER, d);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (ParseException e) {
                         e.printStackTrace();
-
-
                     }
                 }
                 recievedloadSuccess = true;
@@ -421,11 +420,8 @@ public class ChatFragment extends android.app.Fragment {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onErrorResponse(VolleyError error) {
-                // String json = new String(error.networkResponse.data);
-                // json = trimMessage(json, "message");
-                //      Log.e("", "onErrorResponse: " + json );
-
-                //   Log.e("Messages", "onErrorResponse:" + error.getMessage() );
+                 String json = new String(error.networkResponse.data);
+                 Log.e("", "onErrorResponse: " + json );
             }
         });
 
@@ -434,31 +430,9 @@ public class ChatFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(a);
     }
 
-    public JSONObject getAuthenticationJson() {
-        JSONObject authentication = new JSONObject();
-        JSONObject aut = new JSONObject();
-        try {
-            authentication.put("userName", utils.getUserName());
-            authentication.put("password", utils.getPassword());
-            aut.put("authentication", authentication);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return aut;
-    }
-
-
-    public JSONObject getAuthenticationJsonb() {
-        JSONObject authentication = new JSONObject();
-        try {
-            authentication.put("userName", utils.getUserName());
-            authentication.put("password", utils.getPassword());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return authentication;
-    }
-
+    /**
+     * Speichert Chat Nachrichten in einem File.
+     */
     private void saveChatMessagesInFile() {
 
         if (chatMessages.isEmpty()) {
@@ -487,6 +461,9 @@ public class ChatFragment extends android.app.Fragment {
 
     }
 
+    /**
+     * Läd Chat Nachrichten aus einem File.
+     */
     private void loadChatMessagesInFile() {
 
         chatMessageFileName = utils.getUserName() + chatPartner + "TutorscoutChatMessages";
@@ -517,6 +494,11 @@ public class ChatFragment extends android.app.Fragment {
 
     }
 
+    /**
+     * Wandelt einen gespeicherten Sting in eine Nachricht um und fügt sie der Liste hinzu..
+     *
+     * @param messages Die Chat message, als String.
+     */
     private void stringToMessage(String messages) {
         String[] stringMessageArray = messages.split(Pattern.quote("|"));
 
@@ -551,6 +533,9 @@ public class ChatFragment extends android.app.Fragment {
         }
     }
 
+    /**
+     * Sortiert die Nachrichten nach der Zeit.
+     */
     private void sortMessages() {
         if (sendloadSuccess && recievedloadSuccess) {
 

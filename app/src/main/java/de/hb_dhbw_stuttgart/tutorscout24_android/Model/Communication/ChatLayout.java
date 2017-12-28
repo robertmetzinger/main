@@ -7,13 +7,16 @@ import android.util.DisplayMetrics;
 import android.widget.RelativeLayout;
 
 
-
-/**
- * Created by Patrick Woehnl on 26.11.2017.
+/*
+  Created by Patrick Woehnl on 26.11.2017.
  */
 
+/**
+ * Die ChatLayout Klasse.
+ * <p>
+ * Das Chatlayout Managed das Layout des Chats.
+ */
 public class ChatLayout extends RelativeLayout {
-
 
 
     public ChatLayout(Context context) {
@@ -28,13 +31,19 @@ public class ChatLayout extends RelativeLayout {
         super(context, attrs, defStyle);
     }
 
+    /**
+     * Setzt die größe der Chat Bubbles.
+     *
+     * @param widthMeasureSpec  Die widthMeasureSpec.
+     * @param heightMeasureSpec Die heightMeasureSpec.
+     */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         final float adjustVal = (float) 12.667;
 
-        if(getChildCount()<3)
+        if (getChildCount() < 3)
             return;
 
         int imageViewWidth = getChildAt(0).getMeasuredWidth();
@@ -48,13 +57,13 @@ public class ChatLayout extends RelativeLayout {
     }
 
     /**
-     * This method converts dp unit to equivalent pixels, depending on device density.
+     * Wandelt dp in pixel um, abhängig vom Gerät.
      *
-     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent px equivalent to dp depending on device density
+     * @param dp      Eine größe in dp.
+     * @param context Der context.
+     * @return Eine float Zahl welche die Pixel angibt.
      */
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * (metrics.densityDpi / 160f);

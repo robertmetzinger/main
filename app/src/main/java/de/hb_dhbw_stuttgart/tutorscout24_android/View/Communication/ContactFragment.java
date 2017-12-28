@@ -37,10 +37,15 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
-/**
- * Created by patrick.woehnl on 26.11.2017.
+/*
+  Created by patrick.woehnl on 26.11.2017.
  */
 
+/**
+ * Das Contact Fragment.
+ *
+ * Dieses Fragment übernimmt das Management der Kontakte und öffnet einen Chat falls nötig.
+ */
 public class ContactFragment extends android.app.Fragment {
 
     private ArrayList<String> kontakte;
@@ -75,6 +80,11 @@ public class ContactFragment extends android.app.Fragment {
         return view;
     }
 
+    /**
+     * Setzt die KontaktListe.
+     *
+     * @param view Die view.
+     */
     private void setKontakteList(View view) {
 
 
@@ -92,6 +102,8 @@ public class ContactFragment extends android.app.Fragment {
 
                 final TextView v = (TextView) view;
 
+                // Löschen eines Kontaks aus der Liste.
+                // Abfrage mit hilfe eines Dialogs.
                 if(isDeleteEnabled){
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Sind Sie sicher, dass dieser Kontakt gelöscht werden soll?");
@@ -111,11 +123,11 @@ public class ContactFragment extends android.app.Fragment {
                     });
 
                     builder.show();
-
                     isDeleteEnabled = false;
                     return;
                 }
 
+                // Öffnet einen neuen Chat mit dem ausgewählten User.
                 Toast.makeText(getContext(), v.getText(), Toast.LENGTH_SHORT).show();
                 ChatFragment chatFragment= new ChatFragment();
                 utils.setChatUser(v.getText().toString());
@@ -130,10 +142,7 @@ public class ContactFragment extends android.app.Fragment {
                        R.id.kontakt_item_textview,
                        kontakte
                );
-
-
            kontakteListView.setAdapter(listAdapter);
-
     }
 
     @Override
@@ -152,10 +161,6 @@ public class ContactFragment extends android.app.Fragment {
     @Override
     public void onStop() {
         super.onStop();
-
-        // We need an Editor object to make preference changes.
-        // All objects are from android.context.Context
-
         kontakte = utils.getKontakte();
         if(kontakte.contains("keine Kontakte gefunden")){
             kontakte.remove("keine Kontakte gefunden");
@@ -165,11 +170,10 @@ public class ContactFragment extends android.app.Fragment {
         SharedPreferences.Editor editor = settings.edit();
         editor.putStringSet("Kontakte", new HashSet<>(kontakte));
 
-        // Commit the edits!
         editor.apply();
-
     }
 
+    // Fügt einen neuen ChatPartner der Liste hinzu.
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnNeuerChat)
     public void neuerChat() {
@@ -200,6 +204,12 @@ public class ContactFragment extends android.app.Fragment {
         builder.show();
     }
 
+    /**
+     * Überprüft ob der Kontakt vorhanden ist.
+     *
+     * Falls ja wird er der Kontaktliste hinzugefügt.
+     * @param user Der user.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void getUserInfo(final String user) {
 
@@ -239,6 +249,9 @@ public class ContactFragment extends android.app.Fragment {
     }
 
 
+    /**
+     * Aktiviert den Deletemode.
+     */
     @OnClick(R.id.btnDeleteKontakt)
     public void enableDelete(){
         isDeleteEnabled = true;

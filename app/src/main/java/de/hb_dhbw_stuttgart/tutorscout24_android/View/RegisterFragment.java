@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +33,15 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
-/**
- * Created by patrick.woehnl on 19.11.2017.
+/*
+  Created by patrick.woehnl on 19.11.2017.
  */
 
+/**
+ * Das RegistrierenFragment.
+ * <p>
+ * Dieses Fragment übernimmt das Registrieren.
+ */
 public class RegisterFragment extends android.app.Fragment {
 
     final Calendar myCalendar = Calendar.getInstance();
@@ -88,15 +92,20 @@ public class RegisterFragment extends android.app.Fragment {
     }
 
 
+    /**
+     * Verscuht einen neuen Nutzer zu erstellen, der im Backend gespeichert wird.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnRegistrien)
     public void saveUser() {
 
+        // Kein Feld darf leer sein ( außer Notizen)
         if (!validateEmpty()) {
             return;
         }
 
-        if (!CeckPassword()) {
+        // Das Passwort muss den Anforderungen entsprechen.
+        if (!ceckPassword()) {
             return;
         }
 
@@ -107,6 +116,8 @@ public class RegisterFragment extends android.app.Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        // Nutzer erfolgreich erstellt.
+
                         Log.e("response ", response);
                         ((MainActivity) getActivity()).setUser(userName, password);
 
@@ -120,6 +131,8 @@ public class RegisterFragment extends android.app.Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         try {
+
+                            // Nutzer konnte nicht erstellt werden
                             NetworkResponse response = error.networkResponse;
 
                             String json = new String(response.data);
@@ -143,9 +156,10 @@ public class RegisterFragment extends android.app.Fragment {
                 return null;
             }
 
+            // Mapt die bestandteile des Users.
             @Override
             protected Map<String, String> getParams() {
-                if(getView() == null){
+                if (getView() == null) {
                     return null;
                 }
 
@@ -184,9 +198,14 @@ public class RegisterFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(strRequest);
     }
 
+    /**
+     * Überprüft ob Felder leer sind.
+     *
+     * @return true falls kein Feld leer ist, sonst false.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean validateEmpty() {
-        if(getView() == null){
+        if (getView() == null) {
             return false;
         }
 
@@ -239,9 +258,14 @@ public class RegisterFragment extends android.app.Fragment {
     }
 
 
+    /**
+     * Überprüft ob das Passwort korrekt ist.
+     *
+     * @return true falls das Passwort korrekt ist, sonst false.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public boolean CeckPassword() {
-        if(getView() == null){
+    public boolean ceckPassword() {
+        if (getView() == null) {
             return false;
         }
         EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
@@ -293,10 +317,13 @@ public class RegisterFragment extends android.app.Fragment {
         return true;
     }
 
+    /**
+     * Setzt den Geburtstag
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setGeburtstag() {
 
-        if(getView() == null){
+        if (getView() == null) {
             return;
         }
 

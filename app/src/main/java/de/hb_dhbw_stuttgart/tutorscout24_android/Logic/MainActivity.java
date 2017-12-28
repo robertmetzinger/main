@@ -22,14 +22,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.auth.api.credentials.CredentialRequest;
@@ -41,11 +37,6 @@ import com.google.android.gms.common.api.ResolvingResultCallbacks;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,7 +60,7 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.View.ProfileFragment;
 /**
  * Der Haupteinsitiegspunkt des Programms.
  * <p>
- * Diese Klasse dient zum Managment der Übergreifenden Funktionen und zum wechseln der Fragments.
+ * Diese Klasse dient zum Managment des Logins und zum wechseln der Fragments.
  */
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -87,10 +78,13 @@ public class MainActivity extends AppCompatActivity implements
     LoginFragment loginFragment;
     Utils utils;
 
-    private GoogleApiClient mCredentialsApiClient;
+    private GoogleApiClient credentialsApiClient;
 
     private boolean mIsResolving = false;
 
+    /**
+     * Wechselt die Fragments je nach Auswahlt.
+     */
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -145,6 +139,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+    /**
+     * Instanziiert die MainActivity.
+     *
+     * @param savedInstanceState Der savedInstanceState.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,36 +166,44 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        mCredentialsApiClient = new GoogleApiClient.Builder(this)
+        // Instanziiert die Credentials Api
+        credentialsApiClient
+                = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.CREDENTIALS_API)
                 .build();
 
 
-        mCredentialsApiClient.connect();
+        credentialsApiClient.connect();
 
         disableNavigation();
 
 
         BottomNavigationView nav = findViewById(R.id.navigation);
         nav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        titleView = findViewById(R.id.toolbar_title);
 
+        // Zu beginn wird das LoginFragment aufgerufen und gezeigt
+        titleView = findViewById(R.id.toolbar_title);
         loginFragment = new LoginFragment();
         changeFragment(loginFragment, "Login");
 
         getWindow().setBackgroundDrawableResource(R.drawable.background_screen_small);
 
+        // Scheduler zum Polling von neuen Nachrichten
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         exec.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 utils.loadRecievedMessages(getApplicationContext());
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
+    /**
+     * Das onStatrt Event.
+     * Fragt die Credentials an.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -207,6 +214,12 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Wechselt das aktuelle Fragment.
+     *
+     * @param fragment Das neue Fragment.
+     * @param name     Der Name des Fragments.
+     */
     public void changeFragment(Fragment fragment, String name) {
 
         transaction = getFragmentManager().beginTransaction();
@@ -218,20 +231,24 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
 
+    /**
+     * Das onActivityResult Event.
+     *
+     * @param requestCode Der resultCode.
+     * @param resultCode  Der resultCode.
+     * @param data Die data.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -270,32 +287,31 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Called when the save button is clicked.  Reads the entries in the email and password
-     * fields and attempts to save a new Credential to the Credentials API.
+     * Wird aufgerufen, sobald die Credentials gespeichert werden sollen.
+     * Speicher den Nutzername und das Passwort.
+     *
+     * Code wurde entnommen aus:
+     * https://developers.google.com/identity/protocols/application-default-credentials
+     * Zudem finden sich hier weitere Informationen.
      */
     public void saveCredentialClicked(String email, String password) {
 
 
-        if (!mCredentialsApiClient.isConnected()) {
-            mCredentialsApiClient.connect();
+        if (!credentialsApiClient.isConnected()) {
+            credentialsApiClient.connect();
 
         }
-        // Create a Credential with the user's email as the ID and storing the password.  We
-        // could also add 'Name' and 'ProfilePictureURL' but that is outside the scope of this
-        // minimal sample.
+
+        // Erzeugt eine neue Credential.
         Log.d(TAG, "Saving Credential:" + email + ":" + anonymizePassword(password));
         final Credential credential = new Credential.Builder(email)
                 .setPassword(password)
                 .build();
 
-        // showProgress();
 
-        // NOTE: this method unconditionally saves the Credential built, even if all the fields
-        // are blank or it is invalid in some other way.  In a real application you should contact
-        // your app's back end and determine that the credential is valid before saving it to the
-        // Credentials backend.
-        // showProgress();
-        Auth.CredentialsApi.save(mCredentialsApiClient, credential).setResultCallback(
+
+       // Speichert die Credentials
+        Auth.CredentialsApi.save(credentialsApiClient, credential).setResultCallback(
                 new ResolvingResultCallbacks<Status>(this, RC_SAVE) {
                     @Override
                     public void onSuccess(@NonNull Status status) {
@@ -313,18 +329,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Request Credentials from the Credentials API.
+     * Request Credentials aus der Credentials API.
      */
     public void requestCredentials() {
-        // Request all of the user's saved username/password credentials.  We are not using
-        // setAccountTypes so we will not load any credentials from other Identity Providers.
+        // Fragt nach allen Credentials die mit dem Benutzer gespeichert wurden.
         CredentialRequest request = new CredentialRequest.Builder()
                 .setPasswordLoginSupported(true)
                 .build();
 
-        // showProgress();
-
-        Auth.CredentialsApi.request(mCredentialsApiClient, request).setResultCallback(
+        Auth.CredentialsApi.request(credentialsApiClient, request).setResultCallback(
                 new ResultCallback<CredentialRequestResult>() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
@@ -332,14 +345,11 @@ public class MainActivity extends AppCompatActivity implements
                         // hideProgress();
                         Status status = credentialRequestResult.getStatus();
                         if (status.isSuccess()) {
-                            // Successfully read the credential without any user interaction, this
-                            // means there was only a single credential and the user has auto
-                            // changeFragment(new BlankFragment(), "Blank");
+                            // Credentials erfolgreich gelesen.
                             loginFragment.processRetrievedCredential(credentialRequestResult.getCredential(), false);
                             Log.d(TAG, "onResult: success");
                         } else if (status.getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
-                            // This is most likely the case where the user has multiple saved
-                            // credentials and needs to pick one
+                            // Credentials nicht erfolgreich gelesen.
                             resolveResult(status, RC_READ);
                         }
                     }
@@ -348,15 +358,13 @@ public class MainActivity extends AppCompatActivity implements
 
 
     /**
-     * Attempt to resolve a non-successful Status from an asynchronous request.
+     * Verarbeitung bei Fehlschlag des Lesens.
      *
-     * @param status      the Status to resolve.
-     * @param requestCode the request code to use when starting an Activity for result,
-     *                    this will be passed back to onActivityResult.
+     * @param status      Der status.
+     * @param requestCode Der requestCode.
      */
     private void resolveResult(Status status, int requestCode) {
-        // We don't want to fire multiple resolutions at once since that can result
-        // in stacked dialogs after rotation or another similar event.
+
         if (mIsResolving) {
             Log.w(TAG, "resolveResult: already resolving.");
             return;
@@ -370,34 +378,31 @@ public class MainActivity extends AppCompatActivity implements
                 mIsResolving = true;
             } catch (IntentSender.SendIntentException e) {
                 Log.e(TAG, "STATUS: Failed to send resolution.", e);
-                //  hideProgress();
             }
         } else {
             Log.e(TAG, "STATUS: FAIL");
             showToast("Could Not Resolve Error");
-            // hideProgress();
         }
     }
 
-    public void deleteLoadedCredentialClicked(Credential mCurrentCredential) {
-        if (mCurrentCredential == null) {
+    /**
+     * Löschen der Credentials
+     * @param credential Die credentials.
+     */
+    public void deleteLoadedCredentialClicked(Credential credential) {
+        if (credential == null) {
             showToast("Error: no credential to delete");
         }
-        //showProgress();
 
-        Auth.CredentialsApi.delete(mCredentialsApiClient, mCurrentCredential).setResultCallback(
+        Auth.CredentialsApi.delete(credentialsApiClient, credential).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        // hideProgress();
                         if (status.isSuccess()) {
-                            // Credential delete succeeded, disable the delete button because we
-                            // cannot delete the same credential twice. Clear text fields.
+                            // Credentials erfolgreich gelöscht.
                             showToast("Credential Delete Success");
                         } else {
-                            // Credential deletion either failed or was cancelled, this operation
-                            // never gives a 'resolution' so we can display the failure message
-                            // immediately.
+                            // Credentials löschen fehlgeschlagen
                             Log.e(TAG, "Credential Delete: NOT OK");
                             showToast("Credential Delete Failed");
                         }
@@ -406,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Make a password into asterisks of the right length, for logging.
+     * Macht aus einem Passwort Sternchen der richtigen Länge für das Logging.
      **/
     private String anonymizePassword(String password) {
         if (password == null) {
@@ -421,40 +426,56 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Display a short Toast message
+     * Zeigt einen Toas an
      **/
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
 
+    /**
+     * Setzt einen User in den Utils.
+     * @param userName Der userName,
+     * @param password Das password.
+     */
     public void setUser(String userName, String password) {
         utils.setUserName(userName);
         utils.setPassword(password);
     }
 
+    /*
+    * Ändert den Titel (titleView).
+     */
     public void changeTitle(String title) {
         if (titleView != null && title != null && !title.isEmpty()) {
             titleView.setText(title);
         }
     }
-    public void vibrate(){
+
+    /**
+     * Vibriert für 500 millisekunden.
+     */
+    public void vibrate() {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         if (v != null) {
             v.vibrate(500);
         }
     }
 
-
+    /**
+     * Schickt eine Push notification.
+     *
+     * Code entnommen aus:
+     * https://developer.android.com/guide/topics/ui/notifiers/notifications.html
+     */
     public void notification() {
-        // The id of the channel.
         String CHANNEL_ID = "my_channel_01";
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_stat_chat_bubble)
                         .setContentTitle("Tutorscout")
                         .setContentText("Neue Nachricht von: " + utils.getChatUser());
-// Creates an explicit intent for an Activity in your app
+        // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
 
 // The stack builder object will contain an artificial back stack for the
@@ -483,16 +504,25 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public Utils getUtils(){
+    /**
+     * gibt die aktuelle Utils zurück.
+     * @return Die Utils.
+     */
+    public Utils getUtils() {
         return utils;
     }
 
-    public void enableNavigation(){
+    /**
+     * Weiterleitung an Utils, da die BottomNavigationView nicht in den Fragments vorhanden ist.
+     */
+    public void enableNavigation() {
         utils.EnableNavigation((BottomNavigationView) findViewById(R.id.navigation));
     }
 
-
-    public void disableNavigation(){
+    /**
+     * Weiterleitung an Utils, da die BottomNavigationView nicht in den Fragments vorhanden ist.
+     */
+    public void disableNavigation() {
         utils.DisableNavigation((BottomNavigationView) findViewById(R.id.navigation));
     }
 }

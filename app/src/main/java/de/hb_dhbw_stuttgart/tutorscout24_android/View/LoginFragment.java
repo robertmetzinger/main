@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,21 +30,25 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
+import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.DisplayFragment;
 
 
-/**
- * Created by patrick.woehnl on 25.11.2017.
+/*
+  Created by patrick.woehnl on 25.11.2017.
  */
 
+/**
+ * Das LoginFragment
+ *
+ * Übernimmt das Login des Benutzers
+ */
 public class LoginFragment extends android.app.Fragment {
 
 
     private Credential mCurrentCredential;
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isLockedIn;
-    private Utils utils;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -54,9 +57,7 @@ public class LoginFragment extends android.app.Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        utils = (((MainActivity)getActivity()).getUtils());
         super.onCreate(savedInstanceState);
-
         isLockedIn = false;
     }
 
@@ -64,27 +65,23 @@ public class LoginFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-
         ButterKnife.bind(this, view);
-
-
         return view;
     }
 
-
     @Override
     public void onAttach(Context context) {
-        utils = (((MainActivity)getActivity()).getUtils());
         super.onAttach(context);
     }
-
 
     @Override
     public void onDetach() {
         super.onDetach();
     }
 
-
+    /**
+     * Speichert das Passwort.
+     */
     public void savePassword() {
 
         if (getView() == null) {
@@ -95,6 +92,7 @@ public class LoginFragment extends android.app.Fragment {
             EditText userName = getView().findViewById(R.id.txtLoginUserName);
             EditText passwort = getView().findViewById(R.id.txtLoginPasswort);
 
+            // Aufrufe von saveCredentials in Main Aktivity (hier beindet sich die Credentials Api)
             ((MainActivity) getActivity()).saveCredentialClicked(userName.getText().toString(), passwort.getText().toString());
 
         } else {
@@ -105,6 +103,9 @@ public class LoginFragment extends android.app.Fragment {
     }
 
 
+    /**
+     * Überprüft das Passwort und den UserName mit dem Backend.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.btnLogin)
     public void checkAuthentification() {
@@ -121,11 +122,13 @@ public class LoginFragment extends android.app.Fragment {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, usercreateURL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+
+                // Überprüfung erfolgreich
                 Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onResponse: " + response);
                 if (response.contains("200")) {
                     ((MainActivity)getActivity()).enableNavigation();
-                    ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
+                    ((MainActivity) getActivity()).changeFragment(new DisplayFragment(), String.valueOf(R.string.NameDisplayFragment));
 
                     savePassword();
                 }
@@ -202,19 +205,21 @@ public class LoginFragment extends android.app.Fragment {
         ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
     }
 
+    /**
+     * Öffnet das Registrieren Fragment.
+     */
     @OnClick(R.id.btnRegistrien)
     public void btnRegistrierenClicked() {
         RegisterFragment registrierenFragment = new RegisterFragment();
-
-
         ((MainActivity) getActivity()).changeFragment(registrierenFragment, "Registrieren");
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.txtPasswortVergessen)
     public void passwortVergessen() {
 
-        // @Backend send mail
+        Toast.makeText(getContext(), "Diese funktion wird leider noch nicht unterstützt.", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -257,6 +262,11 @@ public class LoginFragment extends android.app.Fragment {
         checkBox.setChecked(true);
     }
 
+    /**
+     * Anonymisiert das Passwort.
+     * @param password Dass password.
+     * @return Das Passwort als Sternchen.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private String anonymizePassword(String password) {
         if (password == null) {
@@ -270,6 +280,10 @@ public class LoginFragment extends android.app.Fragment {
         return sb.toString();
     }
 
+    /**
+     * Zeigt einen Toast.
+     * @param msg Die msg.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void showToast(String msg) {
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();

@@ -1,51 +1,33 @@
 package de.hb_dhbw_stuttgart.tutorscout24_android.View;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
-import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
-import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.User;
+import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
 /**
@@ -53,55 +35,20 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.User;
  */
 
 @RequiresApi(api = Build.VERSION_CODES.M)
-public class ProfileFragment extends android.app.Fragment implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-    private final static String USER_FIRSTNAME = "USER_FIRSTNAME";
-    private final static String USER_MAIL = "USER_MAIL";
-    private final static String USER_ALTER = "USER_ALTER";
-    private final static String USER_ADRESSE = "USER_ADRESSE";
-    private final static String USER_LASTNAME = "USER_LASTNAME";
-
-
-    private Serializable firstname;
-    private String alter;
-    private String adresse;
-    private String lastname;
+public class ProfileFragment extends android.app.Fragment {
 
     private User currentUser;
 
-    double gpsLaengengrad;
-    double gpsBreitengrad;
-
     private Utils utils;
 
-    GoogleApiClient googleApiClient;
-    private OnFragmentInteractionListener fragmentListener;
 
     public ProfileFragment() {
         // Required empty public constructor
     }
 
-
-    public static ProfileFragment newInstance(String name, String mail) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(USER_FIRSTNAME, name);
-        args.putString(USER_LASTNAME, mail);
-        args.putString(USER_MAIL, mail);
-        args.putString(USER_ADRESSE, mail);
-        args.putString(USER_ALTER, mail);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         Log.e("TAg", "onSaveInstanceState: ");
-        outState.putSerializable("firstname", firstname);
-        outState.putSerializable("lastname", lastname);
-        outState.putSerializable("alter", alter);
-        outState.putSerializable("adresse", adresse);
         super.onSaveInstanceState(outState);
     }
 
@@ -111,37 +58,6 @@ public class ProfileFragment extends android.app.Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         utils = (((MainActivity)getActivity()).getUtils());
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-
-            firstname = savedInstanceState.getSerializable("firstname");
-            lastname = getArguments().getString(USER_LASTNAME);
-            String mail = getArguments().getString(USER_MAIL);
-            alter = getArguments().getString(USER_ALTER);
-            adresse = getArguments().getString(USER_ADRESSE);
-
-            EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
-            EditText lastName = getView().findViewById(R.id.txtProfileLastName);
-            EditText geschlecht = getView().findViewById(R.id.txtProfileLastGender);
-            EditText txtalter = getView().findViewById(R.id.txtProfileAge);
-            EditText wohnort = getView().findViewById(R.id.txtProfileAdress);
-            EditText txtmail = getView().findViewById(R.id.txtProfileMail);
-            EditText akademischGrad = getView().findViewById(R.id.txtProfileGraduation);
-            EditText note = getView().findViewById(R.id.txtProfileNotiz);
-
-            firstName.setText(firstname.toString());
-            lastName.setText(lastname);
-            txtalter.setText(alter);
-            txtmail.setText(mail);
-            wohnort.setText(adresse);
-        }
-
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
     }
 
@@ -167,71 +83,6 @@ public class ProfileFragment extends android.app.Fragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        fragmentListener = null;
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Falls keine Rechte zur erkennung des Standorts vorhanden sind, kann dieser nicht gefunden werden.
-            return;
-        }
-
-        Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                googleApiClient);
-        if (myLastLocation != null) {
-
-            gpsBreitengrad = myLastLocation.getLatitude();
-            gpsLaengengrad = myLastLocation.getLongitude();
-
-            SetCity();
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.e("Error", "onConnectionSuspended: Connection to Fragment suspendet");
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("Error", "onConnectionFailed: Connection to Fragment lost");
-    }
-
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
-
-
-    //  @OnClick(R.id.btnGetAdresse)
-    public void connectToGoogleGPSApi() {
-
-        Log.e("Try connect", "gps: ");
-
-        String[] LOCATION_PERMS = {
-                android.Manifest.permission.ACCESS_FINE_LOCATION};
-        requestPermissions(LOCATION_PERMS, 1);
-        googleApiClient.connect();
-    }
-
-    private void SetCity() {
-
-        String cityName = null;
-        Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
-        List<Address> addresses;
-        try {
-            addresses = gcd.getFromLocation(gpsBreitengrad, gpsLaengengrad, 1);
-            if (addresses.size() > 0) {
-                cityName = addresses.get(0).getLocality();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        TextView t = getView().findViewById(R.id.txtWohnort);
-        t.setText(cityName);
     }
 
     @OnClick(R.id.btnSpeichern)
@@ -239,6 +90,9 @@ public class ProfileFragment extends android.app.Fragment implements
 
         String updateUserURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/updateUser";
 
+        if(getView() == null){
+            return;
+        }
         EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
         EditText lastName = getView().findViewById(R.id.txtProfileLastName);
         EditText geschlecht = getView().findViewById(R.id.txtProfileLastGender);
@@ -277,7 +131,7 @@ public class ProfileFragment extends android.app.Fragment implements
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 String json = new String(error.networkResponse.data);
-                                json = trimMessage(json, "message");
+                                json = trimMessage(json);
                                 Log.e("", "onErrorResponse: " + json);
                             }
                         });
@@ -288,12 +142,12 @@ public class ProfileFragment extends android.app.Fragment implements
 
     }
 
-    public String trimMessage(String json, String key) {
-        String trimmedString = null;
+    public String trimMessage(String json) {
+        String trimmedString;
 
         try {
             JSONObject obj = new JSONObject(json);
-            trimmedString = obj.getString(key);
+            trimmedString = obj.getString("message");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -327,7 +181,6 @@ public class ProfileFragment extends android.app.Fragment implements
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        String a = response.toString();
                         try {
                             currentUser = new User();
                             currentUser.userName = response.getString("userid");
@@ -351,7 +204,11 @@ public class ProfileFragment extends android.app.Fragment implements
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
+                        if(utils.getUserName() == null){
+                            return;
+                        }
+
+                        Toast.makeText(getContext(), "Fehler beim abrufen des Profils", Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -359,8 +216,12 @@ public class ProfileFragment extends android.app.Fragment implements
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
+    @SuppressLint("SetTextI18n")
     private void SetUserInfo() {
 
+        if(getView() == null){
+            return;
+        }
         EditText firstName = getView().findViewById(R.id.txtProfileFirstName);
         EditText lastName = getView().findViewById(R.id.txtProfileLastName);
         EditText geschlecht = getView().findViewById(R.id.txtProfileLastGender);
