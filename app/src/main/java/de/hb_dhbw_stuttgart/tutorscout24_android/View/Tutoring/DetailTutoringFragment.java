@@ -18,6 +18,7 @@ import java.util.Locale;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Communication.ChatFragment;
 
@@ -102,8 +103,10 @@ public class DetailTutoringFragment extends Fragment {
     //Beim Klicken des Kontaktieren-Buttons wird ein neuer Chat mit dem entsprechenden User angelegt und angezeigt
     @OnClick(R.id.btnContactUser)
     public void OnContactButtonClick() {
-        ((MainActivity) getActivity()).addKontakt(userName);
-        ((MainActivity) getActivity()).chatUser = userName;
+        Utils utils = (((MainActivity)getActivity()).getUtils());
+
+       utils.addKontakt(userName);
+       utils.chatUser = userName;
 
         ChatFragment chatFragment = new ChatFragment();
         ((MainActivity) getActivity()).changeFragment(chatFragment, "ChatFragment");

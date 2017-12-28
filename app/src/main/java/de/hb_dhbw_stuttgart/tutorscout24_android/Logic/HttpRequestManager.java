@@ -7,14 +7,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-
 /**
  * Created by Patrick Woehnl on 04.11.2017.
  */
 
 /**
  * Diese Klasse Managed die Requests an das Backend
- *
+ * <p>
  * Übernommen aus: https://developer.android.com/training/volley/requestqueue.html
  */
 public class HttpRequestManager {
@@ -24,11 +23,22 @@ public class HttpRequestManager {
     @SuppressLint("StaticFieldLeak")
     private static Context context;
 
+    /**
+     * Der Konstruktor.
+     *
+     * @param context Der Context.
+     */
     private HttpRequestManager(Context context) {
         HttpRequestManager.context = context;
         requestQueue = getRequestQueue();
     }
 
+    /**
+     * Gibt die Instanz des HttpRequestManager zurück.
+     *
+     * @param context Der Context.
+     * @return Die Instanz des HttpRequestManagers.
+     */
     public static synchronized HttpRequestManager getInstance(Context context) {
         if (instance == null) {
             instance = new HttpRequestManager(context);
@@ -36,6 +46,10 @@ public class HttpRequestManager {
         return instance;
     }
 
+    /**
+     * Gibt die aktuelle RequestQueue zurück.
+     * @return Die RequestQueue.
+     */
     private RequestQueue getRequestQueue() {
         if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
@@ -45,8 +59,12 @@ public class HttpRequestManager {
         return requestQueue;
     }
 
+    /**
+     * Fügt einen Request der Queue hinzu.
+     * @param req Der Request.
+     * @param <T> Der Typ.
+     */
     public <T> void addToRequestQueue(Request<T> req) {
         getRequestQueue().add(req);
     }
-
 }

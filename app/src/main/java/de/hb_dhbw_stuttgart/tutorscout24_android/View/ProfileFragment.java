@@ -43,6 +43,7 @@ import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.User;
 
@@ -71,6 +72,8 @@ public class ProfileFragment extends android.app.Fragment implements
 
     double gpsLaengengrad;
     double gpsBreitengrad;
+
+    private Utils utils;
 
     GoogleApiClient googleApiClient;
     private OnFragmentInteractionListener fragmentListener;
@@ -106,6 +109,7 @@ public class ProfileFragment extends android.app.Fragment implements
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        utils = (((MainActivity)getActivity()).getUtils());
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
 
@@ -155,9 +159,8 @@ public class ProfileFragment extends android.app.Fragment implements
 
     @Override
     public void onAttach(Context context) {
+        utils = (((MainActivity)getActivity()).getUtils());
         getUserInfo();
-
-
         super.onAttach(context);
     }
 
@@ -247,7 +250,7 @@ public class ProfileFragment extends android.app.Fragment implements
 
         JSONObject params = new JSONObject();
         try {
-            params.put("password", MainActivity.getPassword());
+            params.put("password", utils.getPassword());
             params.put("firstName", firstName.getText().toString());
             params.put("lastName", lastName.getText().toString());
             params.put("birthdate", alter.getText().toString());
@@ -302,8 +305,8 @@ public class ProfileFragment extends android.app.Fragment implements
     public JSONObject getAuthenticationJsonb() {
         JSONObject authentication = new JSONObject();
         try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
+            authentication.put("userName", utils.getUserName());
+            authentication.put("password", utils.getPassword());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -316,7 +319,7 @@ public class ProfileFragment extends android.app.Fragment implements
         String usercreateURL = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/user/myUserInfo";
 
 
-        JSONObject requestBody = ((MainActivity) getActivity()).getUserInfoJsn();
+        JSONObject requestBody = utils.getFullAuthenticationJson();
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.POST, usercreateURL, requestBody, new Response.Listener<JSONObject>() {

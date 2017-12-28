@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
@@ -45,6 +46,7 @@ public class ContactFragment extends android.app.Fragment {
     private ArrayList<String> kontakte;
     public ArrayAdapter<String> listAdapter;
     boolean isDeleteEnabled = false;
+    private Utils utils;
 
     public ContactFragment() {
         // Required empty public constructor
@@ -52,6 +54,7 @@ public class ContactFragment extends android.app.Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        utils = (((MainActivity)getActivity()).getUtils());
         super.onCreate(savedInstanceState);
 
     }
@@ -66,7 +69,7 @@ public class ContactFragment extends android.app.Fragment {
 
        // Restore preferences
         kontakte = new ArrayList<>();
-        kontakte = ((MainActivity)getActivity()).getKontakte();
+        kontakte = ((MainActivity)getActivity()).getUtils().getKontakte();
         setKontakteList(view);
 
         return view;
@@ -115,7 +118,7 @@ public class ContactFragment extends android.app.Fragment {
 
                 Toast.makeText(getContext(), v.getText(), Toast.LENGTH_SHORT).show();
                 ChatFragment chatFragment= new ChatFragment();
-                ((MainActivity)getActivity()).chatUser = v.getText().toString();
+                utils.setChatUser(v.getText().toString());
                 ((MainActivity)getActivity()).changeFragment(chatFragment,"Chat");
             }
         });
@@ -135,9 +138,8 @@ public class ContactFragment extends android.app.Fragment {
 
     @Override
     public void onAttach(Context context) {
+        utils = (((MainActivity)getActivity()).getUtils());
         super.onAttach(context);
-
-
     }
 
     @Override
@@ -154,12 +156,12 @@ public class ContactFragment extends android.app.Fragment {
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
 
-        kontakte = (((MainActivity)getActivity()).getKontakte());
+        kontakte = utils.getKontakte();
         if(kontakte.contains("keine Kontakte gefunden")){
             kontakte.remove("keine Kontakte gefunden");
         }
 
-        SharedPreferences settings = getContext().getSharedPreferences("KontaktListe"+ MainActivity.getUserName(), 0);
+        SharedPreferences settings = getContext().getSharedPreferences("KontaktListe"+ utils.getUserName(), 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putStringSet("Kontakte", new HashSet<>(kontakte));
 
@@ -205,7 +207,7 @@ public class ContactFragment extends android.app.Fragment {
 
         try {
             js.put("userToFind", user);
-            js.put("authentication", getAuthenticationJsonb());
+            js.put("authentication", utils.getUserPasswordAuthenticationJson());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -218,7 +220,7 @@ public class ContactFragment extends android.app.Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        ((MainActivity)getActivity()).addKontakt(user);
+                        ((MainActivity)getActivity()).getUtils().addKontakt(user);
                         listAdapter.notifyDataSetChanged();
 
 
@@ -236,16 +238,6 @@ public class ContactFragment extends android.app.Fragment {
         HttpRequestManager.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
-    public JSONObject getAuthenticationJsonb() {
-        JSONObject authentication = new JSONObject();
-        try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return authentication;
-    }
 
     @OnClick(R.id.btnDeleteKontakt)
     public void enableDelete(){

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,7 +112,7 @@ public class RegisterFragment extends android.app.Fragment {
 
                         android.app.Fragment blankFragment = new BlankFragment();
                         ((MainActivity) getActivity()).changeFragment(blankFragment, "Blank");
-                        ((MainActivity) getActivity()).EnableNavigation();
+                        ((MainActivity) getActivity()).enableNavigation();
 
                     }
                 },

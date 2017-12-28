@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.ChatListAdapter;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Communication.ChatMessage;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonArrayRequest;
@@ -73,6 +74,7 @@ public class ChatFragment extends android.app.Fragment {
     private boolean sendloadSuccess = false;
     private boolean recievedloadSuccess = false;
     private static String TAG = "ChatFragment";
+    private Utils utils;
 
     /**
      * Default constructor.
@@ -97,8 +99,9 @@ public class ChatFragment extends android.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.bind(this, view);
 
+        utils = (((MainActivity)getActivity()).getUtils());
 
-        setChatPartner(((MainActivity) getActivity()).chatUser, view);
+        setChatPartner(utils.chatUser, view);
 
         chatMessages = new ArrayList<>();
         listAdapter = new ChatListAdapter(chatMessages, getContext());
@@ -124,6 +127,7 @@ public class ChatFragment extends android.app.Fragment {
      */
     @Override
     public void onAttach(Context context) {
+        utils = (((MainActivity)getActivity()).getUtils());
         Log.i(TAG, "onAttach");
         super.onAttach(context);
     }
@@ -157,7 +161,7 @@ public class ChatFragment extends android.app.Fragment {
             return;
         }
         EditText editText = getView().findViewById(R.id.chat_edit_text1);
-        sendMessageBackend(editText.getText().toString(), ((MainActivity) getActivity()).chatUser);
+        sendMessageBackend(editText.getText().toString(), utils.getChatUser());
         updateListAdapter();
         editText.setText("");
     }
@@ -306,7 +310,7 @@ public class ChatFragment extends android.app.Fragment {
                         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMANY);
                         try {
                             Date d = f.parse(string_date);
-                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"), UserType.SELF, d, MainActivity.getUserName(), toUserId));
+                            chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"), UserType.SELF, d, utils.getUserName(), toUserId));
                             Log.e("messages", "stringToMessage: Messageload send: " + o.getString("messageId"));
 
 
@@ -379,7 +383,7 @@ public class ChatFragment extends android.app.Fragment {
                         String fromUserId = o.getString("fromUserId");
 
                         if (!fromUserId.equals(chatPartner)) {
-                            ((MainActivity) getActivity()).addKontakt(fromUserId);
+                            utils.addKontakt(fromUserId);
                             continue;
                         }
 
@@ -396,7 +400,7 @@ public class ChatFragment extends android.app.Fragment {
 
                         String string_date = o.getString("datetime");
                         Date d = f.parse(string_date);
-                        chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"), UserType.OTHER, d, fromUserId, MainActivity.getUserName()));
+                        chatMessages.add(new ChatMessage(Integer.parseInt(o.getString("messageId")), o.getString("text"), UserType.OTHER, d, fromUserId, utils.getUserName()));
                         Log.e("messages", "stringToMessage: Messageload recieved: " + o.getString("messageId"));
 
                         //- updateListAdapter(o.getString("text"), UserType.OTHER, d);
@@ -434,8 +438,8 @@ public class ChatFragment extends android.app.Fragment {
         JSONObject authentication = new JSONObject();
         JSONObject aut = new JSONObject();
         try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
+            authentication.put("userName", utils.getUserName());
+            authentication.put("password", utils.getPassword());
             aut.put("authentication", authentication);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -447,8 +451,8 @@ public class ChatFragment extends android.app.Fragment {
     public JSONObject getAuthenticationJsonb() {
         JSONObject authentication = new JSONObject();
         try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
+            authentication.put("userName", utils.getUserName());
+            authentication.put("password", utils.getPassword());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -460,7 +464,7 @@ public class ChatFragment extends android.app.Fragment {
         if (chatMessages.isEmpty()) {
             return;
         }
-        chatMessageFileName = MainActivity.getUserName() + chatPartner + "TutorscoutChatMessages";
+        chatMessageFileName = utils.getUserName() + chatPartner + "TutorscoutChatMessages";
 
         StringBuilder messagesString = new StringBuilder();
 
@@ -485,7 +489,7 @@ public class ChatFragment extends android.app.Fragment {
 
     private void loadChatMessagesInFile() {
 
-        chatMessageFileName = MainActivity.getUserName() + chatPartner + "TutorscoutChatMessages";
+        chatMessageFileName = utils.getUserName() + chatPartner + "TutorscoutChatMessages";
 
         try {
             FileInputStream fis = getContext().openFileInput(chatMessageFileName);

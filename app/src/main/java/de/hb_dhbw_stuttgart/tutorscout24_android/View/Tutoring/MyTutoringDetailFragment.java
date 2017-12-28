@@ -31,6 +31,7 @@ import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonObjectRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
@@ -159,8 +160,10 @@ public class MyTutoringDetailFragment extends Fragment {
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
+            Utils utils = (((MainActivity)getActivity()).getUtils());
+
+            authentication.put("userName", utils.getUserName());
+            authentication.put("password", utils.getPassword());
         } catch (JSONException e) {
             e.printStackTrace();
         }

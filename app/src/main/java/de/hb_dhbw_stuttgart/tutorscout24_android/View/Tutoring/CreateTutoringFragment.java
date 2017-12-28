@@ -290,7 +290,7 @@ public class CreateTutoringFragment extends Fragment implements
             requestBody.put("duration", duration);
             requestBody.put("latitude", latitude);
             requestBody.put("longitude", longitude);
-            requestBody.put("authentication", getAuthenticationJson());
+            requestBody.put("authentication", (((MainActivity)getActivity()).getUtils()).getUserPasswordAuthenticationJson());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -330,7 +330,7 @@ public class CreateTutoringFragment extends Fragment implements
             requestBody.put("duration", duration);
             requestBody.put("latitude", latitude);
             requestBody.put("longitude", longitude);
-            requestBody.put("authentication", getAuthenticationJson());
+            requestBody.put("authentication", (((MainActivity)getActivity()).getUtils()).getUserPasswordAuthenticationJson());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -369,18 +369,6 @@ public class CreateTutoringFragment extends Fragment implements
             e.printStackTrace();
         }
         return null;
-    }
-
-    //erzeugt ein JSONObject mit den Username und Passwort zur Authentifizierung im Backend
-    public JSONObject getAuthenticationJson() {
-        JSONObject authentication = new JSONObject();
-        try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return authentication;
     }
 
     @Override

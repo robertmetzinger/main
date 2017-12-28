@@ -58,6 +58,7 @@ import java.util.Objects;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.CustomJsonArrayRequest;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Tutoring.FeedItem;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Model.Tutoring.FeedItemAdapter;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.FeedSorter;
@@ -481,8 +482,10 @@ public class DisplayFragment extends Fragment implements
     public JSONObject getAuthenticationJson() {
         JSONObject authentication = new JSONObject();
         try {
-            authentication.put("userName", MainActivity.getUserName());
-            authentication.put("password", MainActivity.getPassword());
+            Utils utils = (((MainActivity)getActivity()).getUtils());
+
+            authentication.put("userName", utils.getUserName());
+            authentication.put("password", utils.getPassword());
         } catch (JSONException e) {
             e.printStackTrace();
         }

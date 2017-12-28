@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.HttpRequestManager;
 import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.MainActivity;
+import de.hb_dhbw_stuttgart.tutorscout24_android.Logic.Utils;
 import de.hb_dhbw_stuttgart.tutorscout24_android.R;
 
 
@@ -43,6 +45,7 @@ public class LoginFragment extends android.app.Fragment {
     private Credential mCurrentCredential;
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isLockedIn;
+    private Utils utils;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -51,6 +54,7 @@ public class LoginFragment extends android.app.Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        utils = (((MainActivity)getActivity()).getUtils());
         super.onCreate(savedInstanceState);
 
         isLockedIn = false;
@@ -70,9 +74,8 @@ public class LoginFragment extends android.app.Fragment {
 
     @Override
     public void onAttach(Context context) {
+        utils = (((MainActivity)getActivity()).getUtils());
         super.onAttach(context);
-
-
     }
 
 
@@ -121,7 +124,7 @@ public class LoginFragment extends android.app.Fragment {
                 Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onResponse: " + response);
                 if (response.contains("200")) {
-                    ((MainActivity) getActivity()).EnableNavigation();
+                    ((MainActivity)getActivity()).enableNavigation();
                     ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
 
                     savePassword();
@@ -195,7 +198,7 @@ public class LoginFragment extends android.app.Fragment {
     public void accessKeyStore() {
         isLockedIn = true;
         ((MainActivity) getActivity()).requestCredentials();
-        ((MainActivity) getActivity()).EnableNavigation();
+        ((MainActivity)getActivity()).enableNavigation();
         ((MainActivity) getActivity()).changeFragment(new BlankFragment(), "Blank");
     }
 

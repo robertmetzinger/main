@@ -62,42 +62,30 @@ import de.hb_dhbw_stuttgart.tutorscout24_android.View.LoginFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.Tutoring.MyTutoringsFragment;
 import de.hb_dhbw_stuttgart.tutorscout24_android.View.ProfileFragment;
 
-
-
-/**
- * Created by Patrick Woehnl on 26.10.2017.
+/*
+  Created by Patrick Woehnl on 26.10.2017.
  */
 
+/**
+ * Der Haupteinsitiegspunkt des Programms.
+ * <p>
+ * Diese Klasse dient zum Managment der Übergreifenden Funktionen und zum wechseln der Fragments.
+ */
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-    public String chatUser = null;
-    private static ArrayList<String> kontakte;
 
     FragmentTransaction transaction;
     TextView titleView;
 
-    //TODO rm
     ContactFragment kontateFragment;
-
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SAVE = 1;
     private static final int RC_HINT = 2;
     private static final int RC_READ = 3;
 
-    public static String getUserName() {
-        return userName;
-    }
-
-    public static String getPassword() {
-        return password;
-    }
-
-    private static String userName;
-    private static String password;
-
     LoginFragment loginFragment;
+    Utils utils;
 
     private GoogleApiClient mCredentialsApiClient;
 
@@ -138,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements
                     titleView.setText(R.string.NameContactFragment);
 
                     kontateFragment = new ContactFragment();
+
+                    utils.setKontateFragment(kontateFragment);
+
                     changeFragment(kontateFragment, String.valueOf(R.string.NameContactFragment));
                     return true;
 
@@ -159,12 +150,15 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        utils = new Utils(this, kontateFragment);
+
         // lade Kontaktliste
-        SharedPreferences settings = getSharedPreferences("KontaktListe" + userName, 0);
-        String[] defaultString = {"keine Kontakte gefunden"};
+        SharedPreferences settings = getSharedPreferences("KontaktListe" + utils.getUserName(), 0);
+        String[] defaultString = {"Keine Kontakte gefunden"};
         Set<String> defaultSet = new HashSet<>(Arrays.asList(defaultString));
-        kontakte = new ArrayList<>();
-        kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
+
+
+        utils.kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -182,7 +176,9 @@ public class MainActivity extends AppCompatActivity implements
 
         mCredentialsApiClient.connect();
 
-        DisableNavigation();
+        disableNavigation();
+
+
         BottomNavigationView nav = findViewById(R.id.navigation);
         nav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         titleView = findViewById(R.id.toolbar_title);
@@ -196,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements
         exec.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                loadRecievedMessages();
+                utils.loadRecievedMessages(getApplicationContext());
             }
         }, 0, 5, TimeUnit.SECONDS);
     }
@@ -215,40 +211,10 @@ public class MainActivity extends AppCompatActivity implements
 
         transaction = getFragmentManager().beginTransaction();
         transaction.replace((findViewById(R.id.contentFragment)).getId(), fragment);
-
-        // Alternativ (neues Fragment wird nur drüber gesetzt (anderes evtl Fehlerhaft)
-        // transaction.replace(R.id.mainFragment, fragment);
-
         transaction.addToBackStack(name);
         transaction.commit();
     }
 
-
-    public void DisableNavigation() {
-        BottomNavigationView nav = findViewById(R.id.navigation);
-        nav.setEnabled(false);
-
-        nav.getMenu().getItem(0).setEnabled(false);
-        nav.getMenu().getItem(1).setEnabled(false);
-        nav.getMenu().getItem(2).setEnabled(false);
-        nav.getMenu().getItem(3).setEnabled(false);
-        nav.getMenu().getItem(4).setEnabled(false);
-
-        nav.setVisibility(View.GONE);
-    }
-
-    public void EnableNavigation() {
-        BottomNavigationView nav = findViewById(R.id.navigation);
-        nav.setEnabled(true);
-
-        nav.getMenu().getItem(0).setEnabled(true);
-        nav.getMenu().getItem(1).setEnabled(true);
-        nav.getMenu().getItem(2).setEnabled(true);
-        nav.getMenu().getItem(3).setEnabled(true);
-        nav.getMenu().getItem(4).setEnabled(true);
-
-        nav.setVisibility(View.VISIBLE);
-    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -276,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (requestCode) {
             case RC_HINT:
                 // Drop into handling for RC_READ
+                showToast("Diese funktion wird leider nicht unterstützt.");
             case RC_READ:
                 if (resultCode == RESULT_OK) {
                     boolean isHint = (requestCode == RC_HINT);
@@ -460,27 +427,10 @@ public class MainActivity extends AppCompatActivity implements
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public JSONObject getUserInfoJsn() {
-        JSONObject jsonObject = new JSONObject();
-        JSONObject userJson = new JSONObject();
-
-
-        try {
-            userJson.put("userName", userName);
-            userJson.put("password", password);
-            jsonObject.put("userToFind", userName);
-            jsonObject.put("authentication", userJson);
-
-        } catch (Exception e) {
-            Log.e("aut", "getAutentificationJSON: ", e);
-        }
-
-        return jsonObject;
-    }
 
     public void setUser(String userName, String password) {
-        MainActivity.userName = userName;
-        MainActivity.password = password;
+        utils.setUserName(userName);
+        utils.setPassword(password);
     }
 
     public void changeTitle(String title) {
@@ -488,33 +438,13 @@ public class MainActivity extends AppCompatActivity implements
             titleView.setText(title);
         }
     }
-
-    public ArrayList<String> getKontakte() {
-        SharedPreferences settings = getSharedPreferences("KontaktListe" + userName, 0);
-        String[] defaultString = {"keine Kontakte gefunden"};
-        Set<String> defaultSet = new HashSet<>(Arrays.asList(defaultString));
-        kontakte = new ArrayList<>();
-        kontakte.addAll(settings.getStringSet("Kontakte", defaultSet));
-        return kontakte;
+    public void vibrate(){
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (v != null) {
+            v.vibrate(500);
+        }
     }
 
-
-    public void addKontakt(String kontakt) {
-        if (!kontakte.contains(kontakt)) {
-            kontakte.add(kontakt);
-        }
-
-        if (kontateFragment != null) {
-            kontateFragment.listAdapter.notifyDataSetChanged();
-        }
-
-        SharedPreferences settings = getSharedPreferences("KontaktListe" + userName, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putStringSet("Kontakte", new HashSet<>(kontakte));
-
-        // Commit the edits!
-        editor.apply();
-    }
 
     public void notification() {
         // The id of the channel.
@@ -523,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_stat_chat_bubble)
                         .setContentTitle("Tutorscout")
-                        .setContentText("Neue Nachricht von: " + chatUser);
+                        .setContentText("Neue Nachricht von: " + utils.getChatUser());
 // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -553,57 +483,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void loadRecievedMessages() {
-
-        String url = "http://tutorscout24.vogel.codes:3000/tutorscout24/api/v1/message/getUnreadMessages";
-
-        //erstelle JSON Object für den Request
-
-        CustomJsonArrayRequest a = new CustomJsonArrayRequest(Request.Method.POST, url, getAuthenticationJson(), new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                for (int i = 0; i < response.length(); i++) {
-
-                    try {
-                        JSONObject o = (JSONObject) response.get(i);
-                        chatUser = o.getString("fromUserId");
-                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        if (v != null) {
-                            v.vibrate(500);
-                        }
-                        addKontakt(chatUser);
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                notification();
-            }
-
-        }, new Response.ErrorListener() {
-
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        // Access the RequestQueue through your singleton class.
-        HttpRequestManager.getInstance(this).addToRequestQueue(a);
+    public Utils getUtils(){
+        return utils;
     }
 
-    public JSONObject getAuthenticationJson() {
-        JSONObject authentication = new JSONObject();
-        JSONObject aut = new JSONObject();
-        try {
-            authentication.put("userName", getUserName());
-            authentication.put("password", getPassword());
-            aut.put("authentication", authentication);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return aut;
+    public void enableNavigation(){
+        utils.EnableNavigation((BottomNavigationView) findViewById(R.id.navigation));
+    }
+
+
+    public void disableNavigation(){
+        utils.DisableNavigation((BottomNavigationView) findViewById(R.id.navigation));
     }
 }
